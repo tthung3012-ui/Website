@@ -3,152 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giao diện Shop Acc</title>
-    <!-- Tích hợp Tailwind CSS để style nhanh -->
+    <title>GameAcc - Shop Tài Khoản Tự Động</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tích hợp FontAwesome cho các icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f3f4f6; /* Nền xám nhạt */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-        /* Tùy chỉnh màu sắc nút Dark/Light mode */
-        .theme-toggle {
-            background: linear-gradient(to right, #6b21a8 50%, #e5e7eb 50%);
-        }
-        /* Màu chữ đặc biệt trong phần hướng dẫn */
-        .highlight-red { background-color: #e06666; color: white; padding: 2px 4px; }
-        .highlight-blue { background-color: #6fa8dc; color: white; padding: 2px 4px; }
+        /* Ẩn các section mặc định */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
     </style>
 </head>
-<body class="flex justify-center">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
-    <!-- Container chính: Giới hạn chiều rộng để giống giao diện điện thoại -->
-    <div class="w-full max-w-md bg-white min-h-screen shadow-lg pb-10">
-        
-        <!-- HEADER -->
-        <header class="flex justify-between items-center p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-            <!-- Icon Menu Trái -->
-            <button class="text-gray-500 text-2xl">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+    <!-- HEADER & NAVIGATION -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center cursor-pointer" onclick="switchTab('home')">
+                    <i class="fa-solid fa-gamepad text-2xl text-indigo-600 mr-2"></i>
+                    <span class="font-bold text-xl text-gray-900">Game<span class="text-indigo-600">Acc</span></span>
+                </div>
+                
+                <!-- Menu Navigation -->
+                <nav class="hidden md:flex space-x-6">
+                    <button onclick="switchTab('home')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Trang Chủ</button>
+                    <button onclick="switchTab('history')" class="text-gray-600 hover:text-indigo-600 font-medium transition auth-required">Lịch Sử Mua</button>
+                    <button onclick="switchTab('support')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Hỗ Trợ</button>
+                </nav>
+
+                <!-- User Area -->
+                <div id="user-area" class="flex items-center gap-3">
+                    <!-- Trạng thái chưa đăng nhập -->
+                    <button onclick="switchTab('auth')" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 transition text-sm">Đăng Nhập / Đăng Ký</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- 1. TRANG CHỦ (HOME) -->
+        <section id="section-home" class="page-section active">
+            <!-- Banner -->
+            <div class="bg-indigo-600 rounded-2xl p-6 text-white mb-8 flex items-center justify-between shadow-lg">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">Giảm giá 20% toàn bộ Acc Liên Quân!</h2>
+                    <p class="text-indigo-100">Giao dịch tự động 24/7 - Trắng thông tin - Bảo hành trọn đời.</p>
+                </div>
+                <i class="fa-solid fa-gift text-5xl text-indigo-300 opacity-50 hidden sm:block"></i>
+            </div>
             
-            <!-- Nút Ví -->
-            <button class="flex items-center gap-2 border border-blue-400 text-blue-600 px-3 py-1.5 rounded text-sm font-semibold">
-                <i class="fa-solid fa-wallet"></i> Ví: 1.000đ
-            </button>
-
-            <!-- Chuyển đổi giao diện Sáng/Tối -->
-            <div class="flex items-center border border-gray-300 rounded overflow-hidden">
-                <div class="bg-purple-900 text-white px-2 py-1"><i class="fa-regular fa-sun"></i></div>
-                <div class="bg-gray-100 text-gray-500 px-2 py-1"><i class="fa-regular fa-moon"></i></div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4 border-l-4 border-indigo-600 pl-3">Tài khoản Đang Bán</h3>
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- JS sẽ render sản phẩm vào đây -->
+                <p class="text-gray-500">Đang tải dữ liệu...</p>
             </div>
+        </section>
 
-            <!-- Icon Menu Phải -->
-            <button class="text-gray-500 text-2xl">
-                <i class="fa-solid fa-bars-staggered"></i>
-            </button>
-        </header>
-
-        <!-- MAIN CONTENT -->
-        <main class="p-3">
-            
-            <!-- PHẦN 1: Bảng Thông báo & Hướng dẫn (Từ image.png) -->
-            <div class="border-2 border-blue-600 p-4 rounded text-sm space-y-4 text-gray-800 font-medium">
-                <p>SHOP ACC REG LIÊN QUÂN <a href="#" class="text-blue-500">ACCREG.VN</a> CHÀO CÁC BẠN</p>
-                <p>ZALO Hỗ Trợ <a href="#" class="text-blue-500">https://chat.zalo.me/index.html</a></p>
-                <p>LƯU Ý : Sắp Chung Sức Rồi Ai Cần Acc Lv12-15</p>
-                <p>Inb Mình Giao Lưu ( Zalo <span class="text-blue-500">0358810405</span> )</p>
-                
-                <h3 class="text-lg font-normal">Link Nhóm Zalo Giúp Chung sức</h3>
-                <a href="#" class="text-blue-500 block">https://zalo.me/g/cunzft850</a>
-                
-                <p><span class="highlight-red">cách dùng tài khoản khi đã mua thành công</span></p>
-                <p><span class="highlight-blue font-bold tracking-widest">TK|MK|MAIL|PASSMAIL</span></p>
-                
-                <div class="mt-4 break-words">
-                    <span class="highlight-blue font-bold">VÍ DỤ :</span>
-                    <span class="font-bold">fxiz.26070|$k$Z1&mtCi|hw8b7kj7ysy@xqelwmi.link|gqyst2z2lx</span>
+        <!-- 2. ĐĂNG NHẬP / ĐĂNG KÝ (AUTH) -->
+        <section id="section-auth" class="page-section">
+            <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900" id="auth-title">Đăng Nhập</h2>
+                    <p class="text-gray-500 text-sm mt-1" id="auth-subtitle">Chào mừng bạn quay trở lại</p>
                 </div>
 
-                <div class="mt-6 space-y-2">
-                    <p><span class="text-red-500 font-bold">fxiz.26070</span> Là Tài Khoản Đăng nhập</p>
-                    <p><span class="text-red-500 font-bold">$k$Z1&mtCi</span> Là Mật Khẩu Đăng Nhập</p>
-                    <p><span class="text-red-500 font-bold">hw8b7kj7ysy@xqelwmi.link</span> Đây là email để đổi pass</p>
-                    <p><span class="text-red-500 font-bold">gqyst2z2lx</span> đây là mật khẩu email</p>
-                </div>
-
-                <p class="text-base mt-4">web mail để đổi pass <a href="#" class="text-blue-500">https://mails.dyecuto.com/</a></p>
-            </div>
-
-            <!-- PHẦN 2: Banner Quảng cáo (Từ image_2.png) -->
-            <div class="mt-6 bg-gradient-to-r from-purple-900 to-fuchsia-900 text-white p-4 rounded-t-xl rounded-br-xl shadow-md">
-                <div class="flex items-start gap-3">
-                    <img src="https://via.placeholder.com/40" alt="Avatar" class="w-10 h-10 rounded">
-                    <h2 class="text-base font-bold uppercase leading-snug">
-                        ACC OFF LÂU ĐỂ GIÚP CHUNG SỨC LiQi ( CHO THUÊ 100 NĂM CÒN SỐNG THÌ TRẢ LẠI MÌNH )
-                    </h2>
-                </div>
-            </div>
-
-            <!-- PHẦN 3: Card Sản phẩm (Từ image_2.png) -->
-            <div class="mt-4 bg-gray-50 border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-                <!-- Tiêu đề sản phẩm -->
-                <div class="p-3 bg-white flex items-center gap-3 border-b border-gray-100">
-                    <img src="https://via.placeholder.com/60" alt="Product Image" class="w-14 h-14 object-cover rounded">
-                    <h3 class="font-bold text-gray-800 text-lg">1 acc lv12 off lâu mxt</h3>
-                </div>
-
-                <!-- Danh sách tính năng -->
-                <div class="p-4 bg-white">
-                    <ul class="space-y-2 text-sm text-gray-700">
-                        <li class="flex items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-green-600"></i> - acc lv12 off trên 1 tháng
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-green-600"></i> - mail đổi đc pass
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-green-600"></i> -bao pass 100 năm
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-green-600"></i>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Thống kê & Giá -->
-                <div class="grid grid-cols-3 text-center bg-gray-50 p-3 border-t border-b border-gray-200 divide-x divide-gray-200">
+                <form id="auth-form" class="space-y-4">
                     <div>
-                        <p class="text-xs text-gray-500 font-semibold mb-1">Quốc gia</p>
-                        <div class="w-6 h-4 bg-red-600 mx-auto relative rounded-sm shadow-sm">
-                            <i class="fa-solid fa-star text-yellow-400 text-[10px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="auth-email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                        <input type="password" id="auth-password" required minlength="6" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-lg hover:bg-indigo-700 transition" id="auth-submit-btn">Đăng Nhập</button>
+                </form>
+
+                <div class="mt-4 text-center text-sm text-gray-600">
+                    <span id="auth-toggle-text">Chưa có tài khoản?</span> 
+                    <button id="auth-toggle-btn" class="text-indigo-600 font-bold hover:underline">Đăng ký ngay</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. LỊCH SỬ MUA HÀNG (HISTORY) -->
+        <section id="section-history" class="page-section">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 border-l-4 border-indigo-600 pl-3">Lịch Sử Mua Hàng</h3>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                                <th class="p-4 font-semibold">Tên tài khoản</th>
+                                <th class="p-4 font-semibold">Giá</th>
+                                <th class="p-4 font-semibold">Thông tin (TK|MK)</th>
+                                <th class="p-4 font-semibold">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-list" class="text-sm divide-y divide-gray-100">
+                            <!-- JS sẽ render lịch sử vào đây -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. HỖ TRỢ (SUPPORT) -->
+        <section id="section-support" class="page-section">
+            <h3 class="text-xl font-bold text-gray-900 mb-6 border-l-4 border-indigo-600 pl-3">Trung Tâm Hỗ Trợ</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Thông tin liên hệ -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h4 class="font-bold text-lg mb-4 text-gray-900">Thông Tin Liên Hệ</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-comment-dots"></i></div>
+                            <div>
+                                <p class="text-sm text-gray-500">Zalo Hỗ Trợ</p>
+                                <a href="#" class="font-bold text-gray-900 hover:text-indigo-600">0358.810.405</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
+                            <div>
+                                <p class="text-sm text-gray-500">Group Cộng Đồng</p>
+                                <a href="#" class="font-bold text-gray-900 hover:text-indigo-600">Tham gia Nhóm Chung Sức</a>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-500 font-semibold mb-1">Hiện có</p>
-                        <span class="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">12.406</span>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-300 line-through">1.650đ</p>
-                        <p class="text-yellow-600 font-bold text-lg leading-none">1.500đ</p>
-                    </div>
                 </div>
 
-                <!-- Nút Hành động -->
-                <div class="p-4 bg-white space-y-3">
-                    <button class="w-full border border-gray-300 text-gray-700 font-semibold py-2 rounded flex items-center justify-center gap-2 hover:bg-gray-50 transition">
-                        <i class="fa-regular fa-image"></i> Hình ảnh mô tả
-                    </button>
-                    <button class="w-full bg-purple-900 text-white font-bold py-2.5 rounded flex items-center justify-center gap-2 hover:bg-purple-800 transition shadow-md">
-                        <i class="fa-solid fa-cart-shopping"></i> MUA NGAY
-                    </button>
+                <!-- FAQ -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h4 class="font-bold text-lg mb-4 text-gray-900">Câu Hỏi Thường Gặp</h4>
+                    <div class="space-y-3 text-sm">
+                        <details class="bg-gray-50 p-3 rounded-lg border border-gray-200 cursor-pointer group">
+                            <summary class="font-semibold text-gray-800 list-none flex justify-between items-center">
+                                Cách nạp tiền vào ví?
+                                <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition"></i>
+                            </summary>
+                            <p class="mt-2 text-gray-600">Hệ thống hỗ trợ nạp tiền tự động qua thẻ siêu rẻ hoặc chuyển khoản VietQR. Tiền sẽ được cộng trong 1-3 phút.</p>
+                        </details>
+                        <details class="bg-gray-50 p-3 rounded-lg border border-gray-200 cursor-pointer group">
+                            <summary class="font-semibold text-gray-800 list-none flex justify-between items-center">
+                                Mua xong lấy thông tin acc ở đâu?
+                                <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition"></i>
+                            </summary>
+                            <p class="mt-2 text-gray-600">Ngay khi bấm mua thành công, thông tin tài khoản sẽ hiển thị trên màn hình. Bạn cũng có thể xem lại trong mục "Lịch Sử Mua".</p>
+                        </details>
+                    </div>
                 </div>
             </div>
+        </section>
 
-        </main>
-    </div>
+    </main>
 
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-gray-200 py-6 text-center text-sm text-gray-500 mt-auto">
+        &copy; 2024 GameAcc Shop. All rights reserved.
+    </footer>
+
+    <!-- ===== JAVASCRIPT & FIREBASE LOGIC ===== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
+
+        // === ĐIỀN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY ===
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const functions = getFunctions(app);
+
+        let currentUser = null;
+
+        // ================= XỬ LÝ CHUYỂN TAB (GIAO DIỆN) =================
+        window.switchTab = function(tabId) {
+            if(tabId === 'history' && !currentUser) {
+                alert("Vui lòng đăng nhập để xem lịch sử!");
+                return switchTab('auth');
+            }
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-' + tabId).classList.add('active');
+        };
+
+        // ================= XỬ LÝ AUTH (ĐĂNG NHẬP / ĐĂNG KÝ) =================
+        let isLoginMode = true;
+        const authForm = document.getElementById('auth-form');
+        const authTitle = document.getElementById('auth-title');
+        const authBtn = document.getElementById('auth-submit-btn');
+        const authToggleBtn = document.getElementById('auth-toggle-btn');
+        const authToggleText = document.getElementById('auth-toggle-text');
+
+        authToggleBtn.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            authTitle.innerText = isLoginMode ? "Đăng Nhập" : "Tạo Tài Khoản";
+            authBtn.innerText = isLoginMode ? "Đăng Nhập" : "Đăng Ký";
+            authToggleText.innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
+            authToggleBtn.innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            authBtn.disabled = true;
+            authBtn.innerText = "Đang xử lý...";
+
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    alert("Đăng nhập thành công!");
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    alert("Đăng ký thành công!");
+                }
+                switchTab('home');
+                authForm.reset();
+            } catch (error) {
+                alert("Lỗi: " + error.message);
+            } finally {
+                authBtn.disabled = false;
+                authBtn.innerText = isLoginMode ? "Đăng Nhập" : "Đăng Ký";
+            }
+        });
+
+        // ================= LẮNG NGHE TRẠNG THÁI USER =================
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            const userArea = document.getElementById('user-area');
+            
+            if (user) {
+                // Đã đăng nhập: Lắng nghe số dư
+                onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+                    let balance = 0;
+                    if(docSnap.exists()) balance = docSnap.data().balance || 0;
+                    
+                    userArea.innerHTML = `
+                        <div class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-3 py-1.5 rounded-lg font-bold text-sm flex items-center">
+                            <i class="fa-solid fa-wallet mr-2"></i> ${balance.toLocaleString()}đ
+                        </div>
+                        <button id="logout-btn" class="text-gray-500 hover:text-red-500 transition px-2" title="Đăng xuất"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    `;
+                    document.getElementById('logout-btn').addEventListener('click', () => {
+                        signOut(auth);
+                        switchTab('home');
+                    });
+                });
+                
+                // Nếu đang ở tab auth thì chuyển về home
+                if(document.getElementById('section-auth').classList.contains('active')) switchTab('home');
+                loadHistory(); // Load lịch sử mua hàng
+            } else {
+                // Chưa đăng nhập
+                userArea.innerHTML = `<button onclick="switchTab('auth')" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 transition text-sm">Đăng Nhập / Đăng Ký</button>`;
+                document.getElementById('history-list').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Vui lòng đăng nhập để xem</td></tr>`;
+            }
+        });
+
+        // ================= LOAD DANH SÁCH SẢN PHẨM =================
+        const productList = document.getElementById('product-list');
+        onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
+            productList.innerHTML = '';
+            if (snapshot.empty) {
+                productList.innerHTML = '<p class="text-red-500 col-span-full">Hiện tại đã hết acc. Vui lòng quay lại sau.</p>';
+                return;
+            }
+
+            snapshot.forEach((docSnap) => {
+                const acc = docSnap.data();
+                productList.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
+                        <div class="h-32 bg-gray-200 relative">
+                            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-bold text-gray-800 mb-2 truncate">${acc.title}</h4>
+                            <p class="text-indigo-600 font-extrabold text-lg mb-3">${acc.price.toLocaleString()}đ</p>
+                            <button onclick="buyAccount('${docSnap.id}')" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition">Mua Ngay</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        // ================= HÀM MUA ACC (GỌI CLOUD FUNCTION) =================
+        window.buyAccount = async function(accountId) {
+            if(!currentUser) {
+                alert("Bạn cần đăng nhập để mua tài khoản!");
+                return switchTab('auth');
+            }
+            if(confirm("Bạn có chắc chắn muốn mua tài khoản này?")) {
+                try {
+                    const buyFunc = httpsCallable(functions, 'buyAccount');
+                    const res = await buyFunc({ accountId: accountId });
+                    alert("Mua thành công! Thông tin acc:\n" + res.data.account_info);
+                    loadHistory(); // Cập nhật lại bảng lịch sử
+                } catch (error) {
+                    alert("Lỗi: " + error.message);
+                }
+            }
+        };
+
+        // ================= LOAD LỊCH SỬ MUA HÀNG =================
+        function loadHistory() {
+            if(!currentUser) return;
+            const historyList = document.getElementById('history-list');
+            
+            // Query những account có buyer_uid bằng uid của người dùng hiện tại
+            const q = query(collection(db, "accounts"), where("buyer_uid", "==", currentUser.uid));
+            onSnapshot(q, (snapshot) => {
+                historyList.innerHTML = '';
+                if(snapshot.empty) {
+                    historyList.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Bạn chưa mua tài khoản nào.</td></tr>`;
+                    return;
+                }
+                
+                snapshot.forEach(docSnap => {
+                    const acc = docSnap.data();
+                    historyList.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4 font-medium text-gray-900">${acc.title}</td>
+                            <td class="p-4 text-red-600 font-bold">${acc.price.toLocaleString()}đ</td>
+                            <td class="p-4"><code class="bg-gray-100 text-indigo-700 px-2 py-1 rounded text-xs border border-gray-200">${acc.account_info}</code></td>
+                            <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">Thành công</span></td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+    </script>
 </body>
 </html>
