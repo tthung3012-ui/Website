@@ -27,33 +27,51 @@ header {
     top: 0;
     z-index: 1000;
 
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(10px);
+    background: rgba(15, 23, 42, 0.97);
 
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    padding: 18px 8%;
+    padding: 18px 7%;
 
     border-bottom: 1px solid #1e293b;
 }
 
 .logo {
-    font-size: 25px;
+    font-size: 24px;
     font-weight: bold;
     color: #facc15;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    margin-left: 25px;
-    transition: 0.3s;
 }
 
 nav a:hover {
     color: #facc15;
+}
+
+/* NÚT TÀI KHOẢN */
+
+.account-btn {
+    padding: 10px 16px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #facc15;
+    color: #111827;
+
+    font-weight: bold;
+    cursor: pointer;
 }
 
 /* ================= HERO ================= */
@@ -82,7 +100,7 @@ nav a:hover {
 }
 
 .hero h1 {
-    font-size: 55px;
+    font-size: 52px;
     margin-bottom: 20px;
 }
 
@@ -91,13 +109,13 @@ nav a:hover {
 }
 
 .hero p {
-    font-size: 19px;
     color: #cbd5e1;
+    font-size: 18px;
     margin-bottom: 30px;
 }
 
 .hero-btn {
-    padding: 15px 35px;
+    padding: 14px 30px;
 
     border: none;
     border-radius: 10px;
@@ -105,48 +123,41 @@ nav a:hover {
     background: #facc15;
     color: #111827;
 
-    font-size: 17px;
+    font-size: 16px;
     font-weight: bold;
 
     cursor: pointer;
-
-    transition: 0.3s;
-}
-
-.hero-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(250,204,21,0.3);
 }
 
 /* ================= SHOP ================= */
 
 .shop {
-    padding: 70px 8%;
+    padding: 70px 7%;
 }
 
 .section-title {
     text-align: center;
-    font-size: 35px;
+    font-size: 34px;
     margin-bottom: 15px;
 }
 
 .section-description {
     text-align: center;
     color: #94a3b8;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
 }
 
 /* SEARCH */
 
 .search-box {
     max-width: 600px;
-    margin: 0 auto 50px;
+    margin: 0 auto 40px;
 }
 
 .search-box input {
     width: 100%;
 
-    padding: 16px 20px;
+    padding: 15px 20px;
 
     background: #1e293b;
     border: 1px solid #334155;
@@ -159,11 +170,7 @@ nav a:hover {
     outline: none;
 }
 
-.search-box input:focus {
-    border-color: #facc15;
-}
-
-/* PRODUCTS */
+/* PRODUCT */
 
 .product-list {
     display: grid;
@@ -173,8 +180,6 @@ nav a:hover {
 
     gap: 25px;
 }
-
-/* CARD */
 
 .card {
     position: relative;
@@ -194,9 +199,6 @@ nav a:hover {
     transform: translateY(-8px);
 
     border-color: #facc15;
-
-    box-shadow:
-    0 15px 35px rgba(0,0,0,0.4);
 }
 
 .card img {
@@ -232,15 +234,13 @@ nav a:hover {
 
 .info {
     color: #94a3b8;
-    font-size: 14px;
-
     line-height: 1.8;
 }
 
 .price {
     color: #facc15;
 
-    font-size: 23px;
+    font-size: 22px;
 
     font-weight: bold;
 
@@ -250,11 +250,11 @@ nav a:hover {
 .buy-btn {
     width: 100%;
 
-    padding: 13px;
+    padding: 12px;
 
     border: none;
 
-    border-radius: 9px;
+    border-radius: 8px;
 
     background: #facc15;
 
@@ -263,20 +263,12 @@ nav a:hover {
     font-weight: bold;
 
     cursor: pointer;
-
-    transition: 0.3s;
-}
-
-.buy-btn:hover {
-    background: #fde047;
-
-    transform: scale(1.02);
 }
 
 /* ================= FEATURES ================= */
 
 .features {
-    padding: 60px 8%;
+    padding: 60px 7%;
 
     background: #111827;
 }
@@ -287,12 +279,12 @@ nav a:hover {
     grid-template-columns:
     repeat(auto-fit, minmax(200px, 1fr));
 
-    gap: 25px;
-
-    text-align: center;
+    gap: 20px;
 }
 
 .feature {
+    text-align: center;
+
     padding: 25px;
 
     background: #1e293b;
@@ -303,7 +295,7 @@ nav a:hover {
 .feature-icon {
     font-size: 35px;
 
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .feature p {
@@ -315,27 +307,21 @@ nav a:hover {
 /* ================= CONTACT ================= */
 
 .contact {
-    padding: 70px 20px;
+    padding: 60px 20px;
 
     text-align: center;
-}
-
-.contact h2 {
-    font-size: 32px;
-
-    margin-bottom: 15px;
 }
 
 .contact p {
     color: #94a3b8;
 
-    margin-bottom: 25px;
+    margin: 15px 0 25px;
 }
 
 .contact-btn {
     display: inline-block;
 
-    padding: 13px 25px;
+    padding: 12px 20px;
 
     margin: 5px;
 
@@ -362,9 +348,164 @@ footer {
     color: #64748b;
 }
 
+
+/* ================= MODAL ĐĂNG NHẬP ================= */
+
+.modal {
+    display: none;
+
+    position: fixed;
+
+    z-index: 2000;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.75);
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+.modal-box {
+    position: relative;
+
+    width: 100%;
+    max-width: 420px;
+
+    background: #111827;
+
+    padding: 35px;
+
+    border-radius: 18px;
+
+    border: 1px solid #334155;
+
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.close {
+    position: absolute;
+
+    top: 15px;
+    right: 20px;
+
+    font-size: 25px;
+
+    color: #94a3b8;
+
+    cursor: pointer;
+}
+
+.modal-box h2 {
+    text-align: center;
+
+    margin-bottom: 25px;
+
+    color: #facc15;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #cbd5e1;
+}
+
+.form-group input {
+    width: 100%;
+
+    padding: 13px;
+
+    border-radius: 8px;
+
+    border: 1px solid #334155;
+
+    background: #0f172a;
+
+    color: white;
+
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #facc15;
+}
+
+.submit-btn {
+    width: 100%;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #facc15;
+
+    color: #111827;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    margin-top: 5px;
+}
+
+.switch-form {
+    text-align: center;
+
+    margin-top: 20px;
+
+    color: #94a3b8;
+}
+
+.switch-form span {
+    color: #facc15;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+/* USER MENU */
+
+.user-menu {
+    display: none;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.logout-btn {
+    padding: 8px 12px;
+
+    border: 1px solid #ef4444;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #ef4444;
+
+    cursor: pointer;
+}
+
+
 /* ================= MOBILE ================= */
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
 
     header {
         flex-direction: column;
@@ -372,16 +513,14 @@ footer {
         gap: 15px;
     }
 
-    nav a {
-        margin: 0 8px;
+    nav {
+        flex-wrap: wrap;
+
+        justify-content: center;
     }
 
     .hero h1 {
-        font-size: 38px;
-    }
-
-    .hero p {
-        font-size: 16px;
+        font-size: 36px;
     }
 
 }
@@ -393,7 +532,7 @@ footer {
 <body>
 
 
-<!-- HEADER -->
+<!-- ================= HEADER ================= -->
 
 <header>
 
@@ -403,7 +542,9 @@ footer {
 
 <nav>
 
-<a href="#">Trang chủ</a>
+<a href="#">
+Trang chủ
+</a>
 
 <a href="#shop">
 Shop Acc
@@ -413,12 +554,48 @@ Shop Acc
 Liên hệ
 </a>
 
+
+<!-- CHƯA ĐĂNG NHẬP -->
+
+<div id="loginArea">
+
+<button
+class="account-btn"
+onclick="openLogin()">
+
+🔐 Đăng nhập
+
+</button>
+
+</div>
+
+
+<!-- ĐÃ ĐĂNG NHẬP -->
+
+<div
+id="userArea"
+class="user-menu">
+
+<span id="userName">
+Xin chào
+</span>
+
+<button
+class="logout-btn"
+onclick="logout()">
+
+Đăng xuất
+
+</button>
+
+</div>
+
 </nav>
 
 </header>
 
 
-<!-- HERO -->
+<!-- ================= HERO ================= -->
 
 <section class="hero">
 
@@ -442,7 +619,7 @@ XEM KHO ACC
 </section>
 
 
-<!-- SHOP -->
+<!-- ================= SHOP ================= -->
 
 <section
 class="shop"
@@ -457,8 +634,6 @@ Tìm kiếm tài khoản phù hợp với bạn
 </p>
 
 
-<!-- SEARCH -->
-
 <div class="search-box">
 
 <input
@@ -470,14 +645,12 @@ onkeyup="searchProduct()">
 </div>
 
 
-<!-- PRODUCTS -->
-
 <div
 class="product-list"
 id="productList">
 
 
-<!-- PRODUCT 1 -->
+<!-- ACC 1 -->
 
 <div class="card">
 
@@ -497,11 +670,9 @@ Acc Liên Quân #001
 <div class="info">
 
 ⭐ 80+ Tướng
-
 <br>
 
 👕 150+ Trang phục
-
 <br>
 
 🏆 Rank Cao Thủ
@@ -514,7 +685,7 @@ Acc Liên Quân #001
 
 <button
 class="buy-btn"
-onclick="buy('Acc Liên Quân #001')">
+onclick="buyAccount('Acc Liên Quân #001')">
 
 XEM CHI TIẾT
 
@@ -525,7 +696,7 @@ XEM CHI TIẾT
 </div>
 
 
-<!-- PRODUCT 2 -->
+<!-- ACC 2 -->
 
 <div class="card">
 
@@ -534,6 +705,7 @@ class="badge"
 style="background:#8b5cf6">
 
 VIP
+
 </span>
 
 <img
@@ -548,11 +720,9 @@ Acc Liên Quân #002
 <div class="info">
 
 ⭐ 100+ Tướng
-
 <br>
 
 👕 250+ Trang phục
-
 <br>
 
 🏆 Rank Chiến Tướng
@@ -565,7 +735,7 @@ Acc Liên Quân #002
 
 <button
 class="buy-btn"
-onclick="buy('Acc Liên Quân #002')">
+onclick="buyAccount('Acc Liên Quân #002')">
 
 XEM CHI TIẾT
 
@@ -576,7 +746,7 @@ XEM CHI TIẾT
 </div>
 
 
-<!-- PRODUCT 3 -->
+<!-- ACC 3 -->
 
 <div class="card">
 
@@ -596,11 +766,9 @@ Acc Liên Quân #003
 <div class="info">
 
 ⭐ 120+ Tướng
-
 <br>
 
 👕 300+ Trang phục
-
 <br>
 
 🏆 Rank Chiến Tướng
@@ -613,7 +781,7 @@ Acc Liên Quân #003
 
 <button
 class="buy-btn"
-onclick="buy('Acc Liên Quân #003')">
+onclick="buyAccount('Acc Liên Quân #003')">
 
 XEM CHI TIẾT
 
@@ -629,7 +797,7 @@ XEM CHI TIẾT
 </section>
 
 
-<!-- FEATURES -->
+<!-- ================= FEATURES ================= -->
 
 <section class="features">
 
@@ -707,7 +875,7 @@ Luôn sẵn sàng giải đáp
 </section>
 
 
-<!-- CONTACT -->
+<!-- ================= CONTACT ================= -->
 
 <section
 class="contact"
@@ -748,8 +916,6 @@ Discord
 </section>
 
 
-<!-- FOOTER -->
-
 <footer>
 
 © 2026 Hưng Shop
@@ -761,9 +927,406 @@ Website bán tài khoản game
 </footer>
 
 
+<!-- ================= MODAL ================= -->
+
+<div
+class="modal"
+id="authModal">
+
+<div class="modal-box">
+
+<span
+class="close"
+onclick="closeLogin()">
+
+×
+</span>
+
+
+<!-- FORM ĐĂNG NHẬP -->
+
+<div id="loginForm">
+
+<h2>
+🔐 Đăng nhập
+</h2>
+
+<div class="form-group">
+
+<label>
+Tên đăng nhập
+</label>
+
+<input
+type="text"
+id="loginUsername"
+placeholder="Nhập tên đăng nhập">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Mật khẩu
+</label>
+
+<input
+type="password"
+id="loginPassword"
+placeholder="Nhập mật khẩu">
+
+</div>
+
+
+<button
+class="submit-btn"
+onclick="login()">
+
+Đăng nhập
+
+</button>
+
+
+<div class="switch-form">
+
+Chưa có tài khoản?
+
+<span onclick="showRegister()">
+Tạo tài khoản
+</span>
+
+</div>
+
+</div>
+
+
+<!-- FORM ĐĂNG KÝ -->
+
+<div
+id="registerForm"
+style="display:none">
+
+<h2>
+📝 Tạo tài khoản
+</h2>
+
+
+<div class="form-group">
+
+<label>
+Tên người dùng
+</label>
+
+<input
+type="text"
+id="registerUsername"
+placeholder="Nhập tên người dùng">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Email
+</label>
+
+<input
+type="email"
+id="registerEmail"
+placeholder="Nhập email">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+Mật khẩu
+</label>
+
+<input
+type="password"
+id="registerPassword"
+placeholder="Tạo mật khẩu">
+
+</div>
+
+
+<button
+class="submit-btn"
+onclick="register()">
+
+Tạo tài khoản
+
+</button>
+
+
+<div class="switch-form">
+
+Đã có tài khoản?
+
+<span onclick="showLogin()">
+Đăng nhập
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
 <script>
 
-/* CUỘN ĐẾN SHOP */
+/* ================= ĐĂNG NHẬP ================= */
+
+function openLogin() {
+
+document
+.getElementById("authModal")
+.style.display = "flex";
+
+showLogin();
+
+}
+
+
+function closeLogin() {
+
+document
+.getElementById("authModal")
+.style.display = "none";
+
+}
+
+
+/* ================= CHUYỂN FORM ================= */
+
+function showLogin() {
+
+document
+.getElementById("loginForm")
+.style.display = "block";
+
+document
+.getElementById("registerForm")
+.style.display = "none";
+
+}
+
+
+function showRegister() {
+
+document
+.getElementById("loginForm")
+.style.display = "none";
+
+document
+.getElementById("registerForm")
+.style.display = "block";
+
+}
+
+
+/* ================= ĐĂNG KÝ ================= */
+
+function register() {
+
+let username =
+document
+.getElementById("registerUsername")
+.value;
+
+let email =
+document
+.getElementById("registerEmail")
+.value;
+
+let password =
+document
+.getElementById("registerPassword")
+.value;
+
+
+if (
+username === "" ||
+email === "" ||
+password === ""
+) {
+
+alert("Vui lòng nhập đầy đủ thông tin!");
+
+return;
+
+}
+
+
+let user = {
+
+username: username,
+
+email: email,
+
+password: password
+
+};
+
+
+localStorage.setItem(
+"shopUser",
+JSON.stringify(user)
+);
+
+
+alert(
+"Tạo tài khoản thành công!"
+);
+
+
+showLogin();
+
+}
+
+
+/* ================= ĐĂNG NHẬP ================= */
+
+function login() {
+
+let username =
+document
+.getElementById("loginUsername")
+.value;
+
+let password =
+document
+.getElementById("loginPassword")
+.value;
+
+
+let savedUser =
+JSON.parse(
+localStorage.getItem("shopUser")
+);
+
+
+if (!savedUser) {
+
+alert(
+"Bạn chưa có tài khoản!"
+);
+
+return;
+
+}
+
+
+if (
+username === savedUser.username &&
+password === savedUser.password
+) {
+
+localStorage.setItem(
+"loggedIn",
+"true"
+);
+
+
+localStorage.setItem(
+"currentUser",
+username
+);
+
+
+alert(
+"Đăng nhập thành công!"
+);
+
+
+closeLogin();
+
+updateUserUI();
+
+} else {
+
+alert(
+"Tên đăng nhập hoặc mật khẩu không đúng!"
+);
+
+}
+
+}
+
+
+/* ================= HIỂN THỊ USER ================= */
+
+function updateUserUI() {
+
+let loggedIn =
+localStorage.getItem("loggedIn");
+
+let username =
+localStorage.getItem("currentUser");
+
+
+if (
+loggedIn === "true" &&
+username
+) {
+
+document
+.getElementById("loginArea")
+.style.display = "none";
+
+document
+.getElementById("userArea")
+.style.display = "flex";
+
+document
+.getElementById("userName")
+.innerText =
+"👤 " + username;
+
+} else {
+
+document
+.getElementById("loginArea")
+.style.display = "block";
+
+document
+.getElementById("userArea")
+.style.display = "none";
+
+}
+
+}
+
+
+/* ================= ĐĂNG XUẤT ================= */
+
+function logout() {
+
+localStorage.removeItem(
+"loggedIn"
+);
+
+localStorage.removeItem(
+"currentUser"
+);
+
+updateUserUI();
+
+alert(
+"Bạn đã đăng xuất!"
+);
+
+}
+
+
+/* ================= SHOP ================= */
 
 function goToShop() {
 
@@ -778,8 +1341,6 @@ behavior: "smooth"
 }
 
 
-/* TÌM KIẾM */
-
 function searchProduct() {
 
 let input =
@@ -793,7 +1354,8 @@ document
 .querySelectorAll(".card");
 
 
-cards.forEach(function(card) {
+cards.forEach(
+function(card) {
 
 let name =
 card
@@ -802,7 +1364,9 @@ card
 .toLowerCase();
 
 
-if (name.includes(input)) {
+if (
+name.includes(input)
+) {
 
 card.style.display = "";
 
@@ -817,9 +1381,7 @@ card.style.display = "none";
 }
 
 
-/* NÚT XEM CHI TIẾT */
-
-function buy(account) {
+function buyAccount(account) {
 
 alert(
 
@@ -830,6 +1392,37 @@ alert(
 );
 
 }
+
+
+/* ================= KIỂM TRA ĐĂNG NHẬP ================= */
+
+window.onload =
+function() {
+
+updateUserUI();
+
+};
+
+
+/* ĐÓNG MODAL KHI BẤM RA NGOÀI */
+
+window.onclick =
+function(event) {
+
+let modal =
+document
+.getElementById("authModal");
+
+
+if (
+event.target === modal
+) {
+
+closeLogin();
+
+}
+
+};
 
 </script>
 
