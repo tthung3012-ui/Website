@@ -192,14 +192,42 @@
             document.getElementById('section-' + tabId).classList.add('active');
         };
 
-        // --- XỬ LÝ CHUYỂN ĐỔI FORM ĐĂNG NHẬP / ĐĂNG KÝ ---
-        let isLoginMode = true;
-        document.getElementById('auth-toggle-btn').addEventListener('click', () => {
-            isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? "Đăng Nhập" : "Tạo Tài Khoản";
-            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Đăng Nhập" : "Đăng Ký";
-            document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
-            document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
+                // --- XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ ---
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const username = document.getElementById('auth-username').value;
+
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    // TẠO BẢNG USERS MỚI CHO KHÁCH LÚC ĐĂNG KÝ
+                    await setDoc(doc(db, 'users', userCredential.user.uid), {
+                        username: username,
+                        email: email,
+                        balance: 0, // Set mặc định số dư = 0đ
+                        role: 'user'
+                    });
+                }
+                alert("Thành công!");
+                switchTab('home');
+                e.target.reset();
+            } catch (error) {
+                // Xử lý các mã lỗi Firebase thành thông báo tiếng Việt
+                if (error.code === 'auth/email-already-in-use') {
+                    alert("Gmail này đã có trên hệ thống rồi. Vui lòng sử dụng email khác hoặc Đăng nhập!");
+                } else if (error.code === 'auth/weak-password') {
+                    alert("Mật khẩu quá yếu, vui lòng nhập ít nhất 6 ký tự!");
+                } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                    alert("Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!");
+                } else {
+                    alert("Đã xảy ra lỗi: " + error.message);
+                }
+            }
+        });
 
             // Ẩn/Hiện ô nhập username tùy theo chế độ
             const usernameField = document.getElementById('username-field');
