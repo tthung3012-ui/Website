@@ -3,16 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>acclqmb - Shop cung cấp acc reg</title>
+    <title>AccReg - Shop cung cấp acc game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .page-section { display: none; }
         .page-section.active { display: block; }
+        
+        /* CSS cho Vòng Quay May Mắn */
+        .wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
+        .wheel {
+            width: 100%; height: 100%; border-radius: 50%;
+            background: conic-gradient(
+                #f87171 0deg 60deg, #fbbf24 60deg 120deg, 
+                #34d399 120deg 180deg, #60a5fa 180deg 240deg, 
+                #a78bfa 240deg 300deg, #f472b6 300deg 360deg
+            );
+            border: 8px solid #4f46e5;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .wheel-pointer {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 20px solid transparent; border-right: 20px solid transparent;
+            border-top: 40px solid #1f2937; z-index: 10;
+        }
+        .wheel-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60px; height: 60px; background: white; border-radius: 50%;
+            border: 4px solid #4f46e5; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; color: #4f46e5; z-index: 5;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
+    <!-- HEADER -->
     <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -26,9 +53,12 @@
                     </div>
                 </div>
                 
+                <!-- Desktop Nav -->
                 <nav class="hidden md:flex space-x-6 items-center">
                     <button onclick="switchTab('home')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Trang Chủ</button>
-                    <button onclick="switchTab('history')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Lịch Sử Mua</button>
+                    <button onclick="switchTab('recharge')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Nạp Tiền</button>
+                    <button onclick="switchTab('wheel')" class="text-gray-600 hover:text-indigo-600 font-medium transition animate-pulse text-red-500">Vòng Quay</button>
+                    <button onclick="switchTab('history')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Lịch Sử</button>
                     <button onclick="switchTab('support')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Hỗ Trợ</button>
                     <button id="nav-admin" onclick="switchTab('admin')" class="hidden bg-red-100 text-red-600 px-3 py-1 rounded font-bold hover:bg-red-200 transition">
                         <i class="fa-solid fa-screwdriver-wrench mr-1"></i> Admin Panel
@@ -42,13 +72,14 @@
         </div>
     </header>
 
+    <!-- MOBILE SIDEBAR -->
     <div id="mobile-sidebar" class="fixed inset-0 z-50 bg-black bg-opacity-50 hidden transition-opacity">
         <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-xl p-5 flex flex-col justify-between">
             <div>
                 <div class="flex justify-between items-center mb-6 border-b pb-4">
                     <div class="flex items-center">
                         <i class="fa-solid fa-gamepad text-xl text-indigo-600 mr-2"></i>
-                        <span class="font-bold text-lg text-gray-900">Game<span class="text-indigo-600">Acc</span></span>
+                        <span class="font-bold text-lg text-gray-900">Acc<span class="text-indigo-600">Reg</span></span>
                     </div>
                     <button id="close-sidebar-btn" class="text-gray-500 hover:text-gray-700">
                         <i class="fa-solid fa-xmark text-xl"></i>
@@ -56,21 +87,22 @@
                 </div>
                 <nav class="space-y-3 flex flex-col">
                     <button onclick="switchTab('home'); toggleMobileMenu()" class="text-left py-2 px-3 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium"><i class="fa-solid fa-house mr-3 w-5"></i> Trang Chủ</button>
+                    <button onclick="switchTab('recharge'); toggleMobileMenu()" class="text-left py-2 px-3 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium"><i class="fa-solid fa-money-bill-wave mr-3 w-5"></i> Nạp Tiền</button>
+                    <button onclick="switchTab('wheel'); toggleMobileMenu()" class="text-left py-2 px-3 rounded-lg text-red-600 hover:bg-red-50 font-bold"><i class="fa-solid fa-dharmachakra mr-3 w-5"></i> Vòng Quay</button>
                     <button onclick="switchTab('history'); toggleMobileMenu()" class="text-left py-2 px-3 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium"><i class="fa-solid fa-clock-rotate-left mr-3 w-5"></i> Lịch Sử Mua</button>
                     <button onclick="switchTab('support'); toggleMobileMenu()" class="text-left py-2 px-3 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium"><i class="fa-solid fa-headset mr-3 w-5"></i> Hỗ Trợ</button>
                     <button id="nav-admin-mobile" onclick="switchTab('admin'); toggleMobileMenu()" class="hidden text-left py-2 px-3 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 font-bold">
-                        <i class="fa-solid fa-screwdriver-wrench mr-3 w-5"></i> Admin Panel
+                        <i class="fa-solid fa-screwdriver-wrench mr-3 w-5"></i> Admin
                     </button>
                 </nav>
-            </div>
-            <div class="text-xs text-center text-gray-400 border-t pt-4">
-                ShopAccLienQuan © 2026
             </div>
         </div>
     </div>
 
+    <!-- MAIN CONTENT -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
 
+        <!-- TRANG CHỦ -->
         <section id="section-home" class="page-section active">
             <h3 class="text-xl font-bold text-gray-900 mb-4 border-l-4 border-indigo-600 pl-3">Tài khoản Đang Bán</h3>
             <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -78,28 +110,111 @@
             </div>
         </section>
 
-        <!-- FORM ĐĂNG NHẬP / ĐĂNG KÝ -->
+        <!-- NẠP TIỀN -->
+        <section id="section-recharge" class="page-section">
+            <h3 class="text-xl font-bold mb-6 border-l-4 border-indigo-600 pl-3">Nạp Tiền Vào Tài Khoản</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Cột Thẻ Cào -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                    <h4 class="font-bold text-lg mb-4 text-indigo-700"><i class="fa-solid fa-credit-card mr-2"></i>Nạp Thẻ Cào (Tự động 5s)</h4>
+                    <form id="recharge-card-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nhà mạng</label>
+                            <select class="w-full px-4 py-2 border rounded-lg bg-white" required>
+                                <option value="VIETTEL">Viettel</option>
+                                <option value="VINAPHONE">Vinaphone</option>
+                                <option value="MOBIFONE">Mobifone</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Mệnh giá</label>
+                            <select class="w-full px-4 py-2 border rounded-lg bg-white" required>
+                                <option value="10000">10,000 VNĐ</option>
+                                <option value="20000">20,000 VNĐ</option>
+                                <option value="50000">50,000 VNĐ</option>
+                                <option value="100000">100,000 VNĐ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Mã thẻ</label>
+                            <input type="text" required class="w-full px-4 py-2 border rounded-lg" placeholder="Nhập mã thẻ">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Số Seri</label>
+                            <input type="text" required class="w-full px-4 py-2 border rounded-lg" placeholder="Nhập số seri">
+                        </div>
+                        <button type="button" onclick="alert('Tính năng nạp thẻ cào cần kết nối API Gạch Thẻ (ví dụ TheSieuToc). Admin vui lòng kết nối API backend!')" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg">Nạp Thẻ Ngay</button>
+                    </form>
+                </div>
+
+                <!-- Cột Ngân Hàng -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border text-center">
+                    <h4 class="font-bold text-lg mb-4 text-green-600"><i class="fa-solid fa-building-columns mr-2"></i>Chuyển Khoản (Tự động 1-3p)</h4>
+                    <p class="text-sm text-gray-600 mb-4">Quét mã QR dưới đây hoặc chuyển khoản theo đúng cú pháp để hệ thống tự động cộng tiền.</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300 inline-block mb-4">
+                        <img id="qr-code-img" src="https://via.placeholder.com/200?text=QR+Code" alt="QR Code" class="mx-auto w-48 h-48 rounded">
+                    </div>
+                    
+                    <div class="text-left bg-green-50 text-green-800 p-4 rounded-lg text-sm space-y-2 border border-green-100">
+                        <p><strong>Ngân hàng:</strong> MB Bank</p>
+                        <p><strong>Số tài khoản:</strong> 0334671178</p>
+                        <p><strong>Chủ tài khoản:</strong> NGUYEN VAN A</p>
+                        <p class="font-mono bg-white p-2 rounded border border-green-200 mt-2 text-center text-lg font-bold text-red-500">
+                            Nội dung: <span id="bank-syntax">NAPTIEN</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VÒNG QUAY MAY MẮN -->
+        <section id="section-wheel" class="page-section">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border max-w-2xl mx-auto text-center">
+                <h3 class="text-2xl font-bold mb-2 text-indigo-700">Vòng Quay Nhân Phẩm</h3>
+                <p class="text-gray-500 mb-8">Giá mỗi lượt quay: <span class="font-bold text-red-500">10,000đ</span></p>
+                
+                <div class="wheel-container mb-8">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel" id="roulette-wheel"></div>
+                    <div class="wheel-center">SPIN</div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-xs md:text-sm font-medium text-gray-600 mb-6 bg-gray-50 p-4 rounded-lg">
+                    <div class="text-red-500">Đỏ: +0đ</div>
+                    <div class="text-yellow-500">Vàng: +5,000đ</div>
+                    <div class="text-green-500">Xanh lá: +10,000đ</div>
+                    <div class="text-blue-500">Xanh dương: +20,000đ</div>
+                    <div class="text-purple-500">Tím: +50,000đ</div>
+                    <div class="text-pink-500">Hồng: +100,000đ</div>
+                </div>
+
+                <button id="spin-btn" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-extrabold text-lg py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform">
+                    QUAY NGAY
+                </button>
+            </div>
+        </section>
+
+        <!-- FORM ĐĂNG NHẬP / ĐĂNG KÝ (Giữ nguyên) -->
         <section id="section-auth" class="page-section">
             <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div class="text-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-900" id="auth-title">Đăng Nhập</h2>
                 </div>
                 <form id="auth-form" class="space-y-4">
-                    
                     <div>
                         <label class="block text-sm font-medium mb-1">Tên đăng nhập <span class="text-red-500">*</span></label>
                         <input type="text" id="auth-username" required placeholder="Nhập tên đăng nhập" class="w-full px-4 py-2 border rounded-lg">
                     </div>
-
                     <div>
                         <label class="block text-sm font-medium mb-1">Mật khẩu <span class="text-red-500">*</span></label>
                         <input type="password" id="auth-password" required minlength="6" placeholder="Nhập mật khẩu" class="w-full px-4 py-2 border rounded-lg">
                     </div>
-
                     <div id="forgot-password-link-container" class="text-right">
                         <button type="button" onclick="switchTab('forgot')" class="text-xs text-indigo-600 hover:underline font-medium">Quên mật khẩu?</button>
                     </div>
-
                     <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-lg" id="auth-submit-btn">Đăng Nhập</button>
                 </form>
                 <div class="mt-4 text-center text-sm text-gray-600">
@@ -114,7 +229,6 @@
             <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div class="text-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-900">Khôi Phục Mật Khẩu</h2>
-                    <p class="text-sm text-gray-500 mt-1">Nhập tên đăng nhập hoặc email khôi phục để nhận liên kết đặt lại mật khẩu.</p>
                 </div>
                 <form id="forgot-form" class="space-y-4">
                     <div>
@@ -129,12 +243,14 @@
             </div>
         </section>
 
+        <!-- LỊCH SỬ -->
         <section id="section-history" class="page-section">
             <h3 class="text-xl font-bold mb-6 border-l-4 border-indigo-600 pl-3">Lịch Sử Mua Hàng</h3>
-            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                <table class="w-full text-left">
+            <div class="bg-white rounded-xl shadow-sm border overflow-x-auto">
+                <table class="w-full text-left min-w-[600px]">
                     <thead>
                         <tr class="bg-gray-50 text-sm border-b">
+                            <th class="p-4">Thời gian</th>
                             <th class="p-4">Tên tài khoản</th>
                             <th class="p-4">Giá</th>
                             <th class="p-4">Thông tin (TK|MK)</th>
@@ -147,31 +263,57 @@
         </section>
 
         <section id="section-support" class="page-section">
-            <h3 class="text-xl font-bold mb-6 border-l-4 border-indigo-600 pl-3">Hỗ Trợ</h3>
-            <p>Liên hệ Admin qua Zalo: 0334671178</p>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border max-w-xl mx-auto text-center">
+                <h3 class="text-2xl font-bold mb-4 text-indigo-700">Hỗ Trợ Khách Hàng</h3>
+                <p class="mb-6 text-gray-600">Gặp vấn đề nạp thẻ, lỗi nick hoặc cần tư vấn? Liên hệ ngay với Admin để được giải quyết nhanh nhất.</p>
+                <a href="https://zalo.me/0334671178" target="_blank" class="inline-block bg-blue-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-600 transition">
+                    <i class="fa-solid fa-comment-dots mr-2"></i> Chat Zalo: 0334671178
+                </a>
+            </div>
         </section>
 
+        <!-- ADMIN PANEL NÂNG CAO -->
         <section id="section-admin" class="page-section">
-            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 max-w-2xl mx-auto">
-                <h3 class="text-2xl font-bold text-red-600 mb-6 border-b pb-4"><i class="fa-solid fa-lock mr-2"></i>Khu Vực Đăng Bán Acc</h3>
-                
-                <form id="admin-add-acc-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tiêu đề (VD: Acc LV12 Trắng TT)</label>
-                        <input type="text" id="add-title" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Giá bán (VNĐ)</label>
-                        <input type="number" id="add-price" required min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Thông tin Acc (Định dạng TK|MK|MAIL|PASS)</label>
-                        <input type="text" id="add-info" required class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-green-700 font-mono">
-                    </div>
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-md transition mt-4">
-                        <i class="fa-solid fa-cloud-arrow-up mr-2"></i>Đăng Bán Lên Shop
-                    </button>
-                </form>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Cột Đăng Bán -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-bold text-red-600 mb-6 border-b pb-4"><i class="fa-solid fa-cloud-arrow-up mr-2"></i>Đăng Bán Acc</h3>
+                    <form id="admin-add-acc-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Tiêu đề (VD: Acc LV12 Trắng TT)</label>
+                            <input type="text" id="add-title" required class="w-full px-4 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Giá bán (VNĐ)</label>
+                            <input type="number" id="add-price" required min="0" class="w-full px-4 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Thông tin Acc (Định dạng TK|MK)</label>
+                            <input type="text" id="add-info" required class="w-full px-4 py-2 border rounded-lg bg-gray-50 font-mono">
+                        </div>
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg mt-4">
+                            Đăng Bán Lên Shop
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Cột Cộng Tiền Thủ Công -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-bold text-green-600 mb-6 border-b pb-4"><i class="fa-solid fa-money-bill-transfer mr-2"></i>Cộng Tiền Thành Viên</h3>
+                    <form id="admin-add-balance-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Username Khách Hàng</label>
+                            <input type="text" id="add-bal-username" required class="w-full px-4 py-2 border rounded-lg" placeholder="Nhập username">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Số Tiền Cần Cộng (+/-)</label>
+                            <input type="number" id="add-bal-amount" required class="w-full px-4 py-2 border rounded-lg" placeholder="VD: 50000">
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-4">
+                            Thực Hiện Cộng Tiền
+                        </button>
+                    </form>
+                </div>
             </div>
         </section>
 
@@ -180,8 +322,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // CẤU HÌNH ADMIN (Thay đổi theo ý bạn)
         const ADMIN_EMAIL = "tthung3012@gmail.com"; 
 
         const firebaseConfig = {
@@ -196,8 +339,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
         let currentUser = null;
+        let currentUserData = null; // Lưu thêm data để lấy username, balance
 
+        // --- GIAO DIỆN & TABS ---
         const mobileSidebar = document.getElementById('mobile-sidebar');
         window.toggleMobileMenu = function() { mobileSidebar.classList.toggle('hidden'); }
         document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
@@ -205,14 +351,20 @@
         mobileSidebar.addEventListener('click', (e) => { if (e.target === mobileSidebar) toggleMobileMenu(); });
 
         window.switchTab = function(tabId) {
-            if(tabId === 'history' && !currentUser) return alert("Vui lòng đăng nhập!"), switchTab('auth');
-            if(tabId === 'admin' && (!currentUser || currentUser.email !== ADMIN_EMAIL)) return alert("Bạn không có quyền truy cập!");
+            const protectedTabs = ['history', 'recharge', 'wheel'];
+            if(protectedTabs.includes(tabId) && !currentUser) {
+                alert("Vui lòng đăng nhập để sử dụng tính năng này!");
+                return switchTab('auth');
+            }
+            if(tabId === 'admin' && (!currentUser || currentUser.email !== ADMIN_EMAIL)) {
+                return alert("Bạn không có quyền truy cập!");
+            }
             
             document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById('section-' + tabId).classList.add('active');
         };
 
-        // --- XỬ LÝ CHUYỂN ĐỔI FORM ĐĂNG NHẬP / ĐĂNG KÝ ---
+        // --- ĐĂNG NHẬP / ĐĂNG KÝ ---
         let isLoginMode = true;
         document.getElementById('auth-toggle-btn').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
@@ -220,18 +372,11 @@
             document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Đăng Nhập" : "Đăng Ký";
             document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
             document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
-
+            
             const forgotLink = document.getElementById('forgot-password-link-container');
-            if (isLoginMode) {
-                forgotLink.classList.remove('hidden');
-                document.getElementById('auth-username').placeholder = "Nhập tên đăng nhập của bạn";
-            } else {
-                forgotLink.classList.add('hidden');
-                document.getElementById('auth-username').placeholder = "Nhập tên đăng nhập viết liền không dấu";
-            }
+            isLoginMode ? forgotLink.classList.remove('hidden') : forgotLink.classList.add('hidden');
         });
 
-        // --- XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ (DÙNG USERNAME ĐỂ ĐĂNG NHẬP) ---
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const usernameInput = document.getElementById('auth-username').value.trim();
@@ -243,23 +388,14 @@
                     const q = query(usersRef, where("username", "==", usernameInput));
                     const querySnapshot = await getDocs(q);
 
-                    if (querySnapshot.empty) {
-                        alert("Tên đăng nhập không tồn tại trên hệ thống!");
-                        return;
-                    }
-
+                    if (querySnapshot.empty) return alert("Tên đăng nhập không tồn tại!");
                     let userEmail = "";
-                    querySnapshot.forEach((doc) => {
-                        userEmail = doc.data().email;
-                    });
+                    querySnapshot.forEach((doc) => { userEmail = doc.data().email; });
 
                     await signInWithEmailAndPassword(auth, userEmail, password);
-                    alert("Đăng nhập thành công!");
                 } else {
-                    // Khi đăng ký tự động sinh email ẩn dạng hệ thống dựa vào username để Firebase chấp nhận
                     const autoEmail = `${usernameInput.toLowerCase()}@acclqmb.local`;
                     const userCredential = await createUserWithEmailAndPassword(auth, autoEmail, password);
-                    
                     await setDoc(doc(db, 'users', userCredential.user.uid), {
                         username: usernameInput,
                         email: autoEmail,
@@ -271,38 +407,24 @@
                 switchTab('home');
                 e.target.reset();
             } catch (error) {
-                if (error.code === 'auth/email-already-in-use') {
-                    alert("Tên đăng nhập này đã có trên hệ thống rồi. Vui lòng chọn tên khác!");
-                } else if (error.code === 'auth/weak-password') {
-                    alert("Mật khẩu quá yếu, vui lòng nhập ít nhất 6 ký tự!");
-                } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                    alert("Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!");
-                } else {
-                    alert("Đã xảy ra lỗi: " + error.message);
-                }
+                alert("Lỗi: Kiểm tra lại tên đăng nhập hoặc mật khẩu!");
             }
         });
 
-        // --- XỬ LÝ QUÊN MẬT KHẨU ---
+        // --- QUÊN MẬT KHẨU ---
         document.getElementById('forgot-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('forgot-email').value.trim();
-
             try {
                 await sendPasswordResetEmail(auth, email);
-                alert("Đã gửi email khôi phục mật khẩu! Vui lòng kiểm tra hộp thư (hoặc mục Thư rác/Spam) của Gmail: " + email);
+                alert("Đã gửi email khôi phục!");
                 switchTab('auth');
-                e.target.reset();
             } catch (error) {
-                if (error.code === 'auth/user-not-found') {
-                    alert("Email này chưa được đăng ký trên hệ thống!");
-                } else {
-                    alert("Lỗi: " + error.message);
-                }
+                alert("Lỗi hoặc email không tồn tại.");
             }
         });
 
-        // --- HIỂN THỊ DỮ LIỆU NGƯỜI DÙNG ---
+        // --- HIỂN THỊ TRẠNG THÁI & DỮ LIỆU USER ---
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             const userArea = document.getElementById('user-area');
@@ -311,92 +433,227 @@
             
             if (user) {
                 if (user.email === ADMIN_EMAIL) {
-                    navAdmin.classList.remove('hidden');
-                    navAdminMobile.classList.remove('hidden');
-                } else {
-                    navAdmin.classList.add('hidden');
-                    navAdminMobile.classList.add('hidden');
+                    navAdmin.classList.remove('hidden'); navAdminMobile.classList.remove('hidden');
                 }
 
                 onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
-                    let balance = docSnap.exists() ? (docSnap.data().balance || 0) : 0;
-                    userArea.innerHTML = `
-                        <div class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-3 py-1.5 rounded-lg font-bold text-sm">
-                            <i class="fa-solid fa-wallet mr-2"></i> ${balance.toLocaleString()}đ
-                        </div>
-                        <button id="logout-btn" class="text-gray-500 hover:text-red-500 px-2"><i class="fa-solid fa-right-from-bracket"></i></button>
-                    `;
-                    document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); switchTab('home'); });
+                    if(docSnap.exists()) {
+                        currentUserData = docSnap.data();
+                        let balance = currentUserData.balance || 0;
+                        userArea.innerHTML = `
+                            <div class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-bold text-sm">
+                                <i class="fa-solid fa-wallet mr-1"></i> ${balance.toLocaleString()}đ
+                            </div>
+                            <button id="logout-btn" class="text-gray-500 hover:text-red-500 px-2"><i class="fa-solid fa-right-from-bracket"></i></button>
+                        `;
+                        document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); location.reload(); });
+                        
+                        // Cập nhật mã QR nạp ngân hàng theo username
+                        const stkVietQR = "0334671178"; // Thay stk MB Bank của bạn
+                        const nganHang = "MB"; // Mã ngân hàng
+                        const cuPhap = `NAP ${currentUserData.username}`;
+                        document.getElementById('bank-syntax').innerText = cuPhap;
+                        document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${encodeURIComponent(cuPhap)}`;
+                    }
                 });
                 loadHistory();
             } else {
-                navAdmin.classList.add('hidden');
-                navAdminMobile.classList.add('hidden');
                 userArea.innerHTML = `<button onclick="switchTab('auth')" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold">Đăng Nhập</button>`;
             }
         });
 
+        // --- LOAD TÀI KHOẢN TRANG CHỦ ---
         onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
-            if (snapshot.empty) return productList.innerHTML = '<p class="text-red-500">Chưa có tài khoản nào được bán.</p>';
+            if (snapshot.empty) return productList.innerHTML = '<p class="text-gray-500 col-span-full text-center py-10">Hiện chưa có tài khoản nào được bán.</p>';
             
             snapshot.forEach((docSnap) => {
                 const acc = docSnap.data();
                 productList.innerHTML += `
-                    <div class="bg-white rounded-xl shadow-sm border p-4">
-                        <h4 class="font-bold text-gray-800 mb-2 truncate">${acc.title}</h4>
-                        <p class="text-indigo-600 font-extrabold text-lg mb-3">${Number(acc.price).toLocaleString()}đ</p>
-                        <button onclick="buyAccount('${docSnap.id}')" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-lg">Mua Ngay</button>
+                    <div class="bg-white rounded-xl shadow-sm border p-4 hover:shadow-md transition">
+                        <div class="bg-indigo-50 rounded-lg p-8 mb-4 text-center">
+                            <i class="fa-solid fa-gamepad text-4xl text-indigo-300"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2 truncate" title="${acc.title}">${acc.title}</h4>
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-indigo-600 font-extrabold text-xl">${Number(acc.price).toLocaleString()}đ</p>
+                        </div>
+                        <button onclick="buyAccount('${docSnap.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg transition">Mua Ngay</button>
                     </div>
                 `;
             });
         });
 
+        // --- TỰ ĐỘNG HÓA CHỨC NĂNG MUA ACC ---
+        window.buyAccount = async function(accId) {
+            if (!currentUser) return switchTab('auth');
+            
+            const confirmBuy = confirm("Bạn có chắc chắn muốn mua tài khoản này?");
+            if(!confirmBuy) return;
+
+            try {
+                // Lấy thông tin acc
+                const accRef = doc(db, "accounts", accId);
+                const accSnap = await getDoc(accRef);
+                
+                if(!accSnap.exists() || accSnap.data().status !== "available") {
+                    return alert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!");
+                }
+                
+                const price = accSnap.data().price;
+                const userRef = doc(db, "users", currentUser.uid);
+                
+                // Cần lấy lại doc user mới nhất để đảm bảo an toàn số dư
+                const userSnap = await getDoc(userRef);
+                if(userSnap.data().balance < price) {
+                    return alert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!");
+                }
+
+                // Thực hiện trừ tiền & đổi trạng thái (Lưu ý: Thực tế nên dùng Firebase Transaction để chống hack đa luồng)
+                await updateDoc(userRef, { balance: increment(-price) });
+                await updateDoc(accRef, { 
+                    status: "sold", 
+                    buyer_uid: currentUser.uid,
+                    sold_at: serverTimestamp()
+                });
+
+                alert("Mua thành công! Vui lòng vào Lịch Sử Mua để xem Tài Khoản / Mật Khẩu.");
+                switchTab('history');
+
+            } catch (error) {
+                alert("Đã xảy ra lỗi khi mua: " + error.message);
+            }
+        };
+
+        // --- VÒNG QUAY MAY MẮN CHỨC NĂNG ---
+        let isSpinning = false;
+        document.getElementById('spin-btn').addEventListener('click', async () => {
+            if(!currentUser) return switchTab('auth');
+            if(isSpinning) return;
+            
+            const spinCost = 10000;
+            const userRef = doc(db, "users", currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            
+            if(userSnap.data().balance < spinCost) {
+                return alert("Bạn cần ít nhất 10,000đ để tham gia vòng quay!");
+            }
+
+            isSpinning = true;
+            await updateDoc(userRef, { balance: increment(-spinCost) });
+
+            // Logic tính toán giải thưởng & Góc quay CSS
+            const prizes = [0, 5000, 10000, 20000, 50000, 100000]; // Tương ứng 6 ô
+            // Random thiên vị (tỷ lệ trúng thấp để shop có lãi)
+            const rand = Math.random();
+            let prizeIndex = 0; // Mặc định 0đ
+            if(rand > 0.6) prizeIndex = 1; // 5k
+            if(rand > 0.85) prizeIndex = 2; // 10k
+            if(rand > 0.95) prizeIndex = 3; // 20k
+            if(rand > 0.98) prizeIndex = 4; // 50k
+            if(rand > 0.995) prizeIndex = 5; // 100k
+
+            const baseAngle = 360 * 5; // Quay 5 vòng
+            const prizeAngle = prizeIndex * 60 + 30; // Trỏ vào giữa ô
+            const totalDegree = baseAngle + prizeAngle;
+
+            const wheel = document.getElementById('roulette-wheel');
+            wheel.style.transform = `rotate(${totalDegree}deg)`;
+
+            setTimeout(async () => {
+                isSpinning = false;
+                wheel.style.transition = 'none';
+                wheel.style.transform = `rotate(${prizeAngle}deg)`; // Reset để quay tiếp
+                setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)', 50);
+
+                if(prizes[prizeIndex] > 0) {
+                    await updateDoc(userRef, { balance: increment(prizes[prizeIndex]) });
+                    alert(`Chúc mừng! Bạn đã quay trúng ${prizes[prizeIndex].toLocaleString()}đ!`);
+                } else {
+                    alert("Rất tiếc! Bạn quay trúng ô 0đ. Chúc bạn may mắn lần sau!");
+                }
+            }, 4000);
+        });
+
+        // --- LỊCH SỬ MUA HÀNG ---
+        function loadHistory() {
+            if(!currentUser) return;
+            const historyList = document.getElementById('history-list');
+            onSnapshot(query(collection(db, "accounts"), where("buyer_uid", "==", currentUser.uid)), (snapshot) => {
+                historyList.innerHTML = '';
+                if(snapshot.empty) return historyList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Bạn chưa mua tài khoản nào.</td></tr>`;
+                
+                snapshot.forEach(docSnap => {
+                    const acc = docSnap.data();
+                    let dateStr = "Vừa xong";
+                    if(acc.sold_at) {
+                        const d = acc.sold_at.toDate();
+                        dateStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes()}`;
+                    }
+                    historyList.innerHTML += `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4 whitespace-nowrap text-gray-500">${dateStr}</td>
+                            <td class="p-4 font-medium">${acc.title}</td>
+                            <td class="p-4 text-red-600 font-bold">${Number(acc.price).toLocaleString()}đ</td>
+                            <td class="p-4"><input type="text" readonly value="${acc.account_info}" class="bg-gray-100 px-2 py-1 border rounded w-full outline-none text-sm font-mono cursor-text" onclick="this.select()"></td>
+                            <td class="p-4 text-green-600 font-bold"><i class="fa-solid fa-check mr-1"></i>Thành công</td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        // --- KHU VỰC ADMIN ---
+        // 1. Đăng acc
         document.getElementById('admin-add-acc-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser || currentUser.email !== ADMIN_EMAIL) return alert("Chỉ Admin mới được thêm acc!");
-
-            const title = document.getElementById('add-title').value;
-            const price = Number(document.getElementById('add-price').value);
-            const info = document.getElementById('add-info').value;
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
 
             try {
                 await addDoc(collection(db, "accounts"), {
-                    title: title,
-                    price: price,
-                    account_info: info,
+                    title: document.getElementById('add-title').value,
+                    price: Number(document.getElementById('add-price').value),
+                    account_info: document.getElementById('add-info').value,
                     status: "available",
                     buyer_uid: null,
                     created_at: serverTimestamp()
                 });
                 alert("Đăng bán thành công!");
                 e.target.reset();
-                switchTab('home');
-            } catch (error) {
-                alert("Lỗi khi đăng acc: " + error.message);
-            }
+            } catch (error) { alert("Lỗi: " + error.message); }
         });
 
-        function loadHistory() {
-            if(!currentUser) return;
-            const historyList = document.getElementById('history-list');
-            onSnapshot(query(collection(db, "accounts"), where("buyer_uid", "==", currentUser.uid)), (snapshot) => {
-                historyList.innerHTML = '';
-                if(snapshot.empty) return historyList.innerHTML = `<tr><td colspan="4" class="p-4 text-center">Trống</td></tr>`;
-                snapshot.forEach(docSnap => {
-                    const acc = docSnap.data();
-                    historyList.innerHTML += `
-                        <tr class="border-b">
-                            <td class="p-4">${acc.title}</td>
-                            <td class="p-4 text-red-600 font-bold">${Number(acc.price).toLocaleString()}đ</td>
-                            <td class="p-4"><code>${acc.account_info}</code></td>
-                            <td class="p-4 text-green-600 font-bold">Thành công</td>
-                        </tr>
-                    `;
+        // 2. Cộng/Trừ tiền User
+        document.getElementById('admin-add-balance-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
+
+            const usernameToFind = document.getElementById('add-bal-username').value.trim();
+            const amountToAdd = Number(document.getElementById('add-bal-amount').value);
+
+            try {
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("username", "==", usernameToFind));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    return alert(`Không tìm thấy user nào có username là: ${usernameToFind}`);
+                }
+
+                let targetUid = "";
+                querySnapshot.forEach((doc) => { targetUid = doc.id; });
+
+                await updateDoc(doc(db, "users", targetUid), {
+                    balance: increment(amountToAdd)
                 });
-            });
-        }
+
+                alert(`Đã cộng/trừ ${amountToAdd.toLocaleString()}đ cho tài khoản ${usernameToFind} thành công!`);
+                e.target.reset();
+            } catch (error) {
+                alert("Lỗi khi cộng tiền: " + error.message);
+            }
+        });
     </script>
 </body>
 </html>
