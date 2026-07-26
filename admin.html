@@ -7,25 +7,53 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body style="font-family: Arial; padding: 20px;">
-    <h2>Bảng Cộng Tiền Nhanh Cho Khách</h2>
-    
-    <div style="margin-bottom: 10px;">
-        <label>Tên đăng nhập của khách:</label><br>
-        <input type="text" id="targetUser" placeholder="Nhập username khách..." style="padding: 8px; width: 300px;">
-    </div>
-    
-    <div style="margin-bottom: 10px;">
-        <label>Số tiền muốn cộng (+):</label><br>
-        <input type="number" id="amount" placeholder="Ví dụ: 50000" style="padding: 8px; width: 300px;">
+
+    <!-- KHUNG NHẬP MẬT KHẨU BẢO VỆ -->
+    <div id="auth-box" style="max-width: 300px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; text-align: center;">
+        <h3>Đăng Nhập Admin</h3>
+        <p style="font-size: 14px; color: #666;">Nhập mật khẩu quản trị để tiếp tục</p>
+        <input type="password" id="admin-pass" placeholder="Nhập mật khẩu..." style="padding: 8px; width: 90%; margin-bottom: 10px;">
+        <br>
+        <button onclick="checkAdminPassword()" style="padding: 8px 15px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px;">Xác Nhận</button>
     </div>
 
-    <button onclick="handleCongTien()" style="padding: 10px 20px; background: green; color: white; border: none; cursor: pointer;">Cộng Tiền Ngay</button>
+    <!-- BẢNG CỘNG TIỀN (SẼ BỊ ẨN KHI CHƯA NHẬP ĐÚNG MẬT KHẨU) -->
+    <div id="admin-content" style="display: none;">
+        <h2>Bảng Cộng Tiền Nhanh Cho Khách</h2>
+        
+        <div style="margin-bottom: 10px;">
+            <label>Tên đăng nhập của khách:</label><br>
+            <input type="text" id="targetUser" placeholder="Nhập username khách..." style="padding: 8px; width: 300px;">
+        </div>
+        
+        <div style="margin-bottom: 10px;">
+            <label>Số tiền muốn cộng (+):</label><br>
+            <input type="number" id="amount" placeholder="Ví dụ: 50000" style="padding: 8px; width: 300px;">
+        </div>
+
+        <button onclick="handleCongTien()" style="padding: 10px 20px; background: green; color: white; border: none; cursor: pointer;">Cộng Tiền Ngay</button>
+    </div>
 
     <script>
+        // --- ĐẶT MẬT KHẨU ADMIN CỦA BẠN TẠI ĐÂY ---
+        const ADMIN_SECRET_PASS = "3012"; // Bạn có thể đổi chữ "admin123" thành mật khẩu riêng của bạn
+
+        function checkAdminPassword() {
+            const enteredPass = document.getElementById('admin-pass').value;
+            if (enteredPass === ADMIN_SECRET_PASS) {
+                document.getElementById('auth-box').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+            } else {
+                alert("Mật khẩu không chính xác!");
+                document.getElementById('admin-pass').value = '';
+            }
+        }
+
+        // Cấu hình Firebase
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID"
+            apiKey: "AIzaSyBuovkNlYRF_ECaqQEujJ9Lc6gn4ZjCmSA",
+            authDomain: "shopacclienquan-f2506.firebaseapp.com",
+            projectId: "shopacclienquan-f2506"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -40,10 +68,10 @@
             }
 
             db.collection("users").doc(username).update({
-                money: firebase.firestore.FieldValue.increment(moneyToAdd)
+                balance: firebase.firestore.FieldValue.increment(moneyToAdd)
             })
             .then(() => {
-                alert("Đã cộng thành công " + moneyToAdd + " VNĐ cho tài khoản: " + username);
+                alert("Đã cộng thành công " + moneyToAdd.toLocaleString() + " VNĐ cho tài khoản: " + username);
                 document.getElementById('targetUser').value = '';
                 document.getElementById('amount').value = '';
             })
