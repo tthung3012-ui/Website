@@ -197,7 +197,7 @@
             </div>
         </section>
 
-        <!-- FORM ĐĂNG NHẬP / ĐĂNG KÝ (Giữ nguyên) -->
+        <!-- FORM ĐĂNG NHẬP / ĐĂNG KÝ -->
         <section id="section-auth" class="page-section">
             <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div class="text-center mb-6">
@@ -205,8 +205,9 @@
                 </div>
                 <form id="auth-form" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-1">Tên đăng nhập <span class="text-red-500">*</span></label>
-                        <input type="text" id="auth-username" required placeholder="Nhập tên đăng nhập" class="w-full px-4 py-2 border rounded-lg">
+                        <!-- Đổi ID label để dễ DOM -->
+                        <label id="auth-username-label" class="block text-sm font-medium mb-1">Tên đăng nhập hoặc Email <span class="text-red-500">*</span></label>
+                        <input type="text" id="auth-username" required placeholder="Nhập tên đăng nhập hoặc email" class="w-full px-4 py-2 border rounded-lg">
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Mật khẩu <span class="text-red-500">*</span></label>
@@ -341,7 +342,7 @@
         const db = getFirestore(app);
         
         let currentUser = null;
-        let currentUserData = null; // Lưu thêm data để lấy username, balance
+        let currentUserData = null; 
 
         // --- GIAO DIỆN & TABS ---
         const mobileSidebar = document.getElementById('mobile-sidebar');
@@ -364,7 +365,7 @@
             document.getElementById('section-' + tabId).classList.add('active');
         };
 
-        // --- ĐĂNG NHẬP / ĐĂNG KÝ ---
+        // --- ĐĂNG NHẬP / ĐĂNG KÝ (ĐÃ CẬP NHẬT 2 LỰA CHỌN) ---
         let isLoginMode = true;
         document.getElementById('auth-toggle-btn').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
@@ -373,31 +374,57 @@
             document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
             document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
             
+            // Đổi Label và Placeholder tùy theo chế độ
+            const userLabel = document.getElementById('auth-username-label');
+            const userInput = document.getElementById('auth-username');
+            if (isLoginMode) {
+                userLabel.innerHTML = 'Tên đăng nhập hoặc Email <span class="text-red-500">*</span>';
+                userInput.placeholder = "Nhập tên đăng nhập hoặc email";
+            } else {
+                userLabel.innerHTML = 'Tên đăng nhập <span class="text-red-500">*</span>';
+                userInput.placeholder = "Nhập tên đăng nhập (VD: account123)";
+            }
+
             const forgotLink = document.getElementById('forgot-password-link-container');
             isLoginMode ? forgotLink.classList.remove('hidden') : forgotLink.classList.add('hidden');
         });
 
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const usernameInput = document.getElementById('auth-username').value.trim();
+            const inputValue = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-password').value;
 
             try {
                 if (isLoginMode) {
-                    const usersRef = collection(db, "users");
-                    const q = query(usersRef, where("username", "==", usernameInput));
-                    const querySnapshot = await getDocs(q);
+                    let userEmailToLogin = "";
 
-                    if (querySnapshot.empty) return alert("Tên đăng nhập không tồn tại!");
-                    let userEmail = "";
-                    querySnapshot.forEach((doc) => { userEmail = doc.data().email; });
+                    // Kiểm tra xem đầu vào có phải là Gmail/Email không (chứa ký tự '@')
+                    if (inputValue.includes('@')) {
+                        // Đăng nhập bằng Email
+                        userEmailToLogin = inputValue;
+                    } else {
+                        // Đăng nhập bằng Tên đăng nhập
+                        const usersRef = collection(db, "users");
+                        const q = query(usersRef, where("username", "==", inputValue));
+                        const querySnapshot = await getDocs(q);
 
-                    await signInWithEmailAndPassword(auth, userEmail, password);
+                        if (querySnapshot.empty) return alert("Tên đăng nhập không tồn tại!");
+                        
+                        querySnapshot.forEach((doc) => { userEmailToLogin = doc.data().email; });
+                    }
+
+                    // Tiến hành đăng nhập Firebase
+                    await signInWithEmailAndPassword(auth, userEmailToLogin, password);
                 } else {
-                    const autoEmail = `${usernameInput.toLowerCase()}@acclqmb.local`;
+                    // Chế độ đăng ký
+                    if (inputValue.includes('@')) {
+                        return alert("Vui lòng chỉ nhập Tên đăng nhập (không chứa ký tự @) để đăng ký!");
+                    }
+
+                    const autoEmail = `${inputValue.toLowerCase()}@acclqmb.local`;
                     const userCredential = await createUserWithEmailAndPassword(auth, autoEmail, password);
                     await setDoc(doc(db, 'users', userCredential.user.uid), {
-                        username: usernameInput,
+                        username: inputValue,
                         email: autoEmail,
                         balance: 0,
                         role: 'user'
@@ -407,7 +434,7 @@
                 switchTab('home');
                 e.target.reset();
             } catch (error) {
-                alert("Lỗi: Kiểm tra lại tên đăng nhập hoặc mật khẩu!");
+                alert("Lỗi: Kiểm tra lại tài khoản hoặc mật khẩu!");
             }
         });
 
@@ -448,9 +475,8 @@
                         `;
                         document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); location.reload(); });
                         
-                        // Cập nhật mã QR nạp ngân hàng theo username
-                        const stkVietQR = "0334671178"; // Thay stk MB Bank của bạn
-                        const nganHang = "MB"; // Mã ngân hàng
+                        const stkVietQR = "0334671178"; 
+                        const nganHang = "MB";
                         const cuPhap = `NAP ${currentUserData.username}`;
                         document.getElementById('bank-syntax').innerText = cuPhap;
                         document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${encodeURIComponent(cuPhap)}`;
@@ -493,7 +519,6 @@
             if(!confirmBuy) return;
 
             try {
-                // Lấy thông tin acc
                 const accRef = doc(db, "accounts", accId);
                 const accSnap = await getDoc(accRef);
                 
@@ -504,13 +529,11 @@
                 const price = accSnap.data().price;
                 const userRef = doc(db, "users", currentUser.uid);
                 
-                // Cần lấy lại doc user mới nhất để đảm bảo an toàn số dư
                 const userSnap = await getDoc(userRef);
                 if(userSnap.data().balance < price) {
                     return alert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!");
                 }
 
-                // Thực hiện trừ tiền & đổi trạng thái (Lưu ý: Thực tế nên dùng Firebase Transaction để chống hack đa luồng)
                 await updateDoc(userRef, { balance: increment(-price) });
                 await updateDoc(accRef, { 
                     status: "sold", 
@@ -543,19 +566,17 @@
             isSpinning = true;
             await updateDoc(userRef, { balance: increment(-spinCost) });
 
-            // Logic tính toán giải thưởng & Góc quay CSS
-            const prizes = [0, 5000, 10000, 20000, 50000, 100000]; // Tương ứng 6 ô
-            // Random thiên vị (tỷ lệ trúng thấp để shop có lãi)
+            const prizes = [0, 5000, 10000, 20000, 50000, 100000];
             const rand = Math.random();
-            let prizeIndex = 0; // Mặc định 0đ
-            if(rand > 0.6) prizeIndex = 1; // 5k
-            if(rand > 0.85) prizeIndex = 2; // 10k
-            if(rand > 0.95) prizeIndex = 3; // 20k
-            if(rand > 0.98) prizeIndex = 4; // 50k
-            if(rand > 0.995) prizeIndex = 5; // 100k
+            let prizeIndex = 0; 
+            if(rand > 0.6) prizeIndex = 1; 
+            if(rand > 0.85) prizeIndex = 2; 
+            if(rand > 0.95) prizeIndex = 3; 
+            if(rand > 0.98) prizeIndex = 4; 
+            if(rand > 0.995) prizeIndex = 5; 
 
-            const baseAngle = 360 * 5; // Quay 5 vòng
-            const prizeAngle = prizeIndex * 60 + 30; // Trỏ vào giữa ô
+            const baseAngle = 360 * 5; 
+            const prizeAngle = prizeIndex * 60 + 30;
             const totalDegree = baseAngle + prizeAngle;
 
             const wheel = document.getElementById('roulette-wheel');
@@ -564,7 +585,7 @@
             setTimeout(async () => {
                 isSpinning = false;
                 wheel.style.transition = 'none';
-                wheel.style.transform = `rotate(${prizeAngle}deg)`; // Reset để quay tiếp
+                wheel.style.transform = `rotate(${prizeAngle}deg)`;
                 setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)', 50);
 
                 if(prizes[prizeIndex] > 0) {
@@ -605,7 +626,6 @@
         }
 
         // --- KHU VỰC ADMIN ---
-        // 1. Đăng acc
         document.getElementById('admin-add-acc-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
@@ -624,7 +644,6 @@
             } catch (error) { alert("Lỗi: " + error.message); }
         });
 
-        // 2. Cộng/Trừ tiền User
         document.getElementById('admin-add-balance-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
