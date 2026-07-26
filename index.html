@@ -17,13 +17,20 @@
     <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center cursor-pointer" onclick="switchTab('home')">
-                    <i class="fa-solid fa-gamepad text-2xl text-indigo-600 mr-2"></i>
-                    <span class="font-bold text-xl text-gray-900">Game<span class="text-indigo-600">Acc</span></span>
+                <!-- Left: Nút 3 gạch & Logo -->
+                <div class="flex items-center gap-3">
+                    <!-- Nút 3 gạch mở menu mobile -->
+                    <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-indigo-600 focus:outline-none p-1">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <!-- Logo -->
+                    <div class="flex items-center cursor-pointer" onclick="switchTab('home')">
+                        <i class="fa-solid fa-gamepad text-2xl text-indigo-600 mr-2"></i>
+                        <span class="font-bold text-xl text-gray-900">Game<span class="text-indigo-600">Acc</span></span>
+                    </div>
                 </div>
                 
-                <!-- Menu Navigation -->
+                <!-- Menu Navigation (Desktop) -->
                 <nav class="hidden md:flex space-x-6 items-center">
                     <button onclick="switchTab('home')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Trang Chủ</button>
                     <button onclick="switchTab('history')" class="text-gray-600 hover:text-indigo-600 font-medium transition">Lịch Sử Mua</button>
@@ -41,6 +48,35 @@
             </div>
         </div>
     </header>
+
+    <!-- MOBILE SIDEBAR MENU -->
+    <div id="mobile-sidebar" class="fixed inset-0 z-50 bg-black bg-opacity-50 hidden transition-opacity">
+        <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-xl p-5 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-gamepad text-xl text-indigo-600 mr-2"></i>
+                        <span class="font-bold text-lg text-gray-900">Game<span class="text-indigo-600">Acc</span></span>
+                    </div>
+                    <button id="close-sidebar-btn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+                <nav class="space-y-3 flex flex-col">
+                    <button onclick="switchTab('home'); toggleMobileMenu()" class="text-left py-2 px-3 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium"><i class="fa-solid fa-house mr-3 w-5"></i> Trang Chủ</button>
+                    <button onclick="switchTab('history'); toggleMobileMenu()" class="text-left py-2 px-3 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium"><i class="fa-solid fa-clock-rotate-left mr-3 w-5"></i> Lịch Sử Mua</button>
+                    <button onclick="switchTab('support'); toggleMobileMenu()" class="text-left py-2 px-3 rounded-lg text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 font-medium"><i class="fa-solid fa-headset mr-3 w-5"></i> Hỗ Trợ</button>
+                    <!-- NÚT ADMIN MOBILE (Mặc định ẩn) -->
+                    <button id="nav-admin-mobile" onclick="switchTab('admin'); toggleMobileMenu()" class="hidden text-left py-2 px-3 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 font-bold">
+                        <i class="fa-solid fa-screwdriver-wrench mr-3 w-5"></i> Admin Panel
+                    </button>
+                </nav>
+            </div>
+            <div class="text-xs text-center text-gray-400 border-t pt-4">
+                ShopAccLienQuan © 2026
+            </div>
+        </div>
+    </div>
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
 
@@ -135,7 +171,7 @@
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         // === 1. ĐIỀN EMAIL ADMIN CỦA BẠN VÀO ĐÂY ===
-        const ADMIN_EMAIL = "tthung3012@gmail.com"; // <-- THAY BẰNG EMAIL CỦA BẠN
+        const ADMIN_EMAIL = "tthung3012@gmail.com"; 
 
         // === 2. ĐIỀN CẤU HÌNH FIREBASE ===
         const firebaseConfig = {
@@ -152,6 +188,17 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
         let currentUser = null;
+
+        // Xử lý bật/tắt Sidebar trên mobile
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        window.toggleMobileMenu = function() {
+            mobileSidebar.classList.toggle('hidden');
+        }
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+        document.getElementById('close-sidebar-btn').addEventListener('click', toggleMobileMenu);
+        mobileSidebar.addEventListener('click', (e) => {
+            if (e.target === mobileSidebar) toggleMobileMenu();
+        });
 
         // Chuyển Tab
         window.switchTab = function(tabId) {
@@ -187,21 +234,22 @@
             }
         });
 
-        // Theo dõi User & Hiển thị nút Admin
+        // Theo dõi User & Hiển thị nút Admin (cả Desktop và Mobile)
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             const userArea = document.getElementById('user-area');
             const navAdmin = document.getElementById('nav-admin');
+            const navAdminMobile = document.getElementById('nav-admin-mobile');
             
             if (user) {
-                // Hiển thị nút Admin nếu đúng Email
                 if (user.email === ADMIN_EMAIL) {
                     navAdmin.classList.remove('hidden');
+                    navAdminMobile.classList.remove('hidden');
                 } else {
                     navAdmin.classList.add('hidden');
+                    navAdminMobile.classList.add('hidden');
                 }
 
-                // Lấy số dư ví
                 onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
                     let balance = docSnap.exists() ? docSnap.data().balance : 0;
                     userArea.innerHTML = `
@@ -215,6 +263,7 @@
                 loadHistory();
             } else {
                 navAdmin.classList.add('hidden');
+                navAdminMobile.classList.add('hidden');
                 userArea.innerHTML = `<button onclick="switchTab('auth')" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold">Đăng Nhập</button>`;
             }
         });
@@ -247,7 +296,6 @@
             const info = document.getElementById('add-info').value;
 
             try {
-                // Thêm tài liệu mới vào collection 'accounts'
                 await addDoc(collection(db, "accounts"), {
                     title: title,
                     price: price,
@@ -257,8 +305,8 @@
                     created_at: serverTimestamp()
                 });
                 alert("Đăng bán thành công!");
-                e.target.reset(); // Xóa trắng form
-                switchTab('home'); // Chuyển về trang chủ xem kết quả
+                e.target.reset();
+                switchTab('home');
             } catch (error) {
                 alert("Lỗi khi đăng acc: " + error.message);
             }
