@@ -154,13 +154,13 @@
                     <p class="text-sm text-gray-600 mb-4">Quét mã QR dưới đây hoặc chuyển khoản theo đúng cú pháp để hệ thống tự động cộng tiền.</p>
                     
                     <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300 inline-block mb-4">
-                        <img id="qr-code-img" src="https://via.placeholder.com/200?text=QR+Code" alt="QR Code" class="mx-auto w-48 h-48 rounded">
+                        <img id="qr-code-img" src="https://img.vietqr.io/image/MB-0354426873-compact2.png?amount=0&addInfo=NAPTIEN&accountName=TRAN%20THE%20HIEN" alt="QR Code" class="mx-auto w-48 h-48 rounded object-contain">
                     </div>
                     
                     <div class="text-left bg-green-50 text-green-800 p-4 rounded-lg text-sm space-y-2 border border-green-100">
                         <p><strong>Ngân hàng:</strong> MB Bank</p>
-                        <p><strong>Số tài khoản:</strong> 0334671178</p>
-                        <p><strong>Chủ tài khoản:</strong> NGUYEN VAN A</p>
+                        <p><strong>Số tài khoản:</strong> 0354426873</p>
+                        <p><strong>Chủ tài khoản:</strong> TRAN THE HIEN</p>
                         <p class="font-mono bg-white p-2 rounded border border-green-200 mt-2 text-center text-lg font-bold text-red-500">
                             Nội dung: <span id="bank-syntax">NAPTIEN</span>
                         </p>
@@ -205,7 +205,6 @@
                 </div>
                 <form id="auth-form" class="space-y-4">
                     <div>
-                        <!-- Đổi ID label để dễ DOM -->
                         <label id="auth-username-label" class="block text-sm font-medium mb-1">Tên đăng nhập hoặc Email <span class="text-red-500">*</span></label>
                         <input type="text" id="auth-username" required placeholder="Nhập tên đăng nhập hoặc email" class="w-full px-4 py-2 border rounded-lg">
                     </div>
@@ -267,8 +266,8 @@
             <div class="bg-white p-8 rounded-2xl shadow-sm border max-w-xl mx-auto text-center">
                 <h3 class="text-2xl font-bold mb-4 text-indigo-700">Hỗ Trợ Khách Hàng</h3>
                 <p class="mb-6 text-gray-600">Gặp vấn đề nạp thẻ, lỗi nick hoặc cần tư vấn? Liên hệ ngay với Admin để được giải quyết nhanh nhất.</p>
-                <a href="https://zalo.me/0334671178" target="_blank" class="inline-block bg-blue-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-600 transition">
-                    <i class="fa-solid fa-comment-dots mr-2"></i> Chat Zalo: 0334671178
+                <a href="https://zalo.me/0354426873" target="_blank" class="inline-block bg-blue-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-600 transition">
+                    <i class="fa-solid fa-comment-dots mr-2"></i> Chat Zalo: 0354426873
                 </a>
             </div>
         </section>
@@ -325,7 +324,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // CẤU HÌNH ADMIN (Thay đổi theo ý bạn)
         const ADMIN_EMAIL = "tthung3012@gmail.com"; 
 
         const firebaseConfig = {
@@ -344,7 +342,6 @@
         let currentUser = null;
         let currentUserData = null; 
 
-        // --- GIAO DIỆN & TABS ---
         const mobileSidebar = document.getElementById('mobile-sidebar');
         window.toggleMobileMenu = function() { mobileSidebar.classList.toggle('hidden'); }
         document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
@@ -365,7 +362,6 @@
             document.getElementById('section-' + tabId).classList.add('active');
         };
 
-        // --- ĐĂNG NHẬP / ĐĂNG KÝ (ĐÃ CẬP NHẬT 2 LỰA CHỌN) ---
         let isLoginMode = true;
         document.getElementById('auth-toggle-btn').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
@@ -374,7 +370,6 @@
             document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
             document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
             
-            // Đổi Label và Placeholder tùy theo chế độ
             const userLabel = document.getElementById('auth-username-label');
             const userInput = document.getElementById('auth-username');
             if (isLoginMode) {
@@ -397,13 +392,9 @@
             try {
                 if (isLoginMode) {
                     let userEmailToLogin = "";
-
-                    // Kiểm tra xem đầu vào có phải là Gmail/Email không (chứa ký tự '@')
                     if (inputValue.includes('@')) {
-                        // Đăng nhập bằng Email
                         userEmailToLogin = inputValue;
                     } else {
-                        // Đăng nhập bằng Tên đăng nhập
                         const usersRef = collection(db, "users");
                         const q = query(usersRef, where("username", "==", inputValue));
                         const querySnapshot = await getDocs(q);
@@ -412,11 +403,8 @@
                         
                         querySnapshot.forEach((doc) => { userEmailToLogin = doc.data().email; });
                     }
-
-                    // Tiến hành đăng nhập Firebase
                     await signInWithEmailAndPassword(auth, userEmailToLogin, password);
                 } else {
-                    // Chế độ đăng ký
                     if (inputValue.includes('@')) {
                         return alert("Vui lòng chỉ nhập Tên đăng nhập (không chứa ký tự @) để đăng ký!");
                     }
@@ -438,7 +426,6 @@
             }
         });
 
-        // --- QUÊN MẬT KHẨU ---
         document.getElementById('forgot-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('forgot-email').value.trim();
@@ -451,13 +438,17 @@
             }
         });
 
-        // --- HIỂN THỊ TRẠNG THÁI & DỮ LIỆU USER ---
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             const userArea = document.getElementById('user-area');
             const navAdmin = document.getElementById('nav-admin');
             const navAdminMobile = document.getElementById('nav-admin-mobile');
             
+            // Thông tin tài khoản MB Bank của bạn
+            const stkVietQR = "0354426873"; 
+            const nganHang = "MB";
+            const tenChuTK = "TRAN THE HIEN";
+
             if (user) {
                 if (user.email === ADMIN_EMAIL) {
                     navAdmin.classList.remove('hidden'); navAdminMobile.classList.remove('hidden');
@@ -475,20 +466,22 @@
                         `;
                         document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); location.reload(); });
                         
-                        const stkVietQR = "0334671178"; 
-                        const nganHang = "MB";
+                        // Cập nhật cú pháp nạp tiền động theo username người dùng
                         const cuPhap = `NAP ${currentUserData.username}`;
                         document.getElementById('bank-syntax').innerText = cuPhap;
-                        document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${encodeURIComponent(cuPhap)}`;
+                        document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${encodeURIComponent(cuPhap)}&accountName=${encodeURIComponent(tenChuTK)}`;
                     }
                 });
                 loadHistory();
             } else {
                 userArea.innerHTML = `<button onclick="switchTab('auth')" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold">Đăng Nhập</button>`;
+                // Mặc định khi chưa đăng nhập
+                const defaultCuPhap = "NAPTIEN";
+                document.getElementById('bank-syntax').innerText = defaultCuPhap;
+                document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${defaultCuPhap}&accountName=${encodeURIComponent(tenChuTK)}`;
             }
         });
 
-        // --- LOAD TÀI KHOẢN TRANG CHỦ ---
         onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -511,7 +504,6 @@
             });
         });
 
-        // --- TỰ ĐỘNG HÓA CHỨC NĂNG MUA ACC ---
         window.buyAccount = async function(accId) {
             if (!currentUser) return switchTab('auth');
             
@@ -549,7 +541,6 @@
             }
         };
 
-        // --- VÒNG QUAY MAY MẮN CHỨC NĂNG ---
         let isSpinning = false;
         document.getElementById('spin-btn').addEventListener('click', async () => {
             if(!currentUser) return switchTab('auth');
@@ -597,7 +588,6 @@
             }, 4000);
         });
 
-        // --- LỊCH SỬ MUA HÀNG ---
         function loadHistory() {
             if(!currentUser) return;
             const historyList = document.getElementById('history-list');
@@ -625,7 +615,6 @@
             });
         }
 
-        // --- KHU VỰC ADMIN ---
         document.getElementById('admin-add-acc-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
