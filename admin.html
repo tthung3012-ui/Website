@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang Quản Trị Shop - Cộng Tiền</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+    <h2>Bảng Cộng Tiền Nhanh Cho Khách</h2>
+    
+    <div style="margin-bottom: 10px;">
+        <label>Tên đăng nhập của khách:</label><br>
+        <input type="text" id="targetUser" placeholder="Nhập username khách..." style="padding: 8px; width: 300px;">
+    </div>
+    
+    <div style="margin-bottom: 10px;">
+        <label>Số tiền muốn cộng (+):</label><br>
+        <input type="number" id="amount" placeholder="Ví dụ: 50000" style="padding: 8px; width: 300px;">
+    </div>
+
+    <button onclick="handleCongTien()" style="padding: 10px 20px; background: green; color: white; border: none; cursor: pointer;">Cộng Tiền Ngay</button>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function handleCongTien() {
+            const username = document.getElementById('targetUser').value.trim();
+            const moneyToAdd = Number(document.getElementById('amount').value);
+
+            if (!username || !moneyToAdd || moneyToAdd <= 0) {
+                alert("Vui lòng nhập đúng tên tài khoản và số tiền!");
+                return;
+            }
+
+            db.collection("users").doc(username).update({
+                money: firebase.firestore.FieldValue.increment(moneyToAdd)
+            })
+            .then(() => {
+                alert("Đã cộng thành công " + moneyToAdd + " VNĐ cho tài khoản: " + username);
+                document.getElementById('targetUser').value = '';
+                document.getElementById('amount').value = '';
+            })
+            .catch((error) => {
+                alert("Lỗi: Không tìm thấy tài khoản hoặc bạn không có quyền thực hiện!");
+                console.error(error);
+            });
+        }
+    </script>
+</body>
+</html>
