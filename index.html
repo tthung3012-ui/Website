@@ -78,6 +78,7 @@
             </div>
         </section>
 
+        <!-- FORM ĐĂNG NHẬP / ĐĂNG KÝ -->
         <section id="section-auth" class="page-section">
             <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div class="text-center mb-6">
@@ -85,24 +86,50 @@
                 </div>
                 <form id="auth-form" class="space-y-4">
                     
-                    <div id="username-field" class="hidden">
-                        <label class="block text-sm font-medium mb-1">Tên đăng nhập <span class="text-red-500">*</span></label>
-                        <input type="text" id="auth-username" placeholder="Nhập tên đăng nhập viết liền không dấu" class="w-full px-4 py-2 border rounded-lg">
+                    <div>
+                        <label class="block text-sm font-medium mb-1" id="label-user-identifier">Tên đăng nhập <span class="text-red-500">*</span></label>
+                        <input type="text" id="auth-username" required placeholder="Nhập tên đăng nhập" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+
+                    <div id="email-field">
+                        <label class="block text-sm font-medium mb-1">Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="auth-email" placeholder="Nhập email của bạn" class="w-full px-4 py-2 border rounded-lg">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium mb-1">Email <span class="text-red-500">*</span></label>
-                        <input type="email" id="auth-email" required class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
                         <label class="block text-sm font-medium mb-1">Mật khẩu <span class="text-red-500">*</span></label>
-                        <input type="password" id="auth-password" required minlength="6" class="w-full px-4 py-2 border rounded-lg">
+                        <input type="password" id="auth-password" required minlength="6" placeholder="Nhập mật khẩu" class="w-full px-4 py-2 border rounded-lg">
                     </div>
+
+                    <div id="forgot-password-link-container" class="text-right">
+                        <button type="button" onclick="switchTab('forgot')" class="text-xs text-indigo-600 hover:underline font-medium">Quên mật khẩu?</button>
+                    </div>
+
                     <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-lg" id="auth-submit-btn">Đăng Nhập</button>
                 </form>
                 <div class="mt-4 text-center text-sm text-gray-600">
                     <span id="auth-toggle-text">Chưa có tài khoản?</span> 
                     <button id="auth-toggle-btn" class="text-indigo-600 font-bold">Đăng ký ngay</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORM QUÊN MẬT KHẨU -->
+        <section id="section-forgot" class="page-section">
+            <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Khôi Phục Mật Khẩu</h2>
+                    <p class="text-sm text-gray-500 mt-1">Nhập email đã đăng ký để nhận liên kết đặt lại mật khẩu.</p>
+                </div>
+                <form id="forgot-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Email khôi phục <span class="text-red-500">*</span></label>
+                        <input type="email" id="forgot-email" required placeholder="Nhập gmail của bạn" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-lg">Gửi Mã/Link Khôi Phục</button>
+                </form>
+                <div class="mt-4 text-center text-sm">
+                    <button onclick="switchTab('auth')" class="text-indigo-600 font-bold hover:underline">Quay lại Đăng Nhập</button>
                 </div>
             </div>
         </section>
@@ -156,11 +183,9 @@
     </main>
 
     <script type="module">
-        // LƯU Ý: Mình đã Import thêm lệnh `setDoc` ở dòng dưới cùng để tự động tạo dữ liệu users khi đăng ký
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, doc, onSnapshot, addDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const ADMIN_EMAIL = "tthung3012@gmail.com"; 
 
@@ -201,51 +226,98 @@
             document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
             document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
 
-            // Ẩn/Hiện ô nhập username tùy theo chế độ
-            const usernameField = document.getElementById('username-field');
-            const usernameInput = document.getElementById('auth-username');
+            const emailField = document.getElementById('email-field');
+            const emailInput = document.getElementById('auth-email');
+            const forgotLink = document.getElementById('forgot-password-link-container');
+            const labelUser = document.getElementById('label-user-identifier');
+
             if (isLoginMode) {
-                usernameField.classList.add('hidden');
-                usernameInput.removeAttribute('required');
+                // Chế độ Đăng Nhập: Chỉ cần nhập Tên đăng nhập và Mật khẩu
+                emailField.classList.add('hidden');
+                emailInput.removeAttribute('required');
+                forgotLink.classList.remove('hidden');
+                labelUser.innerHTML = 'Tên đăng nhập <span class="text-red-500">*</span>';
+                document.getElementById('auth-username').placeholder = "Nhập tên đăng nhập của bạn";
             } else {
-                usernameField.classList.remove('hidden');
-                usernameInput.setAttribute('required', 'true');
+                // Chế độ Đăng Ký: Cần Tên đăng nhập, Email thật và Mật khẩu
+                emailField.classList.remove('hidden');
+                emailInput.setAttribute('required', 'true');
+                forgotLink.classList.add('hidden');
+                labelUser.innerHTML = 'Tên đăng nhập <span class="text-red-500">*</span>';
+                document.getElementById('auth-username').placeholder = "Nhập tên đăng nhập viết liền không dấu";
             }
         });
 
-        // --- XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ ---
+        // --- XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ (DÙNG USERNAME ĐỂ ĐĂNG NHẬP) ---
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value;
+            const usernameInput = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-password').value;
-            const username = document.getElementById('auth-username').value;
 
             try {
                 if (isLoginMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
+                    // Do Firebase Auth bắt buộc dùng email để đăng nhập, ta phải tra cứu ngược từ username ra email trong Firestore
+                    const usersRef = collection(db, "users");
+                    const q = query(usersRef, where("username", "==", usernameInput));
+                    const querySnapshot = await getDocs(q);
+
+                    if (querySnapshot.empty) {
+                        alert("Tên đăng nhập không tồn tại trên hệ thống!");
+                        return;
+                    }
+
+                    let userEmail = "";
+                    querySnapshot.forEach((doc) => {
+                        userEmail = doc.data().email;
+                    });
+
+                    // Tiến hành đăng nhập bằng email đã tìm được kèm mật khẩu
+                    await signInWithEmailAndPassword(auth, userEmail, password);
+                    alert("Đăng nhập thành công!");
                 } else {
+                    const email = document.getElementById('auth-email').value.trim();
+                    // Tạo tài khoản trên Firebase Auth
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    // TẠO BẢNG USERS MỚI CHO KHÁCH LÚC ĐĂNG KÝ
+                    
+                    // Lưu thông tin kèm username vào collection users
                     await setDoc(doc(db, 'users', userCredential.user.uid), {
-                        username: username,
+                        username: usernameInput,
                         email: email,
-                        balance: 0, // Set mặc định số dư = 0đ
+                        balance: 0,
                         role: 'user'
                     });
+                    alert("Tạo tài khoản thành công!");
                 }
-                alert("Thành công!");
                 switchTab('home');
                 e.target.reset();
             } catch (error) {
-                // Xử lý các mã lỗi Firebase thành thông báo tiếng Việt
                 if (error.code === 'auth/email-already-in-use') {
                     alert("Gmail này đã có trên hệ thống rồi. Vui lòng sử dụng email khác hoặc Đăng nhập!");
                 } else if (error.code === 'auth/weak-password') {
                     alert("Mật khẩu quá yếu, vui lòng nhập ít nhất 6 ký tự!");
                 } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                    alert("Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!");
+                    alert("Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!");
                 } else {
                     alert("Đã xảy ra lỗi: " + error.message);
+                }
+            }
+        });
+
+        // --- XỬ LÝ QUÊN MẬT KHẨU ---
+        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value.trim();
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert("Đã gửi email khôi phục mật khẩu! Vui lòng kiểm tra hộp thư (hoặc mục Thư rác/Spam) của Gmail: " + email);
+                switchTab('auth');
+                e.target.reset();
+            } catch (error) {
+                if (error.code === 'auth/user-not-found') {
+                    alert("Email này chưa được đăng ký trên hệ thống!");
+                } else {
+                    alert("Lỗi: " + error.message);
                 }
             }
         });
