@@ -335,7 +335,7 @@
         import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const ADMIN_EMAIL = "tthung3012@gmail.com"; 
-        const ADMIN_SECRET_PASSWORD = "845376"; // <--- Mật khẩu bảo vệ cho Admin và Quản lý acc
+        const ADMIN_SECRET_PASSWORD = "845376"; // Mật khẩu bảo vệ cho Admin và Quản lý acc
 
         const firebaseConfig = {
             apiKey: "AIzaSyBuovkNlYRF_ECaqQEujJ9Lc6gn4ZjCmSA",
@@ -470,38 +470,56 @@
             const tenChuTK = "TRAN THE HIEN";
 
             if (user) {
-                onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+                // Kiểm tra xem email người dùng có khớp với email Admin không (chuẩn hóa chữ thường)
+                const userEmail = (user.email || "").toLowerCase().trim();
+                const isEmailAdmin = userEmail === ADMIN_EMAIL.toLowerCase().trim();
+
+                onSnapshot(doc(db, 'users', user.uid), async (docSnap) => {
+                    let balance = 0;
+                    let username = userEmail.split('@')[0];
+                    let isAdmin = isEmailAdmin;
+
                     if(docSnap.exists()) {
                         currentUserData = docSnap.data();
-                        let balance = currentUserData.balance || 0;
-
-                        // Kiểm tra quyền Admin dựa trên Email đăng nhập hoặc role lưu trên Firestore
-                        const isAdmin = (user.email === ADMIN_EMAIL) || (currentUserData.role === 'admin');
-
-                        if (isAdmin) {
-                            navAdmin.classList.remove('hidden'); 
-                            navManage.classList.remove('hidden');
-                            navAdminMobile.classList.remove('hidden');
-                            navManageMobile.classList.remove('hidden');
-                        } else {
-                            navAdmin.classList.add('hidden'); 
-                            navManage.classList.add('hidden');
-                            navAdminMobile.classList.add('hidden');
-                            navManageMobile.classList.add('hidden');
+                        balance = currentUserData.balance || 0;
+                        username = currentUserData.username || username;
+                        if (currentUserData.role === 'admin') {
+                            isAdmin = true;
                         }
-
-                        userArea.innerHTML = `
-                            <div class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-bold text-sm">
-                                <i class="fa-solid fa-wallet mr-1"></i> ${balance.toLocaleString()}đ
-                            </div>
-                            <button id="logout-btn" class="text-gray-500 hover:text-red-500 px-2"><i class="fa-solid fa-right-from-bracket"></i></button>
-                        `;
-                        document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); location.reload(); });
-                        
-                        const cuPhap = `NAP ${currentUserData.username}`;
-                        document.getElementById('bank-syntax').innerText = cuPhap;
-                        document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${encodeURIComponent(cuPhap)}&accountName=${encodeURIComponent(tenChuTK)}`;
+                    } else {
+                        // Nếu chưa có record trên Firestore, tự khởi tạo document
+                        await setDoc(doc(db, 'users', user.uid), {
+                            username: username,
+                            email: user.email,
+                            balance: 0,
+                            role: isEmailAdmin ? 'admin' : 'user'
+                        }, { merge: true });
                     }
+
+                    // Cập nhật trạng thái hiển thị của các nút quản trị
+                    if (isAdmin) {
+                        navAdmin.classList.remove('hidden'); 
+                        navManage.classList.remove('hidden');
+                        navAdminMobile.classList.remove('hidden');
+                        navManageMobile.classList.remove('hidden');
+                    } else {
+                        navAdmin.classList.add('hidden'); 
+                        navManage.classList.add('hidden');
+                        navAdminMobile.classList.add('hidden');
+                        navManageMobile.classList.add('hidden');
+                    }
+
+                    userArea.innerHTML = `
+                        <div class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-bold text-sm">
+                            <i class="fa-solid fa-wallet mr-1"></i> ${balance.toLocaleString()}đ
+                        </div>
+                        <button id="logout-btn" class="text-gray-500 hover:text-red-500 px-2"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    `;
+                    document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); location.reload(); });
+                    
+                    const cuPhap = `NAP ${username}`;
+                    document.getElementById('bank-syntax').innerText = cuPhap;
+                    document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${encodeURIComponent(cuPhap)}&accountName=${encodeURIComponent(tenChuTK)}`;
                 });
                 loadHistory();
             } else {
@@ -651,7 +669,7 @@
             });
         }
 
-        // Tải danh sách acc đang bán để quản lý (Xóa, Sửa giá, Sửa tiêu đề, Sửa thông tin TK|MK)
+        // Tải danh sách acc đang bán để quản lý
         function loadManageAccounts() {
             const manageList = document.getElementById('manage-acc-list');
             onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
@@ -771,7 +789,6 @@
                 const usersRef = collection(db, "users");
                 let q;
 
-                // Kiểm tra xem người dùng nhập Gmail (có chứa ký tự '@') hay Username
                 if (inputVal.includes('@')) {
                     q = query(usersRef, where("email", "==", inputVal));
                 } else {
