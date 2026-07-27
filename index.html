@@ -312,8 +312,8 @@
                     <h3 class="text-xl font-bold text-green-600 mb-6 border-b pb-4"><i class="fa-solid fa-money-bill-transfer mr-2"></i>Cộng Tiền Thành Viên</h3>
                     <form id="admin-add-balance-form" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Username Khách Hàng</label>
-                            <input type="text" id="add-bal-username" required class="w-full px-4 py-2 border rounded-lg" placeholder="Nhập username">
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Username hoặc Gmail Khách Hàng</label>
+                            <input type="text" id="add-bal-username" required class="w-full px-4 py-2 border rounded-lg" placeholder="Nhập username hoặc gmail">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Số Tiền Cần Cộng (+/-)</label>
@@ -743,19 +743,28 @@
             } catch (error) { alert("Lỗi: " + error.message); }
         });
 
+        // Xử lý cộng tiền hỗ trợ cả Username hoặc Gmail
         document.getElementById('admin-add-balance-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const usernameToFind = document.getElementById('add-bal-username').value.trim();
+            const inputVal = document.getElementById('add-bal-username').value.trim();
             const amountToAdd = Number(document.getElementById('add-bal-amount').value);
 
             try {
                 const usersRef = collection(db, "users");
-                const q = query(usersRef, where("username", "==", usernameToFind));
+                let q;
+
+                // Kiểm tra xem người dùng nhập Gmail (có chứa ký tự '@') hay Username
+                if (inputVal.includes('@')) {
+                    q = query(usersRef, where("email", "==", inputVal));
+                } else {
+                    q = query(usersRef, where("username", "==", inputVal));
+                }
+
                 const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
-                    return alert(`Không tìm thấy user nào có username là: ${usernameToFind}`);
+                    return alert(`Không tìm thấy tài khoản nào với thông tin: ${inputVal}`);
                 }
 
                 let targetUid = "";
@@ -765,7 +774,7 @@
                     balance: increment(amountToAdd)
                 });
 
-                alert(`Đã cộng/trừ ${amountToAdd.toLocaleString()}đ cho tài khoản ${usernameToFind} thành công!`);
+                alert(`Đã cộng/trừ ${amountToAdd.toLocaleString()}đ cho tài khoản (${inputVal}) thành công!`);
                 e.target.reset();
             } catch (error) {
                 alert("Lỗi khi cộng tiền: " + error.message);
