@@ -302,7 +302,17 @@
                             <label class="block text-sm font-bold text-gray-700 mb-1">Thông tin Acc (Định dạng TK|MK)</label>
                             <input type="text" id="add-info" required class="w-full px-4 py-2 border rounded-lg bg-gray-50 font-mono">
                         </div>
-                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg mt-4">
+                        <!-- TRƯỜNG THÊM ẢNH BẮT ĐẦU TẠI ĐÂY -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Ảnh Acc (Tùy chọn)</label>
+                            <input type="file" id="add-image" accept="image/*" class="w-full px-4 py-2 border rounded-lg bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <div id="image-preview-container" class="mt-3 hidden">
+                                <img id="image-preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-lg border border-gray-300">
+                            </div>
+                        </div>
+                        <!-- TRƯỜNG THÊM ẢNH KẾT THÚC TẠI ĐÂY -->
+                        
+                        <button type="submit" id="add-acc-submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg mt-4 transition">
                             Đăng Bán Lên Shop
                         </button>
                     </form>
@@ -333,9 +343,11 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // IMPORT THÊM FIREBASE STORAGE
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const ADMIN_EMAIL = "tthung3012@gmail.com"; 
-        const ADMIN_SECRET_PASSWORD = "845376"; // Mật khẩu bảo vệ cho Admin và Quản lý acc
+        const ADMIN_SECRET_PASSWORD = "845376"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyBuovkNlYRF_ECaqQEujJ9Lc6gn4ZjCmSA",
@@ -349,6 +361,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app); // KHỞI TẠO STORAGE
         
         let currentUser = null;
         let currentUserData = null; 
@@ -370,7 +383,6 @@
             document.getElementById('section-' + tabId).classList.add('active');
         };
 
-        // Hàm kiểm tra mật khẩu trước khi vào mục Quản lý hoặc Admin Panel
         window.requestAdminAccess = function(tabId) {
             const pwd = prompt("Vui lòng nhập mật khẩu quản trị:");
             if (pwd === ADMIN_SECRET_PASSWORD) {
@@ -470,7 +482,6 @@
             const tenChuTK = "TRAN THE HIEN";
 
             if (user) {
-                // Kiểm tra xem email người dùng có khớp với email Admin không (chuẩn hóa chữ thường)
                 const userEmail = (user.email || "").toLowerCase().trim();
                 const isEmailAdmin = userEmail === ADMIN_EMAIL.toLowerCase().trim();
 
@@ -487,7 +498,6 @@
                             isAdmin = true;
                         }
                     } else {
-                        // Nếu chưa có record trên Firestore, tự khởi tạo document
                         await setDoc(doc(db, 'users', user.uid), {
                             username: username,
                             email: user.email,
@@ -496,7 +506,6 @@
                         }, { merge: true });
                     }
 
-                    // Cập nhật trạng thái hiển thị của các nút quản trị
                     if (isAdmin) {
                         navAdmin.classList.remove('hidden'); 
                         navManage.classList.remove('hidden');
@@ -523,7 +532,6 @@
                 });
                 loadHistory();
             } else {
-                // Khi chưa đăng nhập -> Ẩn các nút quản trị
                 navAdmin.classList.add('hidden'); 
                 navManage.classList.add('hidden');
                 navAdminMobile.classList.add('hidden');
@@ -536,6 +544,7 @@
             }
         });
 
+        // HIỂN THỊ DANH SÁCH ACC (Có kèm Ảnh)
         onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -543,11 +552,17 @@
             
             snapshot.forEach((docSnap) => {
                 const acc = docSnap.data();
+                
+                // Nếu acc có link ảnh thì dùng ảnh, ngược lại dùng biểu tượng tay cầm
+                const imageHtml = acc.imageUrl 
+                    ? `<img src="${acc.imageUrl}" alt="Ảnh acc" class="w-full h-40 object-cover rounded-lg mb-4 border border-gray-200">` 
+                    : `<div class="bg-indigo-50 rounded-lg p-8 mb-4 text-center h-40 flex items-center justify-center">
+                           <i class="fa-solid fa-gamepad text-4xl text-indigo-300"></i>
+                       </div>`;
+
                 productList.innerHTML += `
                     <div class="bg-white rounded-xl shadow-sm border p-4 hover:shadow-md transition">
-                        <div class="bg-indigo-50 rounded-lg p-8 mb-4 text-center">
-                            <i class="fa-solid fa-gamepad text-4xl text-indigo-300"></i>
-                        </div>
+                        ${imageHtml}
                         <h4 class="font-bold text-gray-800 mb-2 truncate" title="${acc.title}">${acc.title}</h4>
                         <div class="flex justify-between items-center mb-4">
                             <p class="text-indigo-600 font-extrabold text-xl">${Number(acc.price).toLocaleString()}đ</p>
@@ -669,7 +684,6 @@
             });
         }
 
-        // Tải danh sách acc đang bán để quản lý
         function loadManageAccounts() {
             const manageList = document.getElementById('manage-acc-list');
             onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
@@ -704,7 +718,6 @@
             });
         }
 
-        // Hàm xóa tài khoản
         window.deleteAccount = async function(accId) {
             if(!confirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi shop không?")) return;
             try {
@@ -715,7 +728,6 @@
             }
         };
 
-        // Hàm thay đổi giá tài khoản
         window.updatePrice = async function(accId, currentPrice) {
             const newPriceStr = prompt("Nhập giá tiền mới (VNĐ):", currentPrice);
             if(newPriceStr === null) return;
@@ -731,7 +743,6 @@
             }
         };
 
-        // Hàm thay đổi tiêu đề tài khoản
         window.updateTitle = async function(accId, currentTitle) {
             const newTitle = prompt("Nhập tiêu đề mới:", currentTitle);
             if(newTitle === null) return;
@@ -746,7 +757,6 @@
             }
         };
 
-        // Hàm thay đổi thông tin tài khoản (TK|MK)
         window.updateInfo = async function(accId, currentInfo) {
             const newInfo = prompt("Nhập thông tin tài khoản mới (Định dạng TK|MK):", currentInfo);
             if(newInfo === null) return;
@@ -761,24 +771,72 @@
             }
         };
 
+        // HIỂN THỊ XEM TRƯỚC ẢNH KHI CHỌN FILE
+        document.getElementById('add-image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImage = document.getElementById('image-preview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImage.src = event.target.result;
+                    previewContainer.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.classList.add('hidden');
+                previewImage.src = "";
+            }
+        });
+
+        // XỬ LÝ SỰ KIỆN SUBMIT FORM ĐĂNG BÁN ACC CÓ KÈM ẢNH
         document.getElementById('admin-add-acc-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const submitBtn = document.getElementById('add-acc-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Đang tải ảnh và đăng bán...";
+            submitBtn.classList.replace('bg-red-600', 'bg-gray-400');
 
             try {
+                const title = document.getElementById('add-title').value;
+                const price = Number(document.getElementById('add-price').value);
+                const accountInfo = document.getElementById('add-info').value;
+                const imageFile = document.getElementById('add-image').files[0];
+                
+                let imageUrl = null;
+
+                // Nếu admin có chọn ảnh, tải lên Firebase Storage
+                if (imageFile) {
+                    const storageRef = ref(storage, `accounts/${Date.now()}_${imageFile.name}`);
+                    await uploadBytes(storageRef, imageFile);
+                    imageUrl = await getDownloadURL(storageRef);
+                }
+
                 await addDoc(collection(db, "accounts"), {
-                    title: document.getElementById('add-title').value,
-                    price: Number(document.getElementById('add-price').value),
-                    account_info: document.getElementById('add-info').value,
+                    title: title,
+                    price: price,
+                    account_info: accountInfo,
+                    imageUrl: imageUrl, // Lưu link ảnh (nếu có)
                     status: "available",
                     buyer_uid: null,
                     created_at: serverTimestamp()
                 });
+                
                 alert("Đăng bán thành công!");
                 e.target.reset();
-            } catch (error) { alert("Lỗi: " + error.message); }
+                document.getElementById('image-preview-container').classList.add('hidden');
+                
+            } catch (error) { 
+                alert("Lỗi: " + error.message + "\n(Lưu ý: Nếu lỗi Firebase Storage, bạn cần vào mục Storage trong Firebase Console để cấp quyền Rules)."); 
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Đăng Bán Lên Shop";
+                submitBtn.classList.replace('bg-gray-400', 'bg-red-600');
+            }
         });
 
-        // Xử lý cộng tiền hỗ trợ cả Username hoặc Gmail
         document.getElementById('admin-add-balance-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
