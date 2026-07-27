@@ -469,16 +469,27 @@
             const nganHang = "MB";
             const tenChuTK = "TRAN THE HIEN";
 
-            navAdmin.classList.remove('hidden'); 
-            navManage.classList.remove('hidden');
-            navAdminMobile.classList.remove('hidden');
-            navManageMobile.classList.remove('hidden');
-
             if (user) {
                 onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
                     if(docSnap.exists()) {
                         currentUserData = docSnap.data();
                         let balance = currentUserData.balance || 0;
+
+                        // Kiểm tra quyền Admin dựa trên Email đăng nhập hoặc role lưu trên Firestore
+                        const isAdmin = (user.email === ADMIN_EMAIL) || (currentUserData.role === 'admin');
+
+                        if (isAdmin) {
+                            navAdmin.classList.remove('hidden'); 
+                            navManage.classList.remove('hidden');
+                            navAdminMobile.classList.remove('hidden');
+                            navManageMobile.classList.remove('hidden');
+                        } else {
+                            navAdmin.classList.add('hidden'); 
+                            navManage.classList.add('hidden');
+                            navAdminMobile.classList.add('hidden');
+                            navManageMobile.classList.add('hidden');
+                        }
+
                         userArea.innerHTML = `
                             <div class="bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg font-bold text-sm">
                                 <i class="fa-solid fa-wallet mr-1"></i> ${balance.toLocaleString()}đ
@@ -494,6 +505,12 @@
                 });
                 loadHistory();
             } else {
+                // Khi chưa đăng nhập -> Ẩn các nút quản trị
+                navAdmin.classList.add('hidden'); 
+                navManage.classList.add('hidden');
+                navAdminMobile.classList.add('hidden');
+                navManageMobile.classList.add('hidden');
+
                 userArea.innerHTML = `<button onclick="switchTab('auth')" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold">Đăng Nhập</button>`;
                 const defaultCuPhap = "NAPTIEN";
                 document.getElementById('bank-syntax').innerText = defaultCuPhap;
