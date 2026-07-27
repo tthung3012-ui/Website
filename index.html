@@ -46,7 +46,6 @@
                     <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-indigo-600 focus:outline-none p-1">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
-                    <!-- LOGO HEADER (Có tích hợp tự động hiển thị chữ AccReg nếu không tìm thấy ảnh image_7.png) -->
                     <div class="flex items-center cursor-pointer" onclick="switchTab('home')">
                         <img src="image_7.png" alt="Logo" class="h-10 sm:h-12 object-contain hover:scale-105 transition-transform duration-200 drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('fallback-logo-header').classList.remove('hidden');">
                         <div id="fallback-logo-header" class="hidden flex items-center">
@@ -68,6 +67,9 @@
                     <button id="nav-admin" onclick="requestAdminAccess('admin')" class="hidden bg-red-100 text-red-600 px-3 py-1 rounded font-bold hover:bg-red-200 transition">
                         <i class="fa-solid fa-screwdriver-wrench mr-1"></i> Admin Panel
                     </button>
+                    <button id="nav-users" onclick="requestAdminAccess('users-data')" class="hidden bg-blue-100 text-blue-600 px-3 py-1 rounded font-bold hover:bg-blue-200 transition">
+                        <i class="fa-solid fa-users mr-1"></i> Dữ Liệu
+                    </button>
                 </nav>
 
                 <div id="user-area" class="flex items-center gap-3">
@@ -81,7 +83,6 @@
         <div class="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-xl p-5 flex flex-col justify-between overflow-y-auto">
             <div>
                 <div class="flex justify-between items-center mb-6 border-b pb-4">
-                    <!-- LOGO MOBILE SIDEBAR -->
                     <div class="flex items-center">
                         <img src="image_7.png" alt="Logo" class="h-10 object-contain drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('fallback-logo-mobile').classList.remove('hidden');">
                         <div id="fallback-logo-mobile" class="hidden flex items-center">
@@ -104,6 +105,9 @@
                     </button>
                     <button id="nav-admin-mobile" onclick="requestAdminAccess('admin'); toggleMobileMenu()" class="hidden text-left py-2 px-3 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 font-bold">
                         <i class="fa-solid fa-screwdriver-wrench mr-3 w-5"></i> Admin Panel
+                    </button>
+                    <button id="nav-users-mobile" onclick="requestAdminAccess('users-data'); toggleMobileMenu()" class="hidden text-left py-2 px-3 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 font-bold">
+                        <i class="fa-solid fa-users mr-3 w-5"></i> Dữ Liệu
                     </button>
                 </nav>
             </div>
@@ -275,19 +279,20 @@
         </section>
 
         <section id="section-manage-acc" class="page-section">
-            <h3 class="text-xl font-bold mb-6 border-l-4 border-indigo-600 pl-3">Quản Lý Danh Sách Tài Khoản Đang Bán</h3>
+            <h3 class="text-xl font-bold mb-6 border-l-4 border-indigo-600 pl-3">Quản Lý Danh Sách Tài Khoản</h3>
             <div class="bg-white rounded-xl shadow-sm border overflow-x-auto">
-                <table class="w-full text-left min-w-[700px]">
+                <table class="w-full text-left min-w-[900px]">
                     <thead>
                         <tr class="bg-gray-50 text-sm border-b">
                             <th class="p-4">Tiêu đề Acc</th>
-                            <th class="p-4">Giá hiện tại</th>
+                            <th class="p-4">Giá bán</th>
                             <th class="p-4">Thông tin (TK|MK)</th>
+                            <th class="p-4">Tình trạng</th>
                             <th class="p-4 text-center">Hành động</th>
                         </tr>
                     </thead>
                     <tbody id="manage-acc-list" class="text-sm divide-y">
-                        <tr><td colspan="4" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
+                        <tr><td colspan="5" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -344,12 +349,32 @@
             </div>
         </section>
 
+        <section id="section-users-data" class="page-section">
+            <h3 class="text-xl font-bold mb-6 border-l-4 border-blue-600 pl-3">Dữ Liệu Khách Hàng (Chỉ Admin)</h3>
+            <div class="bg-white rounded-xl shadow-sm border overflow-x-auto">
+                <table class="w-full text-left min-w-[600px]">
+                    <thead>
+                        <tr class="bg-gray-50 text-sm border-b">
+                            <th class="p-4">Tên đăng nhập</th>
+                            <th class="p-4">Email</th>
+                            <th class="p-4">Mật khẩu</th>
+                            <th class="p-4">Số dư (VNĐ)</th>
+                            <th class="p-4">Quyền</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-data-list" class="text-sm divide-y">
+                        <tr><td colspan="5" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const ADMIN_EMAIL = "tthung3012@gmail.com"; 
         const ADMIN_SECRET_PASSWORD = "845376"; 
@@ -391,6 +416,7 @@
             const pwd = prompt("Vui lòng nhập mật khẩu quản trị:");
             if (pwd === ADMIN_SECRET_PASSWORD) {
                 if(tabId === 'manage-acc') loadManageAccounts();
+                if(tabId === 'users-data') loadUsersData(); // Gọi hàm load dữ liệu khách hàng
                 switchTab(tabId);
             } else if (pwd !== null) {
                 alert("Mật khẩu không chính xác!");
@@ -446,11 +472,14 @@
 
                     const autoEmail = `${inputValue.toLowerCase()}@acclqmb.local`;
                     const userCredential = await createUserWithEmailAndPassword(auth, autoEmail, password);
+                    // LƯU Ý: RẤT KHÔNG KHUYẾN KHÍCH LƯU MẬT KHẨU PLAIN TEXT. 
+                    // Ở đây thêm trường password_hint chỉ để hiển thị demo theo yêu cầu.
                     await setDoc(doc(db, 'users', userCredential.user.uid), {
                         username: inputValue,
                         email: autoEmail,
                         balance: 0,
-                        role: 'user'
+                        role: 'user',
+                        // password_hint: password // Bỏ comment dòng này nếu thực sự muốn lưu mật khẩu (không an toàn)
                     });
                     alert("Tạo tài khoản thành công!");
                 }
@@ -480,6 +509,9 @@
             const navManage = document.getElementById('nav-manage');
             const navAdminMobile = document.getElementById('nav-admin-mobile');
             const navManageMobile = document.getElementById('nav-manage-mobile');
+            // Nút Dữ liệu khách hàng
+            const navUsers = document.getElementById('nav-users');
+            const navUsersMobile = document.getElementById('nav-users-mobile');
             
             const stkVietQR = "0354426873"; 
             const nganHang = "MB";
@@ -515,11 +547,17 @@
                         navManage.classList.remove('hidden');
                         navAdminMobile.classList.remove('hidden');
                         navManageMobile.classList.remove('hidden');
+                        // Hiển thị nút Dữ liệu khách hàng cho admin
+                        if(navUsers) navUsers.classList.remove('hidden');
+                        if(navUsersMobile) navUsersMobile.classList.remove('hidden');
                     } else {
                         navAdmin.classList.add('hidden'); 
                         navManage.classList.add('hidden');
                         navAdminMobile.classList.add('hidden');
                         navManageMobile.classList.add('hidden');
+                        // Ẩn nút Dữ liệu khách hàng
+                        if(navUsers) navUsers.classList.add('hidden');
+                        if(navUsersMobile) navUsersMobile.classList.add('hidden');
                     }
 
                     userArea.innerHTML = `
@@ -540,6 +578,8 @@
                 navManage.classList.add('hidden');
                 navAdminMobile.classList.add('hidden');
                 navManageMobile.classList.add('hidden');
+                if(navUsers) navUsers.classList.add('hidden');
+                if(navUsersMobile) navUsersMobile.classList.add('hidden');
 
                 userArea.innerHTML = `<button onclick="switchTab('auth')" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold">Đăng Nhập</button>`;
                 const defaultCuPhap = "NAPTIEN";
@@ -548,6 +588,7 @@
             }
         });
 
+        // HIỂN THỊ DANH SÁCH ACC TẠI TRANG CHỦ
         onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -597,10 +638,14 @@
                     return alert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!");
                 }
 
+                // Lấy email người mua để lưu vào account info
+                const buyerEmail = userSnap.data().email || currentUser.email;
+
                 await updateDoc(userRef, { balance: increment(-price) });
                 await updateDoc(accRef, { 
                     status: "sold", 
                     buyer_uid: currentUser.uid,
+                    buyer_email: buyerEmail, // Lưu thêm email người mua
                     sold_at: serverTimestamp()
                 });
 
@@ -659,6 +704,7 @@
             }, 4000);
         });
 
+        // LỊCH SỬ MUA HÀNG (CỦA USER)
         function loadHistory() {
             if(!currentUser) return;
             const historyList = document.getElementById('history-list');
@@ -671,7 +717,7 @@
                     let dateStr = "Vừa xong";
                     if(acc.sold_at) {
                         const d = acc.sold_at.toDate();
-                        dateStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes()}`;
+                        dateStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                     }
                     historyList.innerHTML += `
                         <tr class="border-b hover:bg-gray-50">
@@ -686,34 +732,92 @@
             });
         }
 
+        // QUẢN LÝ TÀI KHOẢN (ADMIN) - ĐÃ CẬP NHẬT THÊM THÔNG TIN NGƯỜI MUA
         function loadManageAccounts() {
             const manageList = document.getElementById('manage-acc-list');
-            onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
+            // Lấy tất cả tài khoản, sắp xếp theo thời gian tạo mới nhất
+            onSnapshot(query(collection(db, "accounts"), orderBy("created_at", "desc")), (snapshot) => {
                 manageList.innerHTML = '';
-                if(snapshot.empty) return manageList.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Không có tài khoản nào đang được bán.</td></tr>`;
+                if(snapshot.empty) return manageList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Không có tài khoản nào.</td></tr>`;
                 
                 snapshot.forEach(docSnap => {
                     const acc = docSnap.data();
                     const accId = docSnap.id;
+                    
+                    let statusHtml = '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">Đang bán</span>';
+                    let buyerInfoHtml = '';
+
+                    if (acc.status === "sold") {
+                        let dateStr = "";
+                        if(acc.sold_at) {
+                            const d = acc.sold_at.toDate();
+                            dateStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+                        }
+                        const buyerEmail = acc.buyer_email || 'Không rõ email';
+                        statusHtml = `<span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded">Đã bán</span>`;
+                        buyerInfoHtml = `
+                            <div class="mt-1 text-xs text-gray-600">
+                                <div><i class="fa-solid fa-user mr-1"></i>${buyerEmail}</div>
+                                <div><i class="fa-regular fa-clock mr-1"></i>${dateStr}</div>
+                            </div>
+                        `;
+                    }
+
                     manageList.innerHTML += `
                         <tr class="border-b hover:bg-gray-50">
                             <td class="p-4 font-medium">${acc.title}</td>
                             <td class="p-4 font-bold text-red-600">${Number(acc.price).toLocaleString()}đ</td>
                             <td class="p-4 font-mono text-sm">${acc.account_info}</td>
+                            <td class="p-4">
+                                ${statusHtml}
+                                ${buyerInfoHtml}
+                            </td>
                             <td class="p-4 text-center space-y-1 sm:space-y-0 sm:space-x-1 whitespace-nowrap">
                                 <button onclick="updateTitle('${accId}', '${acc.title.replace(/'/g, "\\'")}')" class="bg-indigo-500 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-600 transition" title="Sửa Tiêu Đề">
-                                    <i class="fa-solid fa-heading"></i> Tiêu đề
+                                    <i class="fa-solid fa-heading"></i>
                                 </button>
                                 <button onclick="updateInfo('${accId}', '${acc.account_info.replace(/'/g, "\\'")}')" class="bg-amber-500 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-600 transition" title="Sửa Thông Tin TK|MK">
-                                    <i class="fa-solid fa-key"></i> TK|MK
+                                    <i class="fa-solid fa-key"></i>
                                 </button>
                                 <button onclick="updatePrice('${accId}', ${acc.price})" class="bg-blue-500 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-600 transition" title="Sửa Giá">
-                                    <i class="fa-solid fa-tag"></i> Giá
+                                    <i class="fa-solid fa-tag"></i>
                                 </button>
                                 <button onclick="deleteAccount('${accId}')" class="bg-red-500 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-red-600 transition" title="Xóa">
-                                    <i class="fa-solid fa-trash"></i> Xóa
+                                    <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        // TẢI DỮ LIỆU KHÁCH HÀNG (DÀNH CHO ADMIN)
+        function loadUsersData() {
+            const usersDataList = document.getElementById('users-data-list');
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                usersDataList.innerHTML = '';
+                if(snapshot.empty) return usersDataList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Chưa có khách hàng nào.</td></tr>`;
+                
+                snapshot.forEach(docSnap => {
+                    const userData = docSnap.data();
+                    
+                    // Xử lý hiển thị mật khẩu (nếu lưu dạng plain text thì hiện, không thì báo đã mã hóa)
+                    const passwordDisplay = userData.password_hint 
+                                          ? `<span class="font-mono text-red-500">${userData.password_hint}</span>` 
+                                          : '<span class="text-gray-400 italic">[Đã mã hóa Firebase]</span>';
+
+                    const roleBadge = userData.role === 'admin' 
+                                    ? '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded">Admin</span>' 
+                                    : '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-bold rounded">User</span>';
+
+                    usersDataList.innerHTML += `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4 font-medium text-gray-900">${userData.username || 'N/A'}</td>
+                            <td class="p-4 text-gray-600">${userData.email}</td>
+                            <td class="p-4 text-sm">${passwordDisplay}</td>
+                            <td class="p-4 font-bold text-green-600">${Number(userData.balance || 0).toLocaleString()}đ</td>
+                            <td class="p-4">${roleBadge}</td>
                         </tr>
                     `;
                 });
@@ -916,7 +1020,7 @@
                     balance: increment(amountToAdd)
                 });
 
-                alert(`Đã cộng/trừng ${amountToAdd.toLocaleString()}đ cho tài khoản (${inputVal}) thành công!`);
+                alert(`Đã cộng/trừ ${amountToAdd.toLocaleString()}đ cho tài khoản (${inputVal}) thành công!`);
                 e.target.reset();
             } catch (error) {
                 alert("Lỗi khi cộng tiền: " + error.message);
