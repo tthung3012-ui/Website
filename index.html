@@ -339,7 +339,8 @@
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1">Số Tiền Cần Cộng (+/-)</label>
-                            <input type="number" id="add-bal-amount" required class="w-full px-4 py-2 border rounded-lg" placeholder="VD: 50000">
+                            <!-- Đã đổi type thành text để định dạng được dấu chấm -->
+                            <input type="text" id="add-bal-amount" required class="w-full px-4 py-2 border rounded-lg font-mono" placeholder="VD: 50.000">
                         </div>
                         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-4">
                             Thực Hiện Cộng Tiền
@@ -416,7 +417,7 @@
             const pwd = prompt("Vui lòng nhập mật khẩu quản trị:");
             if (pwd === ADMIN_SECRET_PASSWORD) {
                 if(tabId === 'manage-acc') loadManageAccounts();
-                if(tabId === 'users-data') loadUsersData(); // Gọi hàm load dữ liệu khách hàng
+                if(tabId === 'users-data') loadUsersData(); 
                 switchTab(tabId);
             } else if (pwd !== null) {
                 alert("Mật khẩu không chính xác!");
@@ -472,14 +473,11 @@
 
                     const autoEmail = `${inputValue.toLowerCase()}@acclqmb.local`;
                     const userCredential = await createUserWithEmailAndPassword(auth, autoEmail, password);
-                    // LƯU Ý: RẤT KHÔNG KHUYẾN KHÍCH LƯU MẬT KHẨU PLAIN TEXT. 
-                    // Ở đây thêm trường password_hint chỉ để hiển thị demo theo yêu cầu.
                     await setDoc(doc(db, 'users', userCredential.user.uid), {
                         username: inputValue,
                         email: autoEmail,
                         balance: 0,
-                        role: 'user',
-                        // password_hint: password // Bỏ comment dòng này nếu thực sự muốn lưu mật khẩu (không an toàn)
+                        role: 'user'
                     });
                     alert("Tạo tài khoản thành công!");
                 }
@@ -509,7 +507,6 @@
             const navManage = document.getElementById('nav-manage');
             const navAdminMobile = document.getElementById('nav-admin-mobile');
             const navManageMobile = document.getElementById('nav-manage-mobile');
-            // Nút Dữ liệu khách hàng
             const navUsers = document.getElementById('nav-users');
             const navUsersMobile = document.getElementById('nav-users-mobile');
             
@@ -547,7 +544,6 @@
                         navManage.classList.remove('hidden');
                         navAdminMobile.classList.remove('hidden');
                         navManageMobile.classList.remove('hidden');
-                        // Hiển thị nút Dữ liệu khách hàng cho admin
                         if(navUsers) navUsers.classList.remove('hidden');
                         if(navUsersMobile) navUsersMobile.classList.remove('hidden');
                     } else {
@@ -555,7 +551,6 @@
                         navManage.classList.add('hidden');
                         navAdminMobile.classList.add('hidden');
                         navManageMobile.classList.add('hidden');
-                        // Ẩn nút Dữ liệu khách hàng
                         if(navUsers) navUsers.classList.add('hidden');
                         if(navUsersMobile) navUsersMobile.classList.add('hidden');
                     }
@@ -638,14 +633,13 @@
                     return alert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!");
                 }
 
-                // Lấy email người mua để lưu vào account info
                 const buyerEmail = userSnap.data().email || currentUser.email;
 
                 await updateDoc(userRef, { balance: increment(-price) });
                 await updateDoc(accRef, { 
                     status: "sold", 
                     buyer_uid: currentUser.uid,
-                    buyer_email: buyerEmail, // Lưu thêm email người mua
+                    buyer_email: buyerEmail, 
                     sold_at: serverTimestamp()
                 });
 
@@ -732,10 +726,9 @@
             });
         }
 
-        // QUẢN LÝ TÀI KHOẢN (ADMIN) - ĐÃ CẬP NHẬT THÊM THÔNG TIN NGƯỜI MUA
+        // QUẢN LÝ TÀI KHOẢN (ADMIN)
         function loadManageAccounts() {
             const manageList = document.getElementById('manage-acc-list');
-            // Lấy tất cả tài khoản, sắp xếp theo thời gian tạo mới nhất
             onSnapshot(query(collection(db, "accounts"), orderBy("created_at", "desc")), (snapshot) => {
                 manageList.innerHTML = '';
                 if(snapshot.empty) return manageList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Không có tài khoản nào.</td></tr>`;
@@ -802,7 +795,6 @@
                 snapshot.forEach(docSnap => {
                     const userData = docSnap.data();
                     
-                    // Xử lý hiển thị mật khẩu (nếu lưu dạng plain text thì hiện, không thì báo đã mã hóa)
                     const passwordDisplay = userData.password_hint 
                                           ? `<span class="font-mono text-red-500">${userData.password_hint}</span>` 
                                           : '<span class="text-gray-400 italic">[Đã mã hóa Firebase]</span>';
@@ -991,11 +983,36 @@
             }
         });
 
+        // XỬ LÝ TỰ ĐỘNG THÊM DẤU CHẤM KHI NHẬP SỐ TIỀN CỘNG/TRỪ
+        const balAmountInput = document.getElementById('add-bal-amount');
+        balAmountInput.addEventListener('input', function (e) {
+            let val = e.target.value;
+            const isNegative = val.startsWith('-');
+            
+            // Lọc chỉ giữ lại chữ số
+            let rawValue = val.replace(/\D/g, '');
+            if (!rawValue) {
+                e.target.value = isNegative ? '-' : '';
+                return;
+            }
+
+            // Định dạng theo chuẩn Việt Nam (dùng dấu chấm)
+            let formattedValue = Number(rawValue).toLocaleString('vi-VN');
+            e.target.value = (isNegative ? '-' : '') + formattedValue;
+        });
+
+        // CỘNG TIỀN CHO THÀNH VIÊN
         document.getElementById('admin-add-balance-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const inputVal = document.getElementById('add-bal-username').value.trim();
-            const amountToAdd = Number(document.getElementById('add-bal-amount').value);
+            // Lấy giá trị chuỗi, loại bỏ tất cả dấu chấm phân cách để chuyển lại thành số thuần
+            const rawAmountStr = document.getElementById('add-bal-amount').value.replace(/\./g, '');
+            const amountToAdd = Number(rawAmountStr);
+
+            if (isNaN(amountToAdd) || amountToAdd === 0) {
+                return alert("Vui lòng nhập số tiền hợp lệ!");
+            }
 
             try {
                 const usersRef = collection(db, "users");
@@ -1020,7 +1037,7 @@
                     balance: increment(amountToAdd)
                 });
 
-                alert(`Đã cộng/trừ ${amountToAdd.toLocaleString()}đ cho tài khoản (${inputVal}) thành công!`);
+                alert(`Đã cộng/trừ ${amountToAdd.toLocaleString('vi-VN')}đ cho tài khoản (${inputVal}) thành công!`);
                 e.target.reset();
             } catch (error) {
                 alert("Lỗi khi cộng tiền: " + error.message);
