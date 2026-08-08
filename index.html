@@ -243,7 +243,7 @@
             </div>
         </section>
 
-        <!-- AUTH - Style giống Marine Shop -->
+        <!-- AUTH - Đăng Nhập / Đăng Ký -->
         <section id="section-auth" class="page-section">
             <div class="max-w-md mx-auto bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
                 <div class="text-center mb-6">
@@ -257,8 +257,16 @@
                     <div>
                         <label id="auth-username-label" class="block text-sm font-medium mb-1.5 text-gray-400">Email hoặc tên người dùng</label>
                         <div class="relative">
-                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
                             <input type="text" id="auth-username" required placeholder="Nhập email hoặc tên người dùng" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
+                        </div>
+                    </div>
+                    <!-- BỔ SUNG Ô ĐIỀN GMAIL KHI ĐĂNG KÝ -->
+                    <div id="auth-email-container" class="hidden">
+                        <label class="block text-sm font-medium mb-1.5 text-gray-400">Địa chỉ Gmail</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input type="email" id="auth-email" placeholder="Nhập Gmail của bạn (VD: example@gmail.com)" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
                         </div>
                     </div>
                     <div>
@@ -478,7 +486,6 @@
                 modalCancel.textContent = cancelText;
                 modalCancel.style.display = showCancel ? 'block' : 'none';
                 
-                // Icon theo type
                 if (type === 'success') {
                     modalIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
                     modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-emerald-900/50 text-emerald-300';
@@ -535,12 +542,10 @@
             if (e.key === 'Escape') modalCancel.click();
         });
 
-        // Helper functions thay thế alert / confirm / prompt
         window.customAlert = (msg, type = 'info') => showModal({ title: 'Thông báo', message: msg, showCancel: false, okText: 'Đóng', type });
         window.customConfirm = (msg) => showModal({ title: 'Xác nhận', message: msg, okText: 'Đồng ý', cancelText: 'Hủy', type: 'warning' });
         window.customPrompt = (msg, defaultVal = '') => showModal({ title: 'Nhập thông tin', message: msg, showInput: true, defaultValue: defaultVal, okText: 'OK', cancelText: 'Hủy', type: 'prompt' });
 
-        // ========== REST OF APP ==========
         const mobileSidebar = document.getElementById('mobile-sidebar');
         window.toggleMobileMenu = function() { mobileSidebar.classList.toggle('hidden'); }
         document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
@@ -570,7 +575,6 @@
             }
         };
 
-        // Toggle password visibility
         document.getElementById('toggle-password')?.addEventListener('click', function() {
             const input = document.getElementById('auth-password');
             const icon = this.querySelector('i');
@@ -583,6 +587,7 @@
             }
         });
 
+        // XỬ LÝ CHUYỂN ĐỔI ĐĂNG NHẬP / ĐĂNG KÝ
         let isLoginMode = true;
         document.getElementById('auth-toggle-btn').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
@@ -594,18 +599,26 @@
             
             const userLabel = document.getElementById('auth-username-label');
             const userInput = document.getElementById('auth-username');
+            const emailContainer = document.getElementById('auth-email-container');
+            const emailInput = document.getElementById('auth-email');
+
             if (isLoginMode) {
                 userLabel.innerHTML = 'Email hoặc tên người dùng';
                 userInput.placeholder = "Nhập email hoặc tên người dùng";
+                emailContainer.classList.add('hidden');
+                emailInput.removeAttribute('required');
             } else {
                 userLabel.innerHTML = 'Tên đăng nhập';
                 userInput.placeholder = "Nhập tên đăng nhập (VD: account123)";
+                emailContainer.classList.remove('hidden');
+                emailInput.setAttribute('required', 'true');
             }
 
             const forgotLink = document.getElementById('forgot-password-link-container');
             isLoginMode ? forgotLink.classList.remove('hidden') : forgotLink.classList.add('hidden');
         });
 
+        // XỬ LÝ SUBMIT ĐĂNG NHẬP / ĐĂNG KÝ
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const inputValue = document.getElementById('auth-username').value.trim();
@@ -627,15 +640,19 @@
                     }
                     await signInWithEmailAndPassword(auth, userEmailToLogin, password);
                 } else {
+                    const registerEmail = document.getElementById('auth-email').value.trim();
+
                     if (inputValue.includes('@')) {
-                        return customAlert("Vui lòng chỉ nhập Tên đăng nhập (không chứa ký tự @) để đăng ký!", 'warning');
+                        return customAlert("Tên đăng nhập không được chứa ký tự @!", 'warning');
+                    }
+                    if (!registerEmail || !registerEmail.includes('@')) {
+                        return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ!", 'warning');
                     }
 
-                    const autoEmail = `${inputValue.toLowerCase()}@acclqmb.local`;
-                    const userCredential = await createUserWithEmailAndPassword(auth, autoEmail, password);
+                    const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, password);
                     await setDoc(doc(db, 'users', userCredential.user.uid), {
                         username: inputValue,
-                        email: autoEmail,
+                        email: registerEmail,
                         balance: 0,
                         role: 'user'
                     });
@@ -644,7 +661,7 @@
                 switchTab('home');
                 e.target.reset();
             } catch (error) {
-                customAlert("Lỗi: Kiểm tra lại tài khoản hoặc mật khẩu!", 'error');
+                customAlert("Lỗi: " + (error.message || "Kiểm tra lại thông tin tài khoản!"), 'error');
             }
         });
 
@@ -747,7 +764,7 @@
             }
         });
 
-        // PRODUCT CARDS
+        // BẢNG SẢN PHẨM ACC (THÊM BIỂU TƯỢNG HỘP BÊN CẠNH SỐ LƯỢNG CÒN LẠI)
         onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -794,7 +811,7 @@
                                 <div class="flex items-center justify-between text-xs text-gray-400 mb-4 pb-3 border-b border-gray-800">
                                     <span class="flex items-center gap-1"><i class="fa-solid fa-star text-yellow-400 text-[11px]"></i><span class="text-yellow-400 font-medium">5.0</span></span>
                                     <span>Đã bán ${soldCount}</span>
-                                    <span>Còn ${stockLeft}</span>
+                                    <span class="flex items-center gap-1 font-medium text-gray-300"><i class="fa-solid fa-box text-indigo-400"></i> Còn ${stockLeft}</span>
                                 </div>
                                 <div class="flex items-baseline gap-2 mb-4">
                                     <span class="text-2xl font-extrabold text-cyan-400">${Number(acc.price).toLocaleString()}đ</span>
@@ -969,7 +986,7 @@
                             <td class="p-4 text-xs text-gray-400 space-y-1">
                                 <div>Giảm: <span class="text-orange-400 font-bold">${discount}%</span></div>
                                 <div>Đã bán: <span class="text-emerald-400 font-bold">${soldCount}</span></div>
-                                <div>Còn lại: <span class="text-cyan-400 font-bold">${stockLeft}</span></div>
+                                <div>Còn lại: <span class="text-cyan-400 font-bold"><i class="fa-solid fa-box text-xs mr-1"></i>${stockLeft}</span></div>
                             </td>
                             <td class="p-4 text-center grid grid-cols-3 sm:grid-cols-4 gap-1">
                                 <button onclick="updateTitle('${accId}', '${acc.title.replace(/'/g, "\\'")}')" class="bg-indigo-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-500 transition" title="Sửa Tiêu Đề"><i class="fa-solid fa-heading"></i></button>
