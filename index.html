@@ -10,7 +10,6 @@
         .page-section { display: none; }
         .page-section.active { display: block; }
         
-        /* CSS cho Vòng Quay May Mắn */
         .wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
         .wheel {
             width: 100%; height: 100%; border-radius: 50%;
@@ -36,14 +35,40 @@
             font-weight: bold; color: #a5b4fc; z-index: 5;
         }
 
-        /* Custom scrollbar dark */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #111827; }
         ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+        /* Custom Modal Animation */
+        #custom-modal.show { display: flex !important; }
+        #custom-modal .modal-box { transform: scale(0.9); opacity: 0; transition: all 0.2s ease; }
+        #custom-modal.show .modal-box { transform: scale(1); opacity: 1; }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+    <!-- ========== CUSTOM DARK MODAL ========== -->
+    <div id="custom-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="modal-box bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+            <div class="p-5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div id="modal-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-indigo-900/50 text-indigo-300">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <h3 id="modal-title" class="text-lg font-bold text-white">Thông báo</h3>
+                </div>
+                <p id="modal-message" class="text-gray-400 text-sm mb-4 leading-relaxed"></p>
+                <div id="modal-input-container" class="hidden mb-4">
+                    <input id="modal-input" type="text" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:ring-2 focus:ring-cyan-500 placeholder-gray-500" placeholder="">
+                </div>
+                <div class="flex gap-3">
+                    <button id="modal-cancel" class="flex-1 py-2.5 rounded-xl text-gray-300 bg-gray-800 hover:bg-gray-700 font-medium transition">Hủy</button>
+                    <button id="modal-ok" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold transition">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- HEADER -->
     <header class="bg-gray-900/95 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
@@ -124,7 +149,6 @@
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
 
-        <!-- TRANG CHỦ -->
         <section id="section-home" class="page-section active">
             <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-2">
                 <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span>
@@ -135,7 +159,6 @@
             </div>
         </section>
 
-        <!-- NẠP TIỀN -->
         <section id="section-recharge" class="page-section">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span>
@@ -170,7 +193,7 @@
                             <label class="block text-sm font-medium mb-1 text-gray-400">Số Seri</label>
                             <input type="text" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nhập số seri">
                         </div>
-                        <button type="button" onclick="alert('Tính năng nạp thẻ cào cần kết nối API Gạch Thẻ (ví dụ TheSieuToc). Admin vui lòng kết nối API backend!')" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition">Nạp Thẻ Ngay</button>
+                        <button type="button" id="recharge-card-btn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition">Nạp Thẻ Ngay</button>
                     </form>
                 </div>
 
@@ -194,7 +217,6 @@
             </div>
         </section>
 
-        <!-- VÒNG QUAY -->
         <section id="section-wheel" class="page-section">
             <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl max-w-2xl mx-auto text-center">
                 <h3 class="text-2xl font-bold mb-2 text-indigo-400">Vòng Quay Nhân Phẩm</h3>
@@ -221,53 +243,65 @@
             </div>
         </section>
 
-        <!-- AUTH -->
+        <!-- AUTH - Style giống Marine Shop -->
         <section id="section-auth" class="page-section">
             <div class="max-w-md mx-auto bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-white" id="auth-title">Đăng Nhập</h2>
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-2xl font-black text-white shadow-lg">
+                        A
+                    </div>
+                    <h2 class="text-2xl font-bold text-white" id="auth-title">Đăng nhập</h2>
+                    <p class="text-gray-400 text-sm mt-1" id="auth-subtitle">Chào mừng bạn quay trở lại AccReg</p>
                 </div>
                 <form id="auth-form" class="space-y-4">
                     <div>
-                        <label id="auth-username-label" class="block text-sm font-medium mb-1 text-gray-400">Tên đăng nhập hoặc Email <span class="text-red-400">*</span></label>
-                        <input type="text" id="auth-username" required placeholder="Nhập tên đăng nhập hoặc email" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label id="auth-username-label" class="block text-sm font-medium mb-1.5 text-gray-400">Email hoặc tên người dùng</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input type="text" id="auth-username" required placeholder="Nhập email hoặc tên người dùng" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1 text-gray-400">Mật khẩu <span class="text-red-400">*</span></label>
-                        <input type="password" id="auth-password" required minlength="6" placeholder="Nhập mật khẩu" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-sm font-medium mb-1.5 text-gray-400">Mật khẩu</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                            <input type="password" id="auth-password" required minlength="6" placeholder="Nhập mật khẩu" class="w-full pl-10 pr-12 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
+                            <button type="button" id="toggle-password" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="forgot-password-link-container" class="text-right">
-                        <button type="button" onclick="switchTab('forgot')" class="text-xs text-indigo-400 hover:underline font-medium">Quên mật khẩu?</button>
+                        <button type="button" onclick="switchTab('forgot')" class="text-sm text-cyan-400 hover:underline font-medium">Quên mật khẩu?</button>
                     </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-2.5 rounded-xl transition" id="auth-submit-btn">Đăng Nhập</button>
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-cyan-900/30" id="auth-submit-btn">Đăng nhập</button>
                 </form>
-                <div class="mt-4 text-center text-sm text-gray-400">
+                <div class="mt-5 text-center text-sm text-gray-400">
                     <span id="auth-toggle-text">Chưa có tài khoản?</span> 
-                    <button id="auth-toggle-btn" class="text-indigo-400 font-bold hover:underline">Đăng ký ngay</button>
+                    <button id="auth-toggle-btn" class="text-cyan-400 font-bold hover:underline">Đăng ký ngay</button>
                 </div>
             </div>
         </section>
 
-        <!-- FORGOT -->
         <section id="section-forgot" class="page-section">
             <div class="max-w-md mx-auto bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
                 <div class="text-center mb-6">
                     <h2 class="text-2xl font-bold text-white">Khôi Phục Mật Khẩu</h2>
+                    <p class="text-gray-400 text-sm mt-1">Nhập email để nhận liên kết khôi phục</p>
                 </div>
                 <form id="forgot-form" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-1 text-gray-400">Email khôi phục <span class="text-red-400">*</span></label>
-                        <input type="email" id="forgot-email" required placeholder="Nhập gmail của bạn" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <label class="block text-sm font-medium mb-1.5 text-gray-400">Email khôi phục</label>
+                        <input type="email" id="forgot-email" required placeholder="Nhập gmail của bạn" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
                     </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-2.5 rounded-xl transition">Gửi Liên Kết Khôi Phục</button>
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl transition">Gửi Liên Kết Khôi Phục</button>
                 </form>
                 <div class="mt-4 text-center text-sm">
-                    <button onclick="switchTab('auth')" class="text-indigo-400 font-bold hover:underline">Quay lại Đăng Nhập</button>
+                    <button onclick="switchTab('auth')" class="text-cyan-400 font-bold hover:underline">← Quay lại Đăng Nhập</button>
                 </div>
             </div>
         </section>
 
-        <!-- LỊCH SỬ -->
         <section id="section-history" class="page-section">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span>
@@ -289,7 +323,6 @@
             </div>
         </section>
 
-        <!-- HỖ TRỢ -->
         <section id="section-support" class="page-section">
             <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl max-w-xl mx-auto text-center">
                 <h3 class="text-2xl font-bold mb-4 text-indigo-400">Hỗ Trợ Khách Hàng</h3>
@@ -300,7 +333,6 @@
             </div>
         </section>
 
-        <!-- QUẢN LÝ ACC -->
         <section id="section-manage-acc" class="page-section">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span>
@@ -325,7 +357,6 @@
             </div>
         </section>
 
-        <!-- ADMIN PANEL -->
         <section id="section-admin" class="page-section">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
@@ -377,7 +408,6 @@
             </div>
         </section>
 
-        <!-- DỮ LIỆU USER -->
         <section id="section-users-data" class="page-section">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>
@@ -427,6 +457,90 @@
         let currentUser = null;
         let currentUserData = null; 
 
+        // ========== CUSTOM DARK MODAL SYSTEM ==========
+        const modalEl = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalInputContainer = document.getElementById('modal-input-container');
+        const modalInput = document.getElementById('modal-input');
+        const modalOk = document.getElementById('modal-ok');
+        const modalCancel = document.getElementById('modal-cancel');
+        const modalIcon = document.getElementById('modal-icon');
+
+        let modalResolve = null;
+
+        function showModal({ title = 'Thông báo', message = '', showInput = false, inputType = 'text', defaultValue = '', okText = 'OK', cancelText = 'Hủy', showCancel = true, type = 'info' }) {
+            return new Promise((resolve) => {
+                modalResolve = resolve;
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                modalOk.textContent = okText;
+                modalCancel.textContent = cancelText;
+                modalCancel.style.display = showCancel ? 'block' : 'none';
+                
+                // Icon theo type
+                if (type === 'success') {
+                    modalIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-emerald-900/50 text-emerald-300';
+                } else if (type === 'error') {
+                    modalIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-red-900/50 text-red-300';
+                } else if (type === 'warning') {
+                    modalIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-amber-900/50 text-amber-300';
+                } else if (type === 'prompt') {
+                    modalIcon.innerHTML = '<i class="fa-solid fa-key"></i>';
+                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-indigo-900/50 text-indigo-300';
+                } else {
+                    modalIcon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-indigo-900/50 text-indigo-300';
+                }
+
+                if (showInput) {
+                    modalInputContainer.classList.remove('hidden');
+                    modalInput.type = inputType;
+                    modalInput.value = defaultValue;
+                    modalInput.placeholder = message || 'Nhập...';
+                    setTimeout(() => modalInput.focus(), 100);
+                } else {
+                    modalInputContainer.classList.add('hidden');
+                }
+
+                modalEl.classList.add('show');
+                modalEl.classList.remove('hidden');
+                modalEl.style.display = 'flex';
+            });
+        }
+
+        function closeModal(result) {
+            modalEl.classList.remove('show');
+            setTimeout(() => {
+                modalEl.classList.add('hidden');
+                modalEl.style.display = 'none';
+            }, 150);
+            if (modalResolve) {
+                modalResolve(result);
+                modalResolve = null;
+            }
+        }
+
+        modalOk.addEventListener('click', () => {
+            const showInput = !modalInputContainer.classList.contains('hidden');
+            closeModal(showInput ? modalInput.value : true);
+        });
+        modalCancel.addEventListener('click', () => closeModal(null));
+        modalEl.addEventListener('click', (e) => { if (e.target === modalEl) closeModal(null); });
+        modalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') modalOk.click();
+            if (e.key === 'Escape') modalCancel.click();
+        });
+
+        // Helper functions thay thế alert / confirm / prompt
+        window.customAlert = (msg, type = 'info') => showModal({ title: 'Thông báo', message: msg, showCancel: false, okText: 'Đóng', type });
+        window.customConfirm = (msg) => showModal({ title: 'Xác nhận', message: msg, okText: 'Đồng ý', cancelText: 'Hủy', type: 'warning' });
+        window.customPrompt = (msg, defaultVal = '') => showModal({ title: 'Nhập thông tin', message: msg, showInput: true, defaultValue: defaultVal, okText: 'OK', cancelText: 'Hủy', type: 'prompt' });
+
+        // ========== REST OF APP ==========
         const mobileSidebar = document.getElementById('mobile-sidebar');
         window.toggleMobileMenu = function() { mobileSidebar.classList.toggle('hidden'); }
         document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
@@ -436,7 +550,7 @@
         window.switchTab = function(tabId) {
             const protectedTabs = ['history', 'recharge', 'wheel'];
             if(protectedTabs.includes(tabId) && !currentUser) {
-                alert("Vui lòng đăng nhập để sử dụng tính năng này!");
+                customAlert("Vui lòng đăng nhập để sử dụng tính năng này!", 'warning');
                 return switchTab('auth');
             }
             
@@ -444,32 +558,47 @@
             document.getElementById('section-' + tabId).classList.add('active');
         };
 
-        window.requestAdminAccess = function(tabId) {
-            const pwd = prompt("Vui lòng nhập mật khẩu quản trị:");
+        window.requestAdminAccess = async function(tabId) {
+            const pwd = await customPrompt("Vui lòng nhập mật khẩu quản trị:");
+            if (pwd === null) return;
             if (pwd === ADMIN_SECRET_PASSWORD) {
                 if(tabId === 'manage-acc') loadManageAccounts();
                 if(tabId === 'users-data') loadUsersData(); 
                 switchTab(tabId);
-            } else if (pwd !== null) {
-                alert("Mật khẩu không chính xác!");
+            } else {
+                await customAlert("Mật khẩu không chính xác!", 'error');
             }
         };
+
+        // Toggle password visibility
+        document.getElementById('toggle-password')?.addEventListener('click', function() {
+            const input = document.getElementById('auth-password');
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
 
         let isLoginMode = true;
         document.getElementById('auth-toggle-btn').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? "Đăng Nhập" : "Tạo Tài Khoản";
-            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Đăng Nhập" : "Đăng Ký";
+            document.getElementById('auth-title').innerText = isLoginMode ? "Đăng nhập" : "Tạo tài khoản";
+            document.getElementById('auth-subtitle').innerText = isLoginMode ? "Chào mừng bạn quay trở lại AccReg" : "Tạo tài khoản mới để mua acc";
+            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Đăng nhập" : "Đăng ký";
             document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
             document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
             
             const userLabel = document.getElementById('auth-username-label');
             const userInput = document.getElementById('auth-username');
             if (isLoginMode) {
-                userLabel.innerHTML = 'Tên đăng nhập hoặc Email <span class="text-red-400">*</span>';
-                userInput.placeholder = "Nhập tên đăng nhập hoặc email";
+                userLabel.innerHTML = 'Email hoặc tên người dùng';
+                userInput.placeholder = "Nhập email hoặc tên người dùng";
             } else {
-                userLabel.innerHTML = 'Tên đăng nhập <span class="text-red-400">*</span>';
+                userLabel.innerHTML = 'Tên đăng nhập';
                 userInput.placeholder = "Nhập tên đăng nhập (VD: account123)";
             }
 
@@ -492,14 +621,14 @@
                         const q = query(usersRef, where("username", "==", inputValue));
                         const querySnapshot = await getDocs(q);
 
-                        if (querySnapshot.empty) return alert("Tên đăng nhập không tồn tại!");
+                        if (querySnapshot.empty) return customAlert("Tên đăng nhập không tồn tại!", 'error');
                         
                         querySnapshot.forEach((doc) => { userEmailToLogin = doc.data().email; });
                     }
                     await signInWithEmailAndPassword(auth, userEmailToLogin, password);
                 } else {
                     if (inputValue.includes('@')) {
-                        return alert("Vui lòng chỉ nhập Tên đăng nhập (không chứa ký tự @) để đăng ký!");
+                        return customAlert("Vui lòng chỉ nhập Tên đăng nhập (không chứa ký tự @) để đăng ký!", 'warning');
                     }
 
                     const autoEmail = `${inputValue.toLowerCase()}@acclqmb.local`;
@@ -510,12 +639,12 @@
                         balance: 0,
                         role: 'user'
                     });
-                    alert("Tạo tài khoản thành công!");
+                    await customAlert("Tạo tài khoản thành công!", 'success');
                 }
                 switchTab('home');
                 e.target.reset();
             } catch (error) {
-                alert("Lỗi: Kiểm tra lại tài khoản hoặc mật khẩu!");
+                customAlert("Lỗi: Kiểm tra lại tài khoản hoặc mật khẩu!", 'error');
             }
         });
 
@@ -524,11 +653,15 @@
             const email = document.getElementById('forgot-email').value.trim();
             try {
                 await sendPasswordResetEmail(auth, email);
-                alert("Đã gửi email khôi phục!");
+                await customAlert("Đã gửi email khôi phục!", 'success');
                 switchTab('auth');
             } catch (error) {
-                alert("Lỗi hoặc email không tồn tại.");
+                customAlert("Lỗi hoặc email không tồn tại.", 'error');
             }
+        });
+
+        document.getElementById('recharge-card-btn').addEventListener('click', () => {
+            customAlert('Tính năng nạp thẻ cào cần kết nối API Gạch Thẻ (ví dụ TheSieuToc). Admin vui lòng kết nối API backend!', 'warning');
         });
 
         onAuthStateChanged(auth, (user) => {
@@ -614,7 +747,7 @@
             }
         });
 
-        // ========== PRODUCT CARDS (LẤY TỪ FIRESTORE - ẢNH TO TOÀN CHIỀU NGANG) ==========
+        // PRODUCT CARDS
         onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -638,7 +771,6 @@
                     ? `<div class="absolute top-3 right-3 z-10"><span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">-${discountPercent}%</span></div>` 
                     : '';
 
-                // Ảnh sản phẩm to full chiều ngang card
                 const imageHtml = acc.imageUrl 
                     ? `<img src="${acc.imageUrl}" alt="Ảnh acc" class="w-full h-56 sm:h-64 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300">` 
                     : `<div class="w-full h-56 sm:h-64 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-2xl flex items-center justify-center">
@@ -647,7 +779,6 @@
 
                 productList.innerHTML += `
                     <div class="relative bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-900/30 transition-all duration-300 group flex flex-col justify-between">
-                        <!-- Badges -->
                         <div class="absolute top-3 left-3 z-10">
                             <span class="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">
                                 <i class="fa-solid fa-fire text-[10px]"></i> Hot
@@ -656,44 +787,25 @@
                         ${badgeHtml}
 
                         <div>
-                            <!-- Ảnh to ở trên -->
-                            <div class="overflow-hidden bg-gray-950">
-                                ${imageHtml}
-                            </div>
-
-                            <!-- Nội dung chi tiết bên dưới -->
+                            <div class="overflow-hidden bg-gray-950">${imageHtml}</div>
                             <div class="p-4">
-                                <span class="inline-block text-[11px] font-medium text-indigo-300 bg-indigo-900/40 px-2.5 py-0.5 rounded-md mb-2">
-                                    Acc Liên Quân
-                                </span>
-                                <h4 class="font-bold text-white text-base leading-snug line-clamp-2 mb-3" title="${acc.title}">
-                                    ${acc.title}
-                                </h4>
-
-                                <!-- Rating + Sold + Stock -->
+                                <span class="inline-block text-[11px] font-medium text-indigo-300 bg-indigo-900/40 px-2.5 py-0.5 rounded-md mb-2">Acc Liên Quân</span>
+                                <h4 class="font-bold text-white text-base leading-snug line-clamp-2 mb-3" title="${acc.title}">${acc.title}</h4>
                                 <div class="flex items-center justify-between text-xs text-gray-400 mb-4 pb-3 border-b border-gray-800">
-                                    <span class="flex items-center gap-1">
-                                        <i class="fa-solid fa-star text-yellow-400 text-[11px]"></i>
-                                        <span class="text-yellow-400 font-medium">5.0</span>
-                                    </span>
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-star text-yellow-400 text-[11px]"></i><span class="text-yellow-400 font-medium">5.0</span></span>
                                     <span>Đã bán ${soldCount}</span>
                                     <span>Còn ${stockLeft}</span>
                                 </div>
-
-                                <!-- Price -->
                                 <div class="flex items-baseline gap-2 mb-4">
                                     <span class="text-2xl font-extrabold text-cyan-400">${Number(acc.price).toLocaleString()}đ</span>
                                     <span class="text-sm text-gray-500 line-through">${originalPrice.toLocaleString()}đ</span>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Buy Button -->
                         <div class="p-4 pt-0">
                             <button onclick="buyAccount('${docSnap.id}')" 
-                                class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-cyan-900/30 group-hover:shadow-cyan-800/40">
-                                <i class="fa-solid fa-cart-shopping text-sm"></i>
-                                Mua ngay
+                                class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-cyan-900/30">
+                                <i class="fa-solid fa-cart-shopping text-sm"></i> Mua ngay
                             </button>
                         </div>
                     </div>
@@ -704,7 +816,7 @@
         window.buyAccount = async function(accId) {
             if (!currentUser) return switchTab('auth');
             
-            const confirmBuy = confirm("Bạn có chắc chắn muốn mua tài khoản này?");
+            const confirmBuy = await customConfirm("Bạn có chắc chắn muốn mua tài khoản này?");
             if(!confirmBuy) return;
 
             try {
@@ -712,7 +824,7 @@
                 const accSnap = await getDoc(accRef);
                 
                 if(!accSnap.exists() || accSnap.data().status !== "available") {
-                    return alert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!");
+                    return customAlert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!", 'error');
                 }
                 
                 const price = accSnap.data().price;
@@ -720,7 +832,7 @@
                 
                 const userSnap = await getDoc(userRef);
                 if(userSnap.data().balance < price) {
-                    return alert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!");
+                    return customAlert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!", 'warning');
                 }
 
                 const buyerEmail = userSnap.data().email || currentUser.email;
@@ -733,11 +845,11 @@
                     sold_at: serverTimestamp()
                 });
 
-                alert("Mua thành công! Vui lòng vào Lịch Sử Mua để xem Tài Khoản / Mật Khẩu.");
+                await customAlert("Mua thành công! Vui lòng vào Lịch Sử Mua để xem Tài Khoản / Mật Khẩu.", 'success');
                 switchTab('history');
 
             } catch (error) {
-                alert("Đã xảy ra lỗi khi mua: " + error.message);
+                customAlert("Đã xảy ra lỗi khi mua: " + error.message, 'error');
             }
         };
 
@@ -751,7 +863,7 @@
             const userSnap = await getDoc(userRef);
             
             if(userSnap.data().balance < spinCost) {
-                return alert("Bạn cần ít nhất 10,000đ để tham gia vòng quay!");
+                return customAlert("Bạn cần ít nhất 10,000đ để tham gia vòng quay!", 'warning');
             }
 
             isSpinning = true;
@@ -781,14 +893,13 @@
 
                 if(prizes[prizeIndex] > 0) {
                     await updateDoc(userRef, { balance: increment(prizes[prizeIndex]) });
-                    alert(`Chúc mừng! Bạn đã quay trúng ${prizes[prizeIndex].toLocaleString()}đ!`);
+                    customAlert(`Chúc mừng! Bạn đã quay trúng ${prizes[prizeIndex].toLocaleString()}đ!`, 'success');
                 } else {
-                    alert("Rất tiếc! Bạn quay trúng ô 0đ. Chúc bạn may mắn lần sau!");
+                    customAlert("Rất tiếc! Bạn quay trúng ô 0đ. Chúc bạn may mắn lần sau!", 'info');
                 }
             }, 4000);
         });
 
-        // LỊCH SỬ MUA HÀNG
         function loadHistory() {
             if(!currentUser) return;
             const historyList = document.getElementById('history-list');
@@ -816,7 +927,6 @@
             });
         }
 
-        // QUẢN LÝ TÀI KHOẢN (ADMIN)
         function loadManageAccounts() {
             const manageList = document.getElementById('manage-acc-list');
             onSnapshot(query(collection(db, "accounts"), orderBy("created_at", "desc")), (snapshot) => {
@@ -855,10 +965,7 @@
                             <td class="p-4 font-medium text-white">${acc.title}</td>
                             <td class="p-4 font-bold text-red-400">${Number(acc.price).toLocaleString()}đ</td>
                             <td class="p-4 font-mono text-sm text-gray-300">${acc.account_info}</td>
-                            <td class="p-4">
-                                ${statusHtml}
-                                ${buyerInfoHtml}
-                            </td>
+                            <td class="p-4">${statusHtml}${buyerInfoHtml}</td>
                             <td class="p-4 text-xs text-gray-400 space-y-1">
                                 <div>Giảm: <span class="text-orange-400 font-bold">${discount}%</span></div>
                                 <div>Đã bán: <span class="text-emerald-400 font-bold">${soldCount}</span></div>
@@ -868,11 +975,9 @@
                                 <button onclick="updateTitle('${accId}', '${acc.title.replace(/'/g, "\\'")}')" class="bg-indigo-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-500 transition" title="Sửa Tiêu Đề"><i class="fa-solid fa-heading"></i></button>
                                 <button onclick="updateInfo('${accId}', '${acc.account_info.replace(/'/g, "\\'")}')" class="bg-amber-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-500 transition" title="Sửa Thông Tin"><i class="fa-solid fa-key"></i></button>
                                 <button onclick="updatePrice('${accId}', ${acc.price})" class="bg-blue-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-500 transition" title="Sửa Giá"><i class="fa-solid fa-tag"></i></button>
-                                
                                 <button onclick="updateStats('${accId}', 'discount_percent', ${discount}, 'Nhập % giảm giá (VD: 50)')" class="bg-orange-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-orange-500 transition" title="Sửa % Giảm Giá"><i class="fa-solid fa-percent"></i></button>
                                 <button onclick="updateStats('${accId}', 'sold_count', ${soldCount}, 'Nhập số lượng đã bán')" class="bg-emerald-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-500 transition" title="Sửa Đã Bán"><i class="fa-solid fa-chart-simple"></i></button>
                                 <button onclick="updateStats('${accId}', 'stock_left', ${stockLeft}, 'Nhập số lượng còn lại')" class="bg-cyan-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-cyan-500 transition" title="Sửa Còn Lại"><i class="fa-solid fa-box-open"></i></button>
-                                
                                 <button onclick="deleteAccount('${accId}')" class="bg-red-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-red-500 transition col-span-3 sm:col-span-1" title="Xóa"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
@@ -881,7 +986,6 @@
             });
         }
 
-        // TẢI DỮ LIỆU KHÁCH HÀNG
         function loadUsersData() {
             const usersDataList = document.getElementById('users-data-list');
             onSnapshot(collection(db, "users"), (snapshot) => {
@@ -890,14 +994,12 @@
                 
                 snapshot.forEach(docSnap => {
                     const userData = docSnap.data();
-                    
                     const passwordDisplay = userData.password_hint 
-                                          ? `<span class="font-mono text-red-400">${userData.password_hint}</span>` 
-                                          : '<span class="text-gray-500 italic">[Đã mã hóa Firebase]</span>';
-
+                        ? `<span class="font-mono text-red-400">${userData.password_hint}</span>` 
+                        : '<span class="text-gray-500 italic">[Đã mã hóa Firebase]</span>';
                     const roleBadge = userData.role === 'admin' 
-                                    ? '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs font-bold rounded">Admin</span>' 
-                                    : '<span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs font-bold rounded">User</span>';
+                        ? '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs font-bold rounded">Admin</span>' 
+                        : '<span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs font-bold rounded">User</span>';
 
                     usersDataList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
@@ -913,77 +1015,78 @@
         }
 
         window.deleteAccount = async function(accId) {
-            if(!confirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi shop không?")) return;
+            const ok = await customConfirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi shop không?");
+            if(!ok) return;
             try {
                 await deleteDoc(doc(db, "accounts", accId));
-                alert("Đã xóa tài khoản thành công!");
+                customAlert("Đã xóa tài khoản thành công!", 'success');
             } catch (error) {
-                alert("Lỗi khi xóa: " + error.message);
+                customAlert("Lỗi khi xóa: " + error.message, 'error');
             }
         };
 
         window.updatePrice = async function(accId, currentPrice) {
-            const newPriceStr = prompt("Nhập giá tiền mới (VNĐ):", currentPrice);
+            const newPriceStr = await customPrompt("Nhập giá tiền mới (VNĐ):", currentPrice);
             if(newPriceStr === null) return;
             const newPrice = Number(newPriceStr);
             if(isNaN(newPrice) || newPrice < 0) {
-                return alert("Vui lòng nhập một số hợp lệ!");
+                return customAlert("Vui lòng nhập một số hợp lệ!", 'error');
             }
             try {
                 await updateDoc(doc(db, "accounts", accId), { price: newPrice });
-                alert("Cập nhật giá thành công!");
+                customAlert("Cập nhật giá thành công!", 'success');
             } catch (error) {
-                alert("Lỗi khi cập nhật giá: " + error.message);
+                customAlert("Lỗi khi cập nhật giá: " + error.message, 'error');
             }
         };
 
         window.updateTitle = async function(accId, currentTitle) {
-            const newTitle = prompt("Nhập tiêu đề mới:", currentTitle);
+            const newTitle = await customPrompt("Nhập tiêu đề mới:", currentTitle);
             if(newTitle === null) return;
             if(newTitle.trim() === "") {
-                return alert("Tiêu đề không được để trống!");
+                return customAlert("Tiêu đề không được để trống!", 'error');
             }
             try {
                 await updateDoc(doc(db, "accounts", accId), { title: newTitle.trim() });
-                alert("Cập nhật tiêu đề thành công!");
+                customAlert("Cập nhật tiêu đề thành công!", 'success');
             } catch (error) {
-                alert("Lỗi khi cập nhật tiêu đề: " + error.message);
+                customAlert("Lỗi khi cập nhật tiêu đề: " + error.message, 'error');
             }
         };
 
         window.updateInfo = async function(accId, currentInfo) {
-            const newInfo = prompt("Nhập thông tin tài khoản mới (Định dạng TK|MK):", currentInfo);
+            const newInfo = await customPrompt("Nhập thông tin tài khoản mới (Định dạng TK|MK):", currentInfo);
             if(newInfo === null) return;
             if(newInfo.trim() === "") {
-                return alert("Thông tin tài khoản không được để trống!");
+                return customAlert("Thông tin tài khoản không được để trống!", 'error');
             }
             try {
                 await updateDoc(doc(db, "accounts", accId), { account_info: newInfo.trim() });
-                alert("Cập nhật thông tin tài khoản thành công!");
+                customAlert("Cập nhật thông tin tài khoản thành công!", 'success');
             } catch (error) {
-                alert("Lỗi khi cập nhật thông tin: " + error.message);
+                customAlert("Lỗi khi cập nhật thông tin: " + error.message, 'error');
             }
         };
 
         window.updateStats = async function(accId, fieldName, currentValue, promptMsg) {
-            const newValStr = prompt(promptMsg + ":", currentValue);
+            const newValStr = await customPrompt(promptMsg, currentValue);
             if(newValStr === null) return;
             const newVal = Number(newValStr);
             
             if(isNaN(newVal) || newVal < 0) {
-                return alert("Vui lòng nhập một số hợp lệ lớn hơn hoặc bằng 0!");
+                return customAlert("Vui lòng nhập một số hợp lệ lớn hơn hoặc bằng 0!", 'error');
             }
             if(fieldName === 'discount_percent' && newVal > 100) {
-                return alert("% giảm giá không được vượt quá 100!");
+                return customAlert("% giảm giá không được vượt quá 100!", 'error');
             }
 
             try {
                 const updateData = {};
                 updateData[fieldName] = newVal;
                 await updateDoc(doc(db, "accounts", accId), updateData);
-                alert("Cập nhật thông số thành công!");
+                customAlert("Cập nhật thông số thành công!", 'success');
             } catch (error) {
-                alert("Lỗi khi cập nhật: " + error.message);
+                customAlert("Lỗi khi cập nhật: " + error.message, 'error');
             }
         };
 
@@ -1015,7 +1118,6 @@
                     img.onload = function () {
                         let width = img.width;
                         let height = img.height;
-
                         if (width > maxWidth || height > maxHeight) {
                             if (width / height > maxWidth / maxHeight) {
                                 height = Math.round((height * maxWidth) / width);
@@ -1025,21 +1127,17 @@
                                 height = maxHeight;
                             }
                         }
-
                         const canvas = document.createElement('canvas');
                         canvas.width = width;
                         canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-
                         let quality = 0.8;
                         let base64String = canvas.toDataURL('image/jpeg', quality);
-
                         while (base64String.length > maxSizeBytes && quality > 0.1) {
                             quality -= 0.1;
                             base64String = canvas.toDataURL('image/jpeg', quality);
                         }
-
                         resolve(base64String);
                     };
                     img.onerror = (err) => reject(err);
@@ -1050,11 +1148,9 @@
 
         document.getElementById('admin-add-acc-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const submitBtn = document.getElementById('add-acc-submit-btn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Đang nạp và xử lý nén ảnh...";
-            submitBtn.classList.replace('bg-red-600', 'bg-gray-600');
 
             const title = document.getElementById('add-title').value;
             const price = Number(document.getElementById('add-price').value);
@@ -1064,27 +1160,18 @@
             async function saveToFirestore(imageUrl = null) {
                 try {
                     await addDoc(collection(db, "accounts"), {
-                        title: title,
-                        price: price,
-                        account_info: accountInfo,
-                        imageUrl: imageUrl, 
-                        status: "available",
-                        buyer_uid: null,
-                        created_at: serverTimestamp(),
-                        discount_percent: 0,
-                        sold_count: 0,
-                        stock_left: 1
+                        title, price, account_info: accountInfo, imageUrl, 
+                        status: "available", buyer_uid: null, created_at: serverTimestamp(),
+                        discount_percent: 0, sold_count: 0, stock_left: 1
                     });
-                    
-                    alert("Đăng bán thành công!");
+                    await customAlert("Đăng bán thành công!", 'success');
                     e.target.reset();
                     document.getElementById('image-preview-container').classList.add('hidden');
                 } catch (error) { 
-                    alert("Lỗi: " + error.message); 
+                    customAlert("Lỗi: " + error.message, 'error'); 
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Đăng Bán Lên Shop";
-                    submitBtn.classList.replace('bg-gray-600', 'bg-red-600');
                 }
             }
 
@@ -1093,72 +1180,56 @@
                     const compressedBase64 = await resizeAndCompressImage(imageFile);
                     await saveToFirestore(compressedBase64);
                 } catch (error) {
-                    console.error("Lỗi nén ảnh: ", error);
-                    alert("Có lỗi khi nén và xử lý ảnh!");
+                    customAlert("Có lỗi khi nén và xử lý ảnh!", 'error');
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Đăng Bán Lên Shop";
-                    submitBtn.classList.replace('bg-gray-600', 'bg-red-600');
                 }
             } else {
                 await saveToFirestore(null);
             }
         });
 
-        // XỬ LÝ TỰ ĐỘNG THÊM DẤU CHẤM KHI NHẬP SỐ TIỀN
         const balAmountInput = document.getElementById('add-bal-amount');
         balAmountInput.addEventListener('input', function (e) {
             let val = e.target.value;
             const isNegative = val.startsWith('-');
-            
             let rawValue = val.replace(/\D/g, '');
             if (!rawValue) {
                 e.target.value = isNegative ? '-' : '';
                 return;
             }
-
-            let formattedValue = Number(rawValue).toLocaleString('vi-VN');
-            e.target.value = (isNegative ? '-' : '') + formattedValue;
+            e.target.value = (isNegative ? '-' : '') + Number(rawValue).toLocaleString('vi-VN');
         });
 
-        // CỘNG TIỀN CHO THÀNH VIÊN
         document.getElementById('admin-add-balance-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const inputVal = document.getElementById('add-bal-username').value.trim();
             const rawAmountStr = document.getElementById('add-bal-amount').value.replace(/\./g, '');
             const amountToAdd = Number(rawAmountStr);
 
             if (isNaN(amountToAdd) || amountToAdd === 0) {
-                return alert("Vui lòng nhập số tiền hợp lệ!");
+                return customAlert("Vui lòng nhập số tiền hợp lệ!", 'error');
             }
 
             try {
                 const usersRef = collection(db, "users");
-                let q;
-
-                if (inputVal.includes('@')) {
-                    q = query(usersRef, where("email", "==", inputVal));
-                } else {
-                    q = query(usersRef, where("username", "==", inputVal));
-                }
+                let q = inputVal.includes('@') 
+                    ? query(usersRef, where("email", "==", inputVal))
+                    : query(usersRef, where("username", "==", inputVal));
 
                 const querySnapshot = await getDocs(q);
-
                 if (querySnapshot.empty) {
-                    return alert(`Không tìm thấy tài khoản nào với thông tin: ${inputVal}`);
+                    return customAlert(`Không tìm thấy tài khoản nào với thông tin: ${inputVal}`, 'error');
                 }
 
                 let targetUid = "";
                 querySnapshot.forEach((doc) => { targetUid = doc.id; });
 
-                await updateDoc(doc(db, "users", targetUid), {
-                    balance: increment(amountToAdd)
-                });
-
-                alert(`Đã cộng/trừ ${amountToAdd.toLocaleString('vi-VN')}đ cho tài khoản (${inputVal}) thành công!`);
+                await updateDoc(doc(db, "users", targetUid), { balance: increment(amountToAdd) });
+                await customAlert(`Đã cộng/trừ ${amountToAdd.toLocaleString('vi-VN')}đ cho tài khoản (${inputVal}) thành công!`, 'success');
                 e.target.reset();
             } catch (error) {
-                alert("Lỗi khi cộng tiền: " + error.message);
+                customAlert("Lỗi khi cộng tiền: " + error.message, 'error');
             }
         });
     </script>
