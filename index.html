@@ -645,8 +645,11 @@
                     if (inputValue.includes('@')) {
                         return customAlert("Tên đăng nhập không được chứa ký tự @!", 'warning');
                     }
-                    if (!registerEmail || !registerEmail.includes('@')) {
-                        return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ!", 'warning');
+                    
+                    // KIỂM TRA ĐỊNH DẠNG GMAIL NGHIÊM NGẶT BẰNG REGEX
+                    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
+                    if (!registerEmail || !gmailRegex.test(registerEmail)) {
+                        return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ (VD: example@gmail.com)!", 'warning');
                     }
 
                     const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, password);
@@ -668,6 +671,13 @@
         document.getElementById('forgot-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('forgot-email').value.trim();
+            
+            // Kiểm tra Gmail khi thực hiện khôi phục
+            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
+            if (!email || !gmailRegex.test(email)) {
+                return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ!", 'warning');
+            }
+
             try {
                 await sendPasswordResetEmail(auth, email);
                 await customAlert("Đã gửi email khôi phục!", 'success');
