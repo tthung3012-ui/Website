@@ -40,15 +40,100 @@
         ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
 
-        /* Custom Modal Animation */
         #custom-modal.show { display: flex !important; }
         #custom-modal .modal-box { transform: scale(0.9); opacity: 0; transition: all 0.2s ease; }
         #custom-modal.show .modal-box { transform: scale(1); opacity: 1; }
+
+        /* ===== THEME SÁNG ===== */
+        body.light-mode {
+            background-color: #f3f4f6 !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode header {
+            background-color: rgba(255,255,255,0.95) !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode .bg-gray-900,
+        body.light-mode .bg-gray-900\/95 {
+            background-color: #ffffff !important;
+        }
+        body.light-mode .text-white { color: #111827 !important; }
+        body.light-mode .text-gray-300,
+        body.light-mode .text-gray-400 { color: #4b5563 !important; }
+        body.light-mode .border-gray-800,
+        body.light-mode .border-gray-700 { border-color: #e5e7eb !important; }
+        body.light-mode .bg-gray-800 { background-color: #f3f4f6 !important; }
+        body.light-mode #custom-modal .modal-box {
+            background: #ffffff !important;
+            border-color: #e5e7eb !important;
+        }
+        body.light-mode #custom-modal .modal-box h3 { color: #111827 !important; }
+        body.light-mode #custom-modal .modal-box p { color: #4b5563 !important; }
+
+        /* ===== WELCOME POPUP ===== */
+        #welcome-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        #welcome-modal.show { display: flex; }
+        .welcome-box {
+            background: #1f2937;
+            border-radius: 20px;
+            padding: 28px 24px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+            border: 1px solid #374151;
+            animation: welcomeIn 0.25s ease;
+        }
+        body.light-mode .welcome-box {
+            background: #ffffff;
+            border-color: #e5e7eb;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+        @keyframes welcomeIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .welcome-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #f9fafb;
+            margin-bottom: 12px;
+        }
+        body.light-mode .welcome-title { color: #1e3a5f; }
+        .welcome-text {
+            font-size: 0.95rem;
+            color: #d1d5db;
+            line-height: 1.65;
+            margin-bottom: 22px;
+        }
+        body.light-mode .welcome-text { color: #4b5563; }
+        .welcome-ok {
+            background: linear-gradient(to right, #ef4444, #dc2626);
+            color: white;
+            font-weight: 700;
+            padding: 10px 40px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+        .welcome-ok:hover { transform: scale(1.05); opacity: 0.95; }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
 
-    <!-- ========== CUSTOM DARK MODAL ========== -->
+    <!-- CUSTOM MODAL -->
     <div id="custom-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
         <div class="modal-box bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
             <div class="p-5">
@@ -67,6 +152,19 @@
                     <button id="modal-ok" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold transition">OK</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- WELCOME POPUP - hiện mỗi lần load -->
+    <div id="welcome-modal">
+        <div class="welcome-box">
+            <div class="welcome-title">🔔 Thông Báo Mới 🔔</div>
+            <div class="welcome-text">
+                Chào mừng mọi người đến với website<br>
+                <strong style="color:#38bdf8">accreggiatot.site</strong>,<br>
+                là nơi cung cấp <span style="color:#60a5fa">acc reg Liên Quân</span> giá cực tốt ❤️
+            </div>
+            <button class="welcome-ok" id="welcome-ok-btn">OK</button>
         </div>
     </div>
 
@@ -104,7 +202,10 @@
                     </button>
                 </nav>
 
-                <div id="user-area" class="flex items-center gap-3">
+                <div id="user-area" class="flex items-center gap-2 sm:gap-3">
+                    <button id="theme-toggle" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center transition" title="Chuyển sáng/tối">
+                        <i class="fa-solid fa-moon text-yellow-400" id="theme-icon"></i>
+                    </button>
                     <button onclick="switchTab('auth')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold transition text-sm">Đăng Nhập</button>
                 </div>
             </div>
@@ -200,11 +301,9 @@
                 <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl text-center">
                     <h4 class="font-bold text-lg mb-4 text-emerald-400"><i class="fa-solid fa-building-columns mr-2"></i>Chuyển Khoản (Tự động 1-3p)</h4>
                     <p class="text-sm text-gray-400 mb-4">Quét mã QR dưới đây hoặc chuyển khoản theo đúng cú pháp để hệ thống tự động cộng tiền.</p>
-                    
                     <div class="bg-gray-800 p-4 rounded-xl border border-dashed border-gray-700 inline-block mb-4">
                         <img id="qr-code-img" src="https://img.vietqr.io/image/MB-0334671178-compact2.png?amount=0&addInfo=NAPTIEN&accountName=TRAN%20THE%20HIEN" alt="QR Code" class="mx-auto w-48 h-48 rounded object-contain">
                     </div>
-                    
                     <div class="text-left bg-emerald-950/50 text-emerald-300 p-4 rounded-xl text-sm space-y-2 border border-emerald-800/50">
                         <p><strong>Ngân hàng:</strong> MB Bank</p>
                         <p><strong>Số tài khoản:</strong> 0334671178</p>
@@ -221,13 +320,11 @@
             <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl max-w-2xl mx-auto text-center">
                 <h3 class="text-2xl font-bold mb-2 text-indigo-400">Vòng Quay Nhân Phẩm</h3>
                 <p class="text-gray-400 mb-8">Giá mỗi lượt quay: <span class="font-bold text-red-400">10,000đ</span></p>
-                
                 <div class="wheel-container mb-8">
                     <div class="wheel-pointer"></div>
                     <div class="wheel" id="roulette-wheel"></div>
                     <div class="wheel-center">SPIN</div>
                 </div>
-
                 <div class="grid grid-cols-3 gap-2 text-xs md:text-sm font-medium text-gray-400 mb-6 bg-gray-800/50 p-4 rounded-xl">
                     <div class="text-red-400">Đỏ: +0đ</div>
                     <div class="text-yellow-400">Vàng: +5,000đ</div>
@@ -236,20 +333,14 @@
                     <div class="text-purple-400">Tím: +50,000đ</div>
                     <div class="text-pink-400">Hồng: +100,000đ</div>
                 </div>
-
-                <button id="spin-btn" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-extrabold text-lg py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform">
-                    QUAY NGAY
-                </button>
+                <button id="spin-btn" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-extrabold text-lg py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform">QUAY NGAY</button>
             </div>
         </section>
 
-        <!-- AUTH - Đăng Nhập / Đăng Ký -->
         <section id="section-auth" class="page-section">
             <div class="max-w-md mx-auto bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
                 <div class="text-center mb-6">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-2xl font-black text-white shadow-lg">
-                        A
-                    </div>
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-2xl font-black text-white shadow-lg">A</div>
                     <h2 class="text-2xl font-bold text-white" id="auth-title">Đăng nhập</h2>
                     <p class="text-gray-400 text-sm mt-1" id="auth-subtitle">Chào mừng bạn quay trở lại AccReg</p>
                 </div>
@@ -261,7 +352,6 @@
                             <input type="text" id="auth-username" required placeholder="Nhập email hoặc tên người dùng" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
                         </div>
                     </div>
-                    <!-- BỔ SUNG Ô ĐIỀN GMAIL KHI ĐĂNG KÝ -->
                     <div id="auth-email-container" class="hidden">
                         <label class="block text-sm font-medium mb-1.5 text-gray-400">Địa chỉ Gmail</label>
                         <div class="relative">
@@ -382,7 +472,6 @@
                             <label class="block text-sm font-bold text-gray-300 mb-1">Thông tin Acc (Định dạng TK|MK)</label>
                             <input type="text" id="add-info" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:ring-2 focus:ring-indigo-500 outline-none">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-bold text-gray-300 mb-1">Ảnh Acc (Tùy chọn)</label>
                             <input type="file" id="add-image" accept="image/*" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-xl text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-900 file:text-indigo-300 hover:file:bg-indigo-800">
@@ -390,13 +479,9 @@
                                 <img id="image-preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl border border-gray-700">
                             </div>
                         </div>
-                        
-                        <button type="submit" id="add-acc-submit-btn" class="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold py-3 rounded-xl mt-4 transition">
-                            Đăng Bán Lên Shop
-                        </button>
+                        <button type="submit" id="add-acc-submit-btn" class="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold py-3 rounded-xl mt-4 transition">Đăng Bán Lên Shop</button>
                     </form>
                 </div>
-
                 <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
                     <h3 class="text-xl font-bold text-emerald-400 mb-6 border-b border-gray-800 pb-4"><i class="fa-solid fa-money-bill-transfer mr-2"></i>Cộng Tiền Thành Viên</h3>
                     <form id="admin-add-balance-form" class="space-y-4">
@@ -408,9 +493,7 @@
                             <label class="block text-sm font-bold text-gray-300 mb-1">Số Tiền Cần Cộng (+/-)</label>
                             <input type="text" id="add-bal-amount" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="VD: 50.000">
                         </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 rounded-xl mt-4 transition">
-                            Thực Hiện Cộng Tiền
-                        </button>
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 rounded-xl mt-4 transition">Thực Hiện Cộng Tiền</button>
                     </form>
                 </div>
             </div>
@@ -438,7 +521,6 @@
                 </table>
             </div>
         </section>
-
     </main>
 
     <script type="module">
@@ -465,7 +547,34 @@
         let currentUser = null;
         let currentUserData = null; 
 
-        // ========== CUSTOM DARK MODAL SYSTEM ==========
+        // ========== THEME SÁNG / TỐI ==========
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+
+        function applyTheme(mode) {
+            if (mode === 'light') {
+                document.body.classList.add('light-mode');
+                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-amber-500';
+                localStorage.setItem('accreg-theme', 'light');
+            } else {
+                document.body.classList.remove('light-mode');
+                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-yellow-400';
+                localStorage.setItem('accreg-theme', 'dark');
+            }
+        }
+        applyTheme(localStorage.getItem('accreg-theme') || 'dark');
+
+        themeToggle?.addEventListener('click', () => {
+            applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+        });
+
+        // ========== WELCOME POPUP - MỖI LẦN LOAD ==========
+        const welcomeModal = document.getElementById('welcome-modal');
+        const welcomeOkBtn = document.getElementById('welcome-ok-btn');
+        setTimeout(() => welcomeModal?.classList.add('show'), 500);
+        welcomeOkBtn?.addEventListener('click', () => welcomeModal.classList.remove('show'));
+
+        // ========== CUSTOM MODAL ==========
         const modalEl = document.getElementById('custom-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalMessage = document.getElementById('modal-message');
@@ -474,7 +583,6 @@
         const modalOk = document.getElementById('modal-ok');
         const modalCancel = document.getElementById('modal-cancel');
         const modalIcon = document.getElementById('modal-icon');
-
         let modalResolve = null;
 
         function showModal({ title = 'Thông báo', message = '', showInput = false, inputType = 'text', defaultValue = '', okText = 'OK', cancelText = 'Hủy', showCancel = true, type = 'info' }) {
@@ -512,7 +620,6 @@
                 } else {
                     modalInputContainer.classList.add('hidden');
                 }
-
                 modalEl.classList.add('show');
                 modalEl.classList.remove('hidden');
                 modalEl.style.display = 'flex';
@@ -525,10 +632,7 @@
                 modalEl.classList.add('hidden');
                 modalEl.style.display = 'none';
             }, 150);
-            if (modalResolve) {
-                modalResolve(result);
-                modalResolve = null;
-            }
+            if (modalResolve) { modalResolve(result); modalResolve = null; }
         }
 
         modalOk.addEventListener('click', () => {
@@ -558,7 +662,6 @@
                 customAlert("Vui lòng đăng nhập để sử dụng tính năng này!", 'warning');
                 return switchTab('auth');
             }
-            
             document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById('section-' + tabId).classList.add('active');
         };
@@ -587,7 +690,6 @@
             }
         });
 
-        // XỬ LÝ CHUYỂN ĐỔI ĐĂNG NHẬP / ĐĂNG KÝ
         let isLoginMode = true;
         document.getElementById('auth-toggle-btn').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
@@ -613,17 +715,14 @@
                 emailContainer.classList.remove('hidden');
                 emailInput.setAttribute('required', 'true');
             }
-
             const forgotLink = document.getElementById('forgot-password-link-container');
             isLoginMode ? forgotLink.classList.remove('hidden') : forgotLink.classList.add('hidden');
         });
 
-        // XỬ LÝ SUBMIT ĐĂNG NHẬP / ĐĂNG KÝ
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const inputValue = document.getElementById('auth-username').value.trim();
             const password = document.getElementById('auth-password').value;
-
             try {
                 if (isLoginMode) {
                     let userEmailToLogin = "";
@@ -633,31 +732,20 @@
                         const usersRef = collection(db, "users");
                         const q = query(usersRef, where("username", "==", inputValue));
                         const querySnapshot = await getDocs(q);
-
                         if (querySnapshot.empty) return customAlert("Tên đăng nhập không tồn tại!", 'error');
-                        
                         querySnapshot.forEach((doc) => { userEmailToLogin = doc.data().email; });
                     }
                     await signInWithEmailAndPassword(auth, userEmailToLogin, password);
                 } else {
                     const registerEmail = document.getElementById('auth-email').value.trim();
-
-                    if (inputValue.includes('@')) {
-                        return customAlert("Tên đăng nhập không được chứa ký tự @!", 'warning');
-                    }
-                    
-                    // KIỂM TRA ĐỊNH DẠNG GMAIL NGHIÊM NGẶT BẰNG REGEX
+                    if (inputValue.includes('@')) return customAlert("Tên đăng nhập không được chứa ký tự @!", 'warning');
                     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
                     if (!registerEmail || !gmailRegex.test(registerEmail)) {
                         return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ (VD: example@gmail.com)!", 'warning');
                     }
-
                     const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, password);
                     await setDoc(doc(db, 'users', userCredential.user.uid), {
-                        username: inputValue,
-                        email: registerEmail,
-                        balance: 0,
-                        role: 'user'
+                        username: inputValue, email: registerEmail, balance: 0, role: 'user'
                     });
                     await customAlert("Tạo tài khoản thành công!", 'success');
                 }
@@ -671,13 +759,8 @@
         document.getElementById('forgot-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('forgot-email').value.trim();
-            
-            // Kiểm tra Gmail khi thực hiện khôi phục
             const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
-            if (!email || !gmailRegex.test(email)) {
-                return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ!", 'warning');
-            }
-
+            if (!email || !gmailRegex.test(email)) return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ!", 'warning');
             try {
                 await sendPasswordResetEmail(auth, email);
                 await customAlert("Đã gửi email khôi phục!", 'success');
@@ -690,6 +773,18 @@
         document.getElementById('recharge-card-btn').addEventListener('click', () => {
             customAlert('Tính năng nạp thẻ cào cần kết nối API Gạch Thẻ (ví dụ TheSieuToc). Admin vui lòng kết nối API backend!', 'warning');
         });
+
+        // Helper render theme button (giữ khi login/logout)
+        function themeBtnHtml() {
+            const isLight = document.body.classList.contains('light-mode');
+            const iconClass = isLight ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon text-yellow-400';
+            return `<button id="theme-toggle" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center transition" title="Chuyển sáng/tối"><i class="${iconClass}" id="theme-icon"></i></button>`;
+        }
+        function bindThemeToggle() {
+            document.getElementById('theme-toggle')?.addEventListener('click', () => {
+                applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+            });
+        }
 
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
@@ -718,15 +813,10 @@
                         currentUserData = docSnap.data();
                         balance = currentUserData.balance || 0;
                         username = currentUserData.username || username;
-                        if (currentUserData.role === 'admin') {
-                            isAdmin = true;
-                        }
+                        if (currentUserData.role === 'admin') isAdmin = true;
                     } else {
                         await setDoc(doc(db, 'users', user.uid), {
-                            username: username,
-                            email: user.email,
-                            balance: 0,
-                            role: isEmailAdmin ? 'admin' : 'user'
+                            username, email: user.email, balance: 0, role: isEmailAdmin ? 'admin' : 'user'
                         }, { merge: true });
                     }
 
@@ -747,11 +837,13 @@
                     }
 
                     userArea.innerHTML = `
+                        ${themeBtnHtml()}
                         <div class="bg-indigo-900/60 text-indigo-300 px-3 py-1.5 rounded-lg font-bold text-sm border border-indigo-700/50">
                             <i class="fa-solid fa-wallet mr-1"></i> ${balance.toLocaleString()}đ
                         </div>
                         <button id="logout-btn" class="text-gray-400 hover:text-red-400 px-2"><i class="fa-solid fa-right-from-bracket"></i></button>
                     `;
+                    bindThemeToggle();
                     document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); location.reload(); });
                     
                     const cuPhap = `NAP ${username}`;
@@ -767,14 +859,16 @@
                 if(navUsers) navUsers.classList.add('hidden');
                 if(navUsersMobile) navUsersMobile.classList.add('hidden');
 
-                userArea.innerHTML = `<button onclick="switchTab('auth')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold transition text-sm">Đăng Nhập</button>`;
-                const defaultCuPhap = "NAPTIEN";
-                document.getElementById('bank-syntax').innerText = defaultCuPhap;
-                document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${defaultCuPhap}&accountName=${encodeURIComponent(tenChuTK)}`;
+                userArea.innerHTML = `
+                    ${themeBtnHtml()}
+                    <button onclick="switchTab('auth')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold transition text-sm">Đăng Nhập</button>
+                `;
+                bindThemeToggle();
+                document.getElementById('bank-syntax').innerText = "NAPTIEN";
+                document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=NAPTIEN&accountName=${encodeURIComponent(tenChuTK)}`;
             }
         });
 
-        // BẢNG SẢN PHẨM ACC (THÊM BIỂU TƯỢNG HỘP BÊN CẠNH SỐ LƯỢNG CÒN LẠI)
         onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
@@ -782,37 +876,25 @@
             
             snapshot.forEach((docSnap) => {
                 const acc = docSnap.data();
-                
                 const discountPercent = acc.discount_percent || 0;
                 const soldCount = acc.sold_count || 0;
                 const stockLeft = acc.stock_left || 1;
-
                 let originalPrice = acc.price;
-                if (discountPercent > 0 && discountPercent < 100) {
-                    originalPrice = Math.round(acc.price / (1 - (discountPercent / 100)));
-                } else if (discountPercent === 100) {
-                    originalPrice = acc.price * 2; 
-                }
+                if (discountPercent > 0 && discountPercent < 100) originalPrice = Math.round(acc.price / (1 - (discountPercent / 100)));
+                else if (discountPercent === 100) originalPrice = acc.price * 2; 
                 
                 const badgeHtml = discountPercent > 0 
-                    ? `<div class="absolute top-3 right-3 z-10"><span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">-${discountPercent}%</span></div>` 
-                    : '';
-
+                    ? `<div class="absolute top-3 right-3 z-10"><span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">-${discountPercent}%</span></div>` : '';
                 const imageHtml = acc.imageUrl 
                     ? `<img src="${acc.imageUrl}" alt="Ảnh acc" class="w-full h-56 sm:h-64 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300">` 
-                    : `<div class="w-full h-56 sm:h-64 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-2xl flex items-center justify-center">
-                           <i class="fa-solid fa-gamepad text-6xl text-white/90"></i>
-                       </div>`;
+                    : `<div class="w-full h-56 sm:h-64 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-2xl flex items-center justify-center"><i class="fa-solid fa-gamepad text-6xl text-white/90"></i></div>`;
 
                 productList.innerHTML += `
                     <div class="relative bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-900/30 transition-all duration-300 group flex flex-col justify-between">
                         <div class="absolute top-3 left-3 z-10">
-                            <span class="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">
-                                <i class="fa-solid fa-fire text-[10px]"></i> Hot
-                            </span>
+                            <span class="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-fire text-[10px]"></i> Hot</span>
                         </div>
                         ${badgeHtml}
-
                         <div>
                             <div class="overflow-hidden bg-gray-950">${imageHtml}</div>
                             <div class="p-4">
@@ -830,8 +912,7 @@
                             </div>
                         </div>
                         <div class="p-4 pt-0">
-                            <button onclick="buyAccount('${docSnap.id}')" 
-                                class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-cyan-900/30">
+                            <button onclick="buyAccount('${docSnap.id}')" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-cyan-900/30">
                                 <i class="fa-solid fa-cart-shopping text-sm"></i> Mua ngay
                             </button>
                         </div>
@@ -842,39 +923,23 @@
 
         window.buyAccount = async function(accId) {
             if (!currentUser) return switchTab('auth');
-            
             const confirmBuy = await customConfirm("Bạn có chắc chắn muốn mua tài khoản này?");
             if(!confirmBuy) return;
-
             try {
                 const accRef = doc(db, "accounts", accId);
                 const accSnap = await getDoc(accRef);
-                
                 if(!accSnap.exists() || accSnap.data().status !== "available") {
                     return customAlert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!", 'error');
                 }
-                
                 const price = accSnap.data().price;
                 const userRef = doc(db, "users", currentUser.uid);
-                
                 const userSnap = await getDoc(userRef);
-                if(userSnap.data().balance < price) {
-                    return customAlert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!", 'warning');
-                }
-
+                if(userSnap.data().balance < price) return customAlert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!", 'warning');
                 const buyerEmail = userSnap.data().email || currentUser.email;
-
                 await updateDoc(userRef, { balance: increment(-price) });
-                await updateDoc(accRef, { 
-                    status: "sold", 
-                    buyer_uid: currentUser.uid,
-                    buyer_email: buyerEmail, 
-                    sold_at: serverTimestamp()
-                });
-
+                await updateDoc(accRef, { status: "sold", buyer_uid: currentUser.uid, buyer_email: buyerEmail, sold_at: serverTimestamp() });
                 await customAlert("Mua thành công! Vui lòng vào Lịch Sử Mua để xem Tài Khoản / Mật Khẩu.", 'success');
                 switchTab('history');
-
             } catch (error) {
                 customAlert("Đã xảy ra lỗi khi mua: " + error.message, 'error');
             }
@@ -884,18 +949,12 @@
         document.getElementById('spin-btn').addEventListener('click', async () => {
             if(!currentUser) return switchTab('auth');
             if(isSpinning) return;
-            
             const spinCost = 10000;
             const userRef = doc(db, "users", currentUser.uid);
             const userSnap = await getDoc(userRef);
-            
-            if(userSnap.data().balance < spinCost) {
-                return customAlert("Bạn cần ít nhất 10,000đ để tham gia vòng quay!", 'warning');
-            }
-
+            if(userSnap.data().balance < spinCost) return customAlert("Bạn cần ít nhất 10,000đ để tham gia vòng quay!", 'warning');
             isSpinning = true;
             await updateDoc(userRef, { balance: increment(-spinCost) });
-
             const prizes = [0, 5000, 10000, 20000, 50000, 100000];
             const rand = Math.random();
             let prizeIndex = 0; 
@@ -904,20 +963,16 @@
             if(rand > 0.95) prizeIndex = 3; 
             if(rand > 0.98) prizeIndex = 4; 
             if(rand > 0.995) prizeIndex = 5; 
-
             const baseAngle = 360 * 5; 
             const prizeAngle = prizeIndex * 60 + 30;
             const totalDegree = baseAngle + prizeAngle;
-
             const wheel = document.getElementById('roulette-wheel');
             wheel.style.transform = `rotate(${totalDegree}deg)`;
-
             setTimeout(async () => {
                 isSpinning = false;
                 wheel.style.transition = 'none';
                 wheel.style.transform = `rotate(${prizeAngle}deg)`;
                 setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)', 50);
-
                 if(prizes[prizeIndex] > 0) {
                     await updateDoc(userRef, { balance: increment(prizes[prizeIndex]) });
                     customAlert(`Chúc mừng! Bạn đã quay trúng ${prizes[prizeIndex].toLocaleString()}đ!`, 'success');
@@ -933,7 +988,6 @@
             onSnapshot(query(collection(db, "accounts"), where("buyer_uid", "==", currentUser.uid)), (snapshot) => {
                 historyList.innerHTML = '';
                 if(snapshot.empty) return historyList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Bạn chưa mua tài khoản nào.</td></tr>`;
-                
                 snapshot.forEach(docSnap => {
                     const acc = docSnap.data();
                     let dateStr = "Vừa xong";
@@ -948,8 +1002,7 @@
                             <td class="p-4 text-red-400 font-bold">${Number(acc.price).toLocaleString()}đ</td>
                             <td class="p-4"><input type="text" readonly value="${acc.account_info}" class="bg-gray-800 px-2 py-1 border border-gray-700 rounded w-full outline-none text-sm font-mono cursor-text text-gray-200" onclick="this.select()"></td>
                             <td class="p-4 text-emerald-400 font-bold"><i class="fa-solid fa-check mr-1"></i>Thành công</td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
             });
         }
@@ -959,34 +1012,23 @@
             onSnapshot(query(collection(db, "accounts"), orderBy("created_at", "desc")), (snapshot) => {
                 manageList.innerHTML = '';
                 if(snapshot.empty) return manageList.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">Không có tài khoản nào.</td></tr>`;
-                
                 snapshot.forEach(docSnap => {
                     const acc = docSnap.data();
                     const accId = docSnap.id;
-                    
                     const discount = acc.discount_percent || 0;
                     const soldCount = acc.sold_count || 0;
                     const stockLeft = acc.stock_left || 1;
-
                     let statusHtml = '<span class="px-2 py-1 bg-emerald-900/50 text-emerald-300 text-xs font-bold rounded">Đang bán</span>';
                     let buyerInfoHtml = '';
-
                     if (acc.status === "sold") {
                         let dateStr = "";
                         if(acc.sold_at) {
                             const d = acc.sold_at.toDate();
                             dateStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                         }
-                        const buyerEmail = acc.buyer_email || 'Không rõ email';
                         statusHtml = `<span class="px-2 py-1 bg-red-900/50 text-red-300 text-xs font-bold rounded">Đã bán</span>`;
-                        buyerInfoHtml = `
-                            <div class="mt-1 text-xs text-gray-400">
-                                <div><i class="fa-solid fa-user mr-1"></i>${buyerEmail}</div>
-                                <div><i class="fa-regular fa-clock mr-1"></i>${dateStr}</div>
-                            </div>
-                        `;
+                        buyerInfoHtml = `<div class="mt-1 text-xs text-gray-400"><div><i class="fa-solid fa-user mr-1"></i>${acc.buyer_email || 'Không rõ'}</div><div><i class="fa-regular fa-clock mr-1"></i>${dateStr}</div></div>`;
                     }
-
                     manageList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
                             <td class="p-4 font-medium text-white">${acc.title}</td>
@@ -1007,8 +1049,7 @@
                                 <button onclick="updateStats('${accId}', 'stock_left', ${stockLeft}, 'Nhập số lượng còn lại')" class="bg-cyan-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-cyan-500 transition" title="Sửa Còn Lại"><i class="fa-solid fa-box-open"></i></button>
                                 <button onclick="deleteAccount('${accId}')" class="bg-red-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-red-500 transition col-span-3 sm:col-span-1" title="Xóa"><i class="fa-solid fa-trash"></i></button>
                             </td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
             });
         }
@@ -1018,7 +1059,6 @@
             onSnapshot(collection(db, "users"), (snapshot) => {
                 usersDataList.innerHTML = '';
                 if(snapshot.empty) return usersDataList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Chưa có khách hàng nào.</td></tr>`;
-                
                 snapshot.forEach(docSnap => {
                     const userData = docSnap.data();
                     const passwordDisplay = userData.password_hint 
@@ -1027,7 +1067,6 @@
                     const roleBadge = userData.role === 'admin' 
                         ? '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs font-bold rounded">Admin</span>' 
                         : '<span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs font-bold rounded">User</span>';
-
                     usersDataList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
                             <td class="p-4 font-medium text-white">${userData.username || 'N/A'}</td>
@@ -1035,99 +1074,70 @@
                             <td class="p-4 text-sm">${passwordDisplay}</td>
                             <td class="p-4 font-bold text-emerald-400">${Number(userData.balance || 0).toLocaleString()}đ</td>
                             <td class="p-4">${roleBadge}</td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
             });
         }
 
         window.deleteAccount = async function(accId) {
-            const ok = await customConfirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi shop không?");
-            if(!ok) return;
+            if(!(await customConfirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi shop không?"))) return;
             try {
                 await deleteDoc(doc(db, "accounts", accId));
                 customAlert("Đã xóa tài khoản thành công!", 'success');
-            } catch (error) {
-                customAlert("Lỗi khi xóa: " + error.message, 'error');
-            }
+            } catch (error) { customAlert("Lỗi khi xóa: " + error.message, 'error'); }
         };
 
         window.updatePrice = async function(accId, currentPrice) {
             const newPriceStr = await customPrompt("Nhập giá tiền mới (VNĐ):", currentPrice);
             if(newPriceStr === null) return;
             const newPrice = Number(newPriceStr);
-            if(isNaN(newPrice) || newPrice < 0) {
-                return customAlert("Vui lòng nhập một số hợp lệ!", 'error');
-            }
+            if(isNaN(newPrice) || newPrice < 0) return customAlert("Vui lòng nhập một số hợp lệ!", 'error');
             try {
                 await updateDoc(doc(db, "accounts", accId), { price: newPrice });
                 customAlert("Cập nhật giá thành công!", 'success');
-            } catch (error) {
-                customAlert("Lỗi khi cập nhật giá: " + error.message, 'error');
-            }
+            } catch (error) { customAlert("Lỗi khi cập nhật giá: " + error.message, 'error'); }
         };
 
         window.updateTitle = async function(accId, currentTitle) {
             const newTitle = await customPrompt("Nhập tiêu đề mới:", currentTitle);
             if(newTitle === null) return;
-            if(newTitle.trim() === "") {
-                return customAlert("Tiêu đề không được để trống!", 'error');
-            }
+            if(newTitle.trim() === "") return customAlert("Tiêu đề không được để trống!", 'error');
             try {
                 await updateDoc(doc(db, "accounts", accId), { title: newTitle.trim() });
                 customAlert("Cập nhật tiêu đề thành công!", 'success');
-            } catch (error) {
-                customAlert("Lỗi khi cập nhật tiêu đề: " + error.message, 'error');
-            }
+            } catch (error) { customAlert("Lỗi khi cập nhật tiêu đề: " + error.message, 'error'); }
         };
 
         window.updateInfo = async function(accId, currentInfo) {
             const newInfo = await customPrompt("Nhập thông tin tài khoản mới (Định dạng TK|MK):", currentInfo);
             if(newInfo === null) return;
-            if(newInfo.trim() === "") {
-                return customAlert("Thông tin tài khoản không được để trống!", 'error');
-            }
+            if(newInfo.trim() === "") return customAlert("Thông tin tài khoản không được để trống!", 'error');
             try {
                 await updateDoc(doc(db, "accounts", accId), { account_info: newInfo.trim() });
                 customAlert("Cập nhật thông tin tài khoản thành công!", 'success');
-            } catch (error) {
-                customAlert("Lỗi khi cập nhật thông tin: " + error.message, 'error');
-            }
+            } catch (error) { customAlert("Lỗi khi cập nhật thông tin: " + error.message, 'error'); }
         };
 
         window.updateStats = async function(accId, fieldName, currentValue, promptMsg) {
             const newValStr = await customPrompt(promptMsg, currentValue);
             if(newValStr === null) return;
             const newVal = Number(newValStr);
-            
-            if(isNaN(newVal) || newVal < 0) {
-                return customAlert("Vui lòng nhập một số hợp lệ lớn hơn hoặc bằng 0!", 'error');
-            }
-            if(fieldName === 'discount_percent' && newVal > 100) {
-                return customAlert("% giảm giá không được vượt quá 100!", 'error');
-            }
-
+            if(isNaN(newVal) || newVal < 0) return customAlert("Vui lòng nhập một số hợp lệ lớn hơn hoặc bằng 0!", 'error');
+            if(fieldName === 'discount_percent' && newVal > 100) return customAlert("% giảm giá không được vượt quá 100!", 'error');
             try {
-                const updateData = {};
-                updateData[fieldName] = newVal;
+                const updateData = {}; updateData[fieldName] = newVal;
                 await updateDoc(doc(db, "accounts", accId), updateData);
                 customAlert("Cập nhật thông số thành công!", 'success');
-            } catch (error) {
-                customAlert("Lỗi khi cập nhật: " + error.message, 'error');
-            }
+            } catch (error) { customAlert("Lỗi khi cập nhật: " + error.message, 'error'); }
         };
 
         document.getElementById('add-image').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const previewContainer = document.getElementById('image-preview-container');
             const previewImage = document.getElementById('image-preview');
-            
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    previewImage.src = event.target.result;
-                    previewContainer.classList.remove('hidden');
-                }
+                reader.onload = (event) => { previewImage.src = event.target.result; previewContainer.classList.remove('hidden'); };
                 reader.readAsDataURL(file);
             } else {
                 previewContainer.classList.add('hidden');
@@ -1143,33 +1153,24 @@
                     const img = new Image();
                     img.src = event.target.result;
                     img.onload = function () {
-                        let width = img.width;
-                        let height = img.height;
+                        let width = img.width, height = img.height;
                         if (width > maxWidth || height > maxHeight) {
-                            if (width / height > maxWidth / maxHeight) {
-                                height = Math.round((height * maxWidth) / width);
-                                width = maxWidth;
-                            } else {
-                                width = Math.round((width * maxHeight) / height);
-                                height = maxHeight;
-                            }
+                            if (width / height > maxWidth / maxHeight) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
+                            else { width = Math.round((width * maxHeight) / height); height = maxHeight; }
                         }
                         const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        let quality = 0.8;
-                        let base64String = canvas.toDataURL('image/jpeg', quality);
+                        canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        let quality = 0.8, base64String = canvas.toDataURL('image/jpeg', quality);
                         while (base64String.length > maxSizeBytes && quality > 0.1) {
                             quality -= 0.1;
                             base64String = canvas.toDataURL('image/jpeg', quality);
                         }
                         resolve(base64String);
                     };
-                    img.onerror = (err) => reject(err);
+                    img.onerror = reject;
                 };
-                reader.onerror = (err) => reject(err);
+                reader.onerror = reject;
             });
         }
 
@@ -1178,7 +1179,6 @@
             const submitBtn = document.getElementById('add-acc-submit-btn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Đang nạp và xử lý nén ảnh...";
-
             const title = document.getElementById('add-title').value;
             const price = Number(document.getElementById('add-price').value);
             const accountInfo = document.getElementById('add-info').value;
@@ -1201,57 +1201,39 @@
                     submitBtn.innerText = "Đăng Bán Lên Shop";
                 }
             }
-
             if (imageFile) {
                 try {
-                    const compressedBase64 = await resizeAndCompressImage(imageFile);
-                    await saveToFirestore(compressedBase64);
+                    await saveToFirestore(await resizeAndCompressImage(imageFile));
                 } catch (error) {
                     customAlert("Có lỗi khi nén và xử lý ảnh!", 'error');
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Đăng Bán Lên Shop";
                 }
-            } else {
-                await saveToFirestore(null);
-            }
+            } else await saveToFirestore(null);
         });
 
-        const balAmountInput = document.getElementById('add-bal-amount');
-        balAmountInput.addEventListener('input', function (e) {
+        document.getElementById('add-bal-amount').addEventListener('input', function (e) {
             let val = e.target.value;
             const isNegative = val.startsWith('-');
             let rawValue = val.replace(/\D/g, '');
-            if (!rawValue) {
-                e.target.value = isNegative ? '-' : '';
-                return;
-            }
+            if (!rawValue) { e.target.value = isNegative ? '-' : ''; return; }
             e.target.value = (isNegative ? '-' : '') + Number(rawValue).toLocaleString('vi-VN');
         });
 
         document.getElementById('admin-add-balance-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const inputVal = document.getElementById('add-bal-username').value.trim();
-            const rawAmountStr = document.getElementById('add-bal-amount').value.replace(/\./g, '');
-            const amountToAdd = Number(rawAmountStr);
-
-            if (isNaN(amountToAdd) || amountToAdd === 0) {
-                return customAlert("Vui lòng nhập số tiền hợp lệ!", 'error');
-            }
-
+            const amountToAdd = Number(document.getElementById('add-bal-amount').value.replace(/\./g, ''));
+            if (isNaN(amountToAdd) || amountToAdd === 0) return customAlert("Vui lòng nhập số tiền hợp lệ!", 'error');
             try {
                 const usersRef = collection(db, "users");
-                let q = inputVal.includes('@') 
+                const q = inputVal.includes('@') 
                     ? query(usersRef, where("email", "==", inputVal))
                     : query(usersRef, where("username", "==", inputVal));
-
                 const querySnapshot = await getDocs(q);
-                if (querySnapshot.empty) {
-                    return customAlert(`Không tìm thấy tài khoản nào với thông tin: ${inputVal}`, 'error');
-                }
-
+                if (querySnapshot.empty) return customAlert(`Không tìm thấy tài khoản nào với thông tin: ${inputVal}`, 'error');
                 let targetUid = "";
                 querySnapshot.forEach((doc) => { targetUid = doc.id; });
-
                 await updateDoc(doc(db, "users", targetUid), { balance: increment(amountToAdd) });
                 await customAlert(`Đã cộng/trừ ${amountToAdd.toLocaleString('vi-VN')}đ cho tài khoản (${inputVal}) thành công!`, 'success');
                 e.target.reset();
