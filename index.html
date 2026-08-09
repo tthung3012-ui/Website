@@ -526,9 +526,11 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc, orderBy, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const ADMIN_EMAIL = "tthung3012@gmail.com"; 
+        // Lưu ý: ADMIN_EMAIL không còn được dùng để tự cấp quyền admin nữa (đã gỡ ở dưới),
+        // vì làm vậy sẽ bị Firestore Rules chặn. Cấp quyền admin bằng cách sửa tay field "role"
+        // trong Firebase Console (xem ghi chú trong onAuthStateChanged bên dưới).
         const ADMIN_SECRET_PASSWORD = "845376"; 
 
         const firebaseConfig = {
@@ -802,12 +804,11 @@
 
             if (user) {
                 const userEmail = (user.email || "").toLowerCase().trim();
-                const isEmailAdmin = userEmail === ADMIN_EMAIL.toLowerCase().trim();
 
                 onSnapshot(doc(db, 'users', user.uid), async (docSnap) => {
                     let balance = 0;
                     let username = userEmail.split('@')[0];
-                    let isAdmin = isEmailAdmin;
+                    let isAdmin = false; // chỉ tin field "role" lấy từ Firestore, không tự suy ra từ email nữa
 
                     if(docSnap.exists()) {
                         currentUserData = docSnap.data();
@@ -815,8 +816,13 @@
                         username = currentUserData.username || username;
                         if (currentUserData.role === 'admin') isAdmin = true;
                     } else {
+                        // Luôn tạo document mới với role 'user' để khớp Firestore Rules
+                        // (rules chặn việc tự phong admin ngay từ bước tạo).
+                        // Muốn cấp quyền admin cho tài khoản chủ shop: vào Firebase Console
+                        // > Firestore Database > collection "users" > tìm đúng document theo uid
+                        // > sửa field "role" thành "admin" bằng tay (chỉ cần làm 1 lần).
                         await setDoc(doc(db, 'users', user.uid), {
-                            username, email: user.email, balance: 0, role: isEmailAdmin ? 'admin' : 'user'
+                            username, email: user.email, balance: 0, role: 'user'
                         }, { merge: true });
                     }
 
@@ -921,27 +927,44 @@
             });
         });
 
+        // Mua acc: dùng runTransaction() để đảm bảo "kiểm tra còn hàng + trừ tiền +
+        // chuyển trạng thái acc" xảy ra atomically — 2 người bấm mua cùng lúc sẽ
+        // không còn xảy ra tình trạng cả 2 đều mua được cùng 1 acc.
         window.buyAccount = async function(accId) {
             if (!currentUser) return switchTab('auth');
             const confirmBuy = await customConfirm("Bạn có chắc chắn muốn mua tài khoản này?");
             if(!confirmBuy) return;
+            const accRef = doc(db, "accounts", accId);
+            const userRef = doc(db, "users", currentUser.uid);
             try {
-                const accRef = doc(db, "accounts", accId);
-                const accSnap = await getDoc(accRef);
-                if(!accSnap.exists() || accSnap.data().status !== "available") {
-                    return customAlert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!", 'error');
-                }
-                const price = accSnap.data().price;
-                const userRef = doc(db, "users", currentUser.uid);
-                const userSnap = await getDoc(userRef);
-                if(userSnap.data().balance < price) return customAlert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!", 'warning');
-                const buyerEmail = userSnap.data().email || currentUser.email;
-                await updateDoc(userRef, { balance: increment(-price) });
-                await updateDoc(accRef, { status: "sold", buyer_uid: currentUser.uid, buyer_email: buyerEmail, sold_at: serverTimestamp() });
+                await runTransaction(db, async (transaction) => {
+                    const accSnap = await transaction.get(accRef);
+                    const userSnap = await transaction.get(userRef);
+                    if(!accSnap.exists() || accSnap.data().status !== "available") {
+                        throw new Error("SOLD_OUT");
+                    }
+                    const price = accSnap.data().price;
+                    const balance = userSnap.data().balance || 0;
+                    if(balance < price) throw new Error("INSUFFICIENT_BALANCE");
+                    const buyerEmail = userSnap.data().email || currentUser.email;
+                    transaction.update(userRef, { balance: increment(-price) });
+                    transaction.update(accRef, {
+                        status: "sold",
+                        buyer_uid: currentUser.uid,
+                        buyer_email: buyerEmail,
+                        sold_at: serverTimestamp()
+                    });
+                });
                 await customAlert("Mua thành công! Vui lòng vào Lịch Sử Mua để xem Tài Khoản / Mật Khẩu.", 'success');
                 switchTab('history');
             } catch (error) {
-                customAlert("Đã xảy ra lỗi khi mua: " + error.message, 'error');
+                if(error.message === "SOLD_OUT") {
+                    customAlert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!", 'error');
+                } else if(error.message === "INSUFFICIENT_BALANCE") {
+                    customAlert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!", 'warning');
+                } else {
+                    customAlert("Đã xảy ra lỗi khi mua: " + error.message, 'error');
+                }
             }
         };
 
@@ -982,6 +1005,9 @@
             }, 4000);
         });
 
+        // Lịch sử mua hàng: acc.account_info không còn nằm trong "accounts" nữa,
+        // nên với mỗi dòng phải load riêng từ collection "account_secrets"
+        // (rules cho phép vì buyer_uid của acc đó chính là mình).
         function loadHistory() {
             if(!currentUser) return;
             const historyList = document.getElementById('history-list');
@@ -995,14 +1021,22 @@
                         const d = acc.sold_at.toDate();
                         dateStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                     }
+                    const rowId = `secret-${docSnap.id}`;
                     historyList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
                             <td class="p-4 whitespace-nowrap text-gray-400">${dateStr}</td>
                             <td class="p-4 font-medium text-white">${acc.title}</td>
                             <td class="p-4 text-red-400 font-bold">${Number(acc.price).toLocaleString()}đ</td>
-                            <td class="p-4"><input type="text" readonly value="${acc.account_info}" class="bg-gray-800 px-2 py-1 border border-gray-700 rounded w-full outline-none text-sm font-mono cursor-text text-gray-200" onclick="this.select()"></td>
+                            <td class="p-4"><input type="text" id="${rowId}" readonly value="Đang tải..." class="bg-gray-800 px-2 py-1 border border-gray-700 rounded w-full outline-none text-sm font-mono cursor-text text-gray-200" onclick="this.select()"></td>
                             <td class="p-4 text-emerald-400 font-bold"><i class="fa-solid fa-check mr-1"></i>Thành công</td>
                         </tr>`;
+                    getDoc(doc(db, "account_secrets", docSnap.id)).then(secretSnap => {
+                        const el = document.getElementById(rowId);
+                        if(el) el.value = secretSnap.exists() ? secretSnap.data().account_info : "(không có dữ liệu)";
+                    }).catch(() => {
+                        const el = document.getElementById(rowId);
+                        if(el) el.value = "(lỗi tải thông tin)";
+                    });
                 });
             });
         }
@@ -1033,7 +1067,11 @@
                         <tr class="hover:bg-gray-800/50 transition">
                             <td class="p-4 font-medium text-white">${acc.title}</td>
                             <td class="p-4 font-bold text-red-400">${Number(acc.price).toLocaleString()}đ</td>
-                            <td class="p-4 font-mono text-sm text-gray-300">${acc.account_info}</td>
+                            <td class="p-4">
+                                <button onclick="viewSecret('${accId}')" class="text-cyan-400 hover:underline text-sm font-mono">
+                                    <i class="fa-solid fa-eye mr-1"></i>Xem TK|MK
+                                </button>
+                            </td>
                             <td class="p-4">${statusHtml}${buyerInfoHtml}</td>
                             <td class="p-4 text-xs text-gray-400 space-y-1">
                                 <div>Giảm: <span class="text-orange-400 font-bold">${discount}%</span></div>
@@ -1042,7 +1080,7 @@
                             </td>
                             <td class="p-4 text-center grid grid-cols-3 sm:grid-cols-4 gap-1">
                                 <button onclick="updateTitle('${accId}', '${acc.title.replace(/'/g, "\\'")}')" class="bg-indigo-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-500 transition" title="Sửa Tiêu Đề"><i class="fa-solid fa-heading"></i></button>
-                                <button onclick="updateInfo('${accId}', '${acc.account_info.replace(/'/g, "\\'")}')" class="bg-amber-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-500 transition" title="Sửa Thông Tin"><i class="fa-solid fa-key"></i></button>
+                                <button onclick="updateInfo('${accId}')" class="bg-amber-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-500 transition" title="Sửa Thông Tin"><i class="fa-solid fa-key"></i></button>
                                 <button onclick="updatePrice('${accId}', ${acc.price})" class="bg-blue-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-500 transition" title="Sửa Giá"><i class="fa-solid fa-tag"></i></button>
                                 <button onclick="updateStats('${accId}', 'discount_percent', ${discount}, 'Nhập % giảm giá (VD: 50)')" class="bg-orange-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-orange-500 transition" title="Sửa % Giảm Giá"><i class="fa-solid fa-percent"></i></button>
                                 <button onclick="updateStats('${accId}', 'sold_count', ${soldCount}, 'Nhập số lượng đã bán')" class="bg-emerald-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-500 transition" title="Sửa Đã Bán"><i class="fa-solid fa-chart-simple"></i></button>
@@ -1079,10 +1117,27 @@
             });
         }
 
+        // Xem thông tin TK|MK thật của 1 acc (chỉ admin gọi được nút này) —
+        // load theo yêu cầu (on-demand) thay vì tải sẵn hết mọi acc cùng lúc.
+        window.viewSecret = async function(accId) {
+            try {
+                const secretSnap = await getDoc(doc(db, "account_secrets", accId));
+                const info = secretSnap.exists() ? secretSnap.data().account_info : "(chưa có dữ liệu)";
+                customAlert(info, 'info');
+            } catch (error) {
+                customAlert("Lỗi khi tải thông tin: " + error.message, 'error');
+            }
+        };
+
+        // Xóa acc: phải xóa cả 2 document (accounts + account_secrets) cùng lúc
+        // bằng writeBatch để tránh sót lại secret mồ côi không ai đọc được nữa.
         window.deleteAccount = async function(accId) {
             if(!(await customConfirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi shop không?"))) return;
             try {
-                await deleteDoc(doc(db, "accounts", accId));
+                const batch = writeBatch(db);
+                batch.delete(doc(db, "accounts", accId));
+                batch.delete(doc(db, "account_secrets", accId));
+                await batch.commit();
                 customAlert("Đã xóa tài khoản thành công!", 'success');
             } catch (error) { customAlert("Lỗi khi xóa: " + error.message, 'error'); }
         };
@@ -1108,12 +1163,19 @@
             } catch (error) { customAlert("Lỗi khi cập nhật tiêu đề: " + error.message, 'error'); }
         };
 
-        window.updateInfo = async function(accId, currentInfo) {
+        // Sửa TK|MK: giờ nằm ở collection riêng "account_secrets", nên trước tiên
+        // phải đọc giá trị hiện tại từ đó rồi mới hiện ô nhập cho admin sửa.
+        window.updateInfo = async function(accId) {
+            let currentInfo = "";
+            try {
+                const secretSnap = await getDoc(doc(db, "account_secrets", accId));
+                if(secretSnap.exists()) currentInfo = secretSnap.data().account_info || "";
+            } catch (error) { /* để trống nếu chưa đọc được, admin tự nhập lại */ }
             const newInfo = await customPrompt("Nhập thông tin tài khoản mới (Định dạng TK|MK):", currentInfo);
             if(newInfo === null) return;
             if(newInfo.trim() === "") return customAlert("Thông tin tài khoản không được để trống!", 'error');
             try {
-                await updateDoc(doc(db, "accounts", accId), { account_info: newInfo.trim() });
+                await setDoc(doc(db, "account_secrets", accId), { account_info: newInfo.trim() }, { merge: true });
                 customAlert("Cập nhật thông tin tài khoản thành công!", 'success');
             } catch (error) { customAlert("Lỗi khi cập nhật thông tin: " + error.message, 'error'); }
         };
@@ -1174,6 +1236,9 @@
             });
         }
 
+        // Đăng bán acc mới: ghi đồng thời vào 2 collection ("accounts" cho thông
+        // tin công khai + "account_secrets" cho TK|MK thật) bằng writeBatch để
+        // đảm bảo cả 2 cùng thành công hoặc cùng thất bại, không bị lệch nhau.
         document.getElementById('admin-add-acc-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('add-acc-submit-btn');
@@ -1186,11 +1251,17 @@
 
             async function saveToFirestore(imageUrl = null) {
                 try {
-                    await addDoc(collection(db, "accounts"), {
-                        title, price, account_info: accountInfo, imageUrl, 
+                    const newAccRef = doc(collection(db, "accounts"));
+                    const batch = writeBatch(db);
+                    batch.set(newAccRef, {
+                        title, price, imageUrl,
                         status: "available", buyer_uid: null, created_at: serverTimestamp(),
                         discount_percent: 0, sold_count: 0, stock_left: 1
                     });
+                    batch.set(doc(db, "account_secrets", newAccRef.id), {
+                        account_info: accountInfo
+                    });
+                    await batch.commit();
                     await customAlert("Đăng bán thành công!", 'success');
                     e.target.reset();
                     document.getElementById('image-preview-container').classList.add('hidden');
