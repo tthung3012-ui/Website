@@ -44,91 +44,78 @@
         #custom-modal .modal-box { transform: scale(0.9); opacity: 0; transition: all 0.2s ease; }
         #custom-modal.show .modal-box { transform: scale(1); opacity: 1; }
 
-        /* ===== THEME SÁNG ===== */
-        body.light-mode {
-            background-color: #f3f4f6 !important;
-            color: #1f2937 !important;
-        }
-        body.light-mode header {
-            background-color: rgba(255,255,255,0.95) !important;
-            border-color: #e5e7eb !important;
-        }
-        body.light-mode .bg-gray-900,
-        body.light-mode .bg-gray-900\/95 {
-            background-color: #ffffff !important;
-        }
+        /* THEME SÁNG */
+        body.light-mode { background-color: #f3f4f6 !important; color: #1f2937 !important; }
+        body.light-mode header { background-color: rgba(255,255,255,0.95) !important; border-color: #e5e7eb !important; }
+        body.light-mode .bg-gray-900, body.light-mode .bg-gray-900\/95 { background-color: #ffffff !important; }
         body.light-mode .text-white { color: #111827 !important; }
-        body.light-mode .text-gray-300,
-        body.light-mode .text-gray-400 { color: #4b5563 !important; }
-        body.light-mode .border-gray-800,
-        body.light-mode .border-gray-700 { border-color: #e5e7eb !important; }
+        body.light-mode .text-gray-300, body.light-mode .text-gray-400 { color: #4b5563 !important; }
+        body.light-mode .border-gray-800, body.light-mode .border-gray-700 { border-color: #e5e7eb !important; }
         body.light-mode .bg-gray-800 { background-color: #f3f4f6 !important; }
-        body.light-mode #custom-modal .modal-box {
-            background: #ffffff !important;
-            border-color: #e5e7eb !important;
-        }
+        body.light-mode #custom-modal .modal-box { background: #ffffff !important; border-color: #e5e7eb !important; }
         body.light-mode #custom-modal .modal-box h3 { color: #111827 !important; }
         body.light-mode #custom-modal .modal-box p { color: #4b5563 !important; }
 
-        /* ===== WELCOME POPUP ===== */
+        /* WELCOME POPUP */
         #welcome-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(4px);
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+            align-items: center; justify-content: center; padding: 16px;
         }
         #welcome-modal.show { display: flex; }
         .welcome-box {
-            background: #1f2937;
-            border-radius: 20px;
-            padding: 28px 24px;
-            max-width: 360px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-            border: 1px solid #374151;
+            background: #1f2937; border-radius: 20px; padding: 28px 24px;
+            max-width: 360px; width: 100%; text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.35); border: 1px solid #374151;
             animation: welcomeIn 0.25s ease;
         }
-        body.light-mode .welcome-box {
-            background: #ffffff;
-            border-color: #e5e7eb;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-        }
-        @keyframes welcomeIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .welcome-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #f9fafb;
-            margin-bottom: 12px;
-        }
+        body.light-mode .welcome-box { background: #ffffff; border-color: #e5e7eb; box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+        @keyframes welcomeIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .welcome-title { font-size: 1.25rem; font-weight: 800; color: #f9fafb; margin-bottom: 12px; }
         body.light-mode .welcome-title { color: #1e3a5f; }
-        .welcome-text {
-            font-size: 0.95rem;
-            color: #d1d5db;
-            line-height: 1.65;
-            margin-bottom: 22px;
-        }
+        .welcome-text { font-size: 0.95rem; color: #d1d5db; line-height: 1.65; margin-bottom: 22px; }
         body.light-mode .welcome-text { color: #4b5563; }
         .welcome-ok {
-            background: linear-gradient(to right, #ef4444, #dc2626);
-            color: white;
-            font-weight: 700;
-            padding: 10px 40px;
-            border-radius: 999px;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
+            background: linear-gradient(to right, #ef4444, #dc2626); color: white; font-weight: 700;
+            padding: 10px 40px; border-radius: 999px; border: none; cursor: pointer; font-size: 1rem;
             transition: transform 0.15s, opacity 0.15s;
         }
         .welcome-ok:hover { transform: scale(1.05); opacity: 0.95; }
+        #welcome-shop-link { color: #38bdf8; font-weight: 700; text-decoration: none; cursor: pointer; }
+        #welcome-shop-link:hover { text-decoration: underline; }
+
+        /* AVATAR DROPDOWN */
+        #user-menu { position: relative; }
+        #user-avatar-btn {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            color: white; font-weight: 700; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.15s;
+        }
+        #user-avatar-btn:hover { transform: scale(1.08); }
+        #user-dropdown {
+            display: none; position: absolute; right: 0; top: calc(100% + 8px);
+            width: 240px; background: #1f2937; border: 1px solid #374151;
+            border-radius: 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); z-index: 100; overflow: hidden;
+        }
+        #user-dropdown.show { display: block; }
+        body.light-mode #user-dropdown { background: #ffffff; border-color: #e5e7eb; box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+        .ud-header { padding: 14px 16px; border-bottom: 1px solid #374151; }
+        body.light-mode .ud-header { border-color: #e5e7eb; }
+        .ud-name { font-weight: 700; color: #f9fafb; font-size: 15px; }
+        body.light-mode .ud-name { color: #111827; }
+        .ud-balance { color: #34d399; font-weight: 600; font-size: 13px; margin-top: 4px; }
+        .ud-item {
+            display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 16px;
+            text-align: left; color: #d1d5db; font-size: 14px; background: transparent;
+            border: none; cursor: pointer; transition: background 0.15s;
+        }
+        .ud-item:hover { background: #374151; }
+        body.light-mode .ud-item { color: #374151; }
+        body.light-mode .ud-item:hover { background: #f3f4f6; }
+        .ud-item.logout { color: #f87171; }
+        .ud-item.logout:hover { background: rgba(239,68,68,0.15); }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
@@ -155,13 +142,13 @@
         </div>
     </div>
 
-    <!-- WELCOME POPUP - hiện mỗi lần load -->
+    <!-- WELCOME POPUP -->
     <div id="welcome-modal">
         <div class="welcome-box">
             <div class="welcome-title">🔔 Thông Báo Mới 🔔</div>
             <div class="welcome-text">
                 Chào mừng mọi người đến với website<br>
-                <strong style="color:#38bdf8">accreggiatot.site</strong>,<br>
+                <a href="#" id="welcome-shop-link">accreggiatot.site</a>,<br>
                 là nơi cung cấp <span style="color:#60a5fa">acc reg Liên Quân</span> giá cực tốt ❤️
             </div>
             <button class="welcome-ok" id="welcome-ok-btn">OK</button>
@@ -224,9 +211,7 @@
                             <span class="font-bold text-lg text-white">Acc<span class="text-indigo-400">Reg</span></span>
                         </div>
                     </div>
-                    <button id="close-sidebar-btn" class="text-gray-400 hover:text-white">
-                        <i class="fa-solid fa-xmark text-xl"></i>
-                    </button>
+                    <button id="close-sidebar-btn" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
                 </div>
                 <nav class="space-y-2 flex flex-col">
                     <button onclick="switchTab('home'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-indigo-400 font-medium"><i class="fa-solid fa-house mr-3 w-5"></i> Trang Chủ</button>
@@ -234,15 +219,9 @@
                     <button onclick="switchTab('wheel'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-red-400 hover:bg-red-900/30 font-bold"><i class="fa-solid fa-dharmachakra mr-3 w-5"></i> Vòng Quay</button>
                     <button onclick="switchTab('history'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-indigo-400 font-medium"><i class="fa-solid fa-clock-rotate-left mr-3 w-5"></i> Lịch Sử Mua</button>
                     <button onclick="switchTab('support'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-indigo-400 font-medium"><i class="fa-solid fa-headset mr-3 w-5"></i> Hỗ Trợ</button>
-                    <button id="nav-manage-mobile" onclick="requestAdminAccess('manage-acc'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-indigo-300 bg-indigo-900/40 hover:bg-indigo-800 font-bold">
-                        <i class="fa-solid fa-list-check mr-3 w-5"></i> Quản Lý Acc
-                    </button>
-                    <button id="nav-admin-mobile" onclick="requestAdminAccess('admin'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-red-300 bg-red-900/40 hover:bg-red-800 font-bold">
-                        <i class="fa-solid fa-screwdriver-wrench mr-3 w-5"></i> Admin Panel
-                    </button>
-                    <button id="nav-users-mobile" onclick="requestAdminAccess('users-data'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-blue-300 bg-blue-900/40 hover:bg-blue-800 font-bold">
-                        <i class="fa-solid fa-users mr-3 w-5"></i> Dữ Liệu
-                    </button>
+                    <button id="nav-manage-mobile" onclick="requestAdminAccess('manage-acc'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-indigo-300 bg-indigo-900/40 hover:bg-indigo-800 font-bold"><i class="fa-solid fa-list-check mr-3 w-5"></i> Quản Lý Acc</button>
+                    <button id="nav-admin-mobile" onclick="requestAdminAccess('admin'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-red-300 bg-red-900/40 hover:bg-red-800 font-bold"><i class="fa-solid fa-screwdriver-wrench mr-3 w-5"></i> Admin Panel</button>
+                    <button id="nav-users-mobile" onclick="requestAdminAccess('users-data'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-blue-300 bg-blue-900/40 hover:bg-blue-800 font-bold"><i class="fa-solid fa-users mr-3 w-5"></i> Dữ Liệu</button>
                 </nav>
             </div>
         </div>
@@ -252,8 +231,7 @@
 
         <section id="section-home" class="page-section active">
             <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span>
-                Tài khoản Đang Bán
+                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Tài khoản Đang Bán
             </h3>
             <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 <p class="text-gray-500 col-span-full text-center py-10">Đang tải dữ liệu...</p>
@@ -262,8 +240,7 @@
 
         <section id="section-recharge" class="page-section">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span>
-                Nạp Tiền Vào Tài Khoản
+                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Nạp Tiền Vào Tài Khoản
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
@@ -297,7 +274,6 @@
                         <button type="button" id="recharge-card-btn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition">Nạp Thẻ Ngay</button>
                     </form>
                 </div>
-
                 <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl text-center">
                     <h4 class="font-bold text-lg mb-4 text-emerald-400"><i class="fa-solid fa-building-columns mr-2"></i>Chuyển Khoản (Tự động 1-3p)</h4>
                     <p class="text-sm text-gray-400 mb-4">Quét mã QR dưới đây hoặc chuyển khoản theo đúng cú pháp để hệ thống tự động cộng tiền.</p>
@@ -364,9 +340,7 @@
                         <div class="relative">
                             <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
                             <input type="password" id="auth-password" required minlength="6" placeholder="Nhập mật khẩu" class="w-full pl-10 pr-12 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
-                            <button type="button" id="toggle-password" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
+                            <button type="button" id="toggle-password" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"><i class="fa-solid fa-eye"></i></button>
                         </div>
                     </div>
                     <div id="forgot-password-link-container" class="text-right">
@@ -375,7 +349,7 @@
                     <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-cyan-900/30" id="auth-submit-btn">Đăng nhập</button>
                 </form>
                 <div class="mt-5 text-center text-sm text-gray-400">
-                    <span id="auth-toggle-text">Chưa có tài khoản?</span> 
+                    <span id="auth-toggle-text">Chưa có tài khoản?</span>
                     <button id="auth-toggle-btn" class="text-cyan-400 font-bold hover:underline">Đăng ký ngay</button>
                 </div>
             </div>
@@ -402,8 +376,7 @@
 
         <section id="section-history" class="page-section">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span>
-                Lịch Sử Mua Hàng
+                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Lịch Sử Mua Hàng
             </h3>
             <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
                 <table class="w-full text-left min-w-[600px]">
@@ -433,8 +406,7 @@
 
         <section id="section-manage-acc" class="page-section">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span>
-                Quản Lý Danh Sách Tài Khoản
+                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Quản Lý Danh Sách Tài Khoản
             </h3>
             <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
                 <table class="w-full text-left min-w-[1000px]">
@@ -501,8 +473,7 @@
 
         <section id="section-users-data" class="page-section">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>
-                Dữ Liệu Khách Hàng (Chỉ Admin)
+                <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span> Dữ Liệu Khách Hàng (Chỉ Admin)
             </h3>
             <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
                 <table class="w-full text-left min-w-[600px]">
@@ -528,9 +499,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc, orderBy, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Lưu ý: ADMIN_EMAIL không còn được dùng để tự cấp quyền admin nữa (đã gỡ ở dưới),
-        // vì làm vậy sẽ bị Firestore Rules chặn. Cấp quyền admin bằng cách sửa tay field "role"
-        // trong Firebase Console (xem ghi chú trong onAuthStateChanged bên dưới).
         const ADMIN_SECRET_PASSWORD = "845376"; 
 
         const firebaseConfig = {
@@ -549,11 +517,9 @@
         let currentUser = null;
         let currentUserData = null; 
 
-        // ========== THEME SÁNG / TỐI ==========
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-
+        // THEME
         function applyTheme(mode) {
+            const themeIcon = document.getElementById('theme-icon');
             if (mode === 'light') {
                 document.body.classList.add('light-mode');
                 if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-amber-500';
@@ -566,17 +532,62 @@
         }
         applyTheme(localStorage.getItem('accreg-theme') || 'dark');
 
-        themeToggle?.addEventListener('click', () => {
-            applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+        function themeBtnHtml() {
+            const isLight = document.body.classList.contains('light-mode');
+            const iconClass = isLight ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon text-yellow-400';
+            return `<button id="theme-toggle" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center transition" title="Chuyển sáng/tối"><i class="${iconClass}" id="theme-icon"></i></button>`;
+        }
+        function bindThemeToggle() {
+            document.getElementById('theme-toggle')?.addEventListener('click', () => {
+                applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+            });
+        }
+
+        // WELCOME
+        const welcomeModal = document.getElementById('welcome-modal');
+        setTimeout(() => welcomeModal?.classList.add('show'), 500);
+        document.getElementById('welcome-ok-btn')?.addEventListener('click', () => welcomeModal.classList.remove('show'));
+        document.getElementById('welcome-shop-link')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            welcomeModal.classList.remove('show');
+            switchTab('home');
         });
 
-        // ========== WELCOME POPUP - MỖI LẦN LOAD ==========
-        const welcomeModal = document.getElementById('welcome-modal');
-        const welcomeOkBtn = document.getElementById('welcome-ok-btn');
-        setTimeout(() => welcomeModal?.classList.add('show'), 500);
-        welcomeOkBtn?.addEventListener('click', () => welcomeModal.classList.remove('show'));
+        // AVATAR MENU
+        function userMenuHtml(username, balance) {
+            const initial = (username || 'U').charAt(0).toUpperCase();
+            return `
+                ${themeBtnHtml()}
+                <div id="user-menu">
+                    <button id="user-avatar-btn" title="${username}">${initial}</button>
+                    <div id="user-dropdown">
+                        <div class="ud-header">
+                            <div class="ud-name">${username || 'User'}</div>
+                            <div class="ud-balance"><i class="fa-solid fa-wallet mr-1"></i>${Number(balance).toLocaleString()}đ</div>
+                        </div>
+                        <button class="ud-item" id="ud-recharge"><i class="fa-solid fa-money-bill-wave w-5 text-emerald-400"></i> Nạp tiền</button>
+                        <button class="ud-item" id="ud-history"><i class="fa-solid fa-clock-rotate-left w-5 text-indigo-400"></i> Lịch sử mua hàng</button>
+                        <button class="ud-item logout" id="ud-logout"><i class="fa-solid fa-right-from-bracket w-5"></i> Đăng xuất</button>
+                    </div>
+                </div>
+            `;
+        }
+        function bindUserMenu() {
+            const avatarBtn = document.getElementById('user-avatar-btn');
+            const dropdown = document.getElementById('user-dropdown');
+            if (!avatarBtn || !dropdown) return;
+            avatarBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+            document.addEventListener('click', () => dropdown.classList.remove('show'));
+            dropdown.addEventListener('click', (e) => e.stopPropagation());
+            document.getElementById('ud-recharge')?.addEventListener('click', () => { dropdown.classList.remove('show'); switchTab('recharge'); });
+            document.getElementById('ud-history')?.addEventListener('click', () => { dropdown.classList.remove('show'); switchTab('history'); });
+            document.getElementById('ud-logout')?.addEventListener('click', () => { signOut(auth); location.reload(); });
+        }
 
-        // ========== CUSTOM MODAL ==========
+        // CUSTOM MODAL
         const modalEl = document.getElementById('custom-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalMessage = document.getElementById('modal-message');
@@ -595,7 +606,6 @@
                 modalOk.textContent = okText;
                 modalCancel.textContent = cancelText;
                 modalCancel.style.display = showCancel ? 'block' : 'none';
-                
                 if (type === 'success') {
                     modalIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
                     modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-emerald-900/50 text-emerald-300';
@@ -612,7 +622,6 @@
                     modalIcon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
                     modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-indigo-900/50 text-indigo-300';
                 }
-
                 if (showInput) {
                     modalInputContainer.classList.remove('hidden');
                     modalInput.type = inputType;
@@ -627,16 +636,11 @@
                 modalEl.style.display = 'flex';
             });
         }
-
         function closeModal(result) {
             modalEl.classList.remove('show');
-            setTimeout(() => {
-                modalEl.classList.add('hidden');
-                modalEl.style.display = 'none';
-            }, 150);
+            setTimeout(() => { modalEl.classList.add('hidden'); modalEl.style.display = 'none'; }, 150);
             if (modalResolve) { modalResolve(result); modalResolve = null; }
         }
-
         modalOk.addEventListener('click', () => {
             const showInput = !modalInputContainer.classList.contains('hidden');
             closeModal(showInput ? modalInput.value : true);
@@ -647,7 +651,6 @@
             if (e.key === 'Enter') modalOk.click();
             if (e.key === 'Escape') modalCancel.click();
         });
-
         window.customAlert = (msg, type = 'info') => showModal({ title: 'Thông báo', message: msg, showCancel: false, okText: 'Đóng', type });
         window.customConfirm = (msg) => showModal({ title: 'Xác nhận', message: msg, okText: 'Đồng ý', cancelText: 'Hủy', type: 'warning' });
         window.customPrompt = (msg, defaultVal = '') => showModal({ title: 'Nhập thông tin', message: msg, showInput: true, defaultValue: defaultVal, okText: 'OK', cancelText: 'Hủy', type: 'prompt' });
@@ -683,13 +686,8 @@
         document.getElementById('toggle-password')?.addEventListener('click', function() {
             const input = document.getElementById('auth-password');
             const icon = this.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
-            }
+            if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+            else { input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
         });
 
         let isLoginMode = true;
@@ -700,12 +698,10 @@
             document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Đăng nhập" : "Đăng ký";
             document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
             document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
-            
             const userLabel = document.getElementById('auth-username-label');
             const userInput = document.getElementById('auth-username');
             const emailContainer = document.getElementById('auth-email-container');
             const emailInput = document.getElementById('auth-email');
-
             if (isLoginMode) {
                 userLabel.innerHTML = 'Email hoặc tên người dùng';
                 userInput.placeholder = "Nhập email hoặc tên người dùng";
@@ -776,18 +772,6 @@
             customAlert('Tính năng nạp thẻ cào cần kết nối API Gạch Thẻ (ví dụ TheSieuToc). Admin vui lòng kết nối API backend!', 'warning');
         });
 
-        // Helper render theme button (giữ khi login/logout)
-        function themeBtnHtml() {
-            const isLight = document.body.classList.contains('light-mode');
-            const iconClass = isLight ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon text-yellow-400';
-            return `<button id="theme-toggle" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center transition" title="Chuyển sáng/tối"><i class="${iconClass}" id="theme-icon"></i></button>`;
-        }
-        function bindThemeToggle() {
-            document.getElementById('theme-toggle')?.addEventListener('click', () => {
-                applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
-            });
-        }
-
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             const userArea = document.getElementById('user-area');
@@ -804,28 +788,20 @@
 
             if (user) {
                 const userEmail = (user.email || "").toLowerCase().trim();
-
                 onSnapshot(doc(db, 'users', user.uid), async (docSnap) => {
                     let balance = 0;
                     let username = userEmail.split('@')[0];
-                    let isAdmin = false; // chỉ tin field "role" lấy từ Firestore, không tự suy ra từ email nữa
-
+                    let isAdmin = false;
                     if(docSnap.exists()) {
                         currentUserData = docSnap.data();
                         balance = currentUserData.balance || 0;
                         username = currentUserData.username || username;
                         if (currentUserData.role === 'admin') isAdmin = true;
                     } else {
-                        // Luôn tạo document mới với role 'user' để khớp Firestore Rules
-                        // (rules chặn việc tự phong admin ngay từ bước tạo).
-                        // Muốn cấp quyền admin cho tài khoản chủ shop: vào Firebase Console
-                        // > Firestore Database > collection "users" > tìm đúng document theo uid
-                        // > sửa field "role" thành "admin" bằng tay (chỉ cần làm 1 lần).
                         await setDoc(doc(db, 'users', user.uid), {
                             username, email: user.email, balance: 0, role: 'user'
                         }, { merge: true });
                     }
-
                     if (isAdmin) {
                         navAdmin.classList.remove('hidden'); 
                         navManage.classList.remove('hidden');
@@ -841,17 +817,10 @@
                         if(navUsers) navUsers.classList.add('hidden');
                         if(navUsersMobile) navUsersMobile.classList.add('hidden');
                     }
-
-                    userArea.innerHTML = `
-                        ${themeBtnHtml()}
-                        <div class="bg-indigo-900/60 text-indigo-300 px-3 py-1.5 rounded-lg font-bold text-sm border border-indigo-700/50">
-                            <i class="fa-solid fa-wallet mr-1"></i> ${balance.toLocaleString()}đ
-                        </div>
-                        <button id="logout-btn" class="text-gray-400 hover:text-red-400 px-2"><i class="fa-solid fa-right-from-bracket"></i></button>
-                    `;
+                    // Avatar + dropdown (không còn hiện số dư / nút logout trên header)
+                    userArea.innerHTML = userMenuHtml(username, balance);
                     bindThemeToggle();
-                    document.getElementById('logout-btn').addEventListener('click', () => { signOut(auth); location.reload(); });
-                    
+                    bindUserMenu();
                     const cuPhap = `NAP ${username}`;
                     document.getElementById('bank-syntax').innerText = cuPhap;
                     document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${encodeURIComponent(cuPhap)}&accountName=${encodeURIComponent(tenChuTK)}`;
@@ -864,7 +833,6 @@
                 navManageMobile.classList.add('hidden');
                 if(navUsers) navUsers.classList.add('hidden');
                 if(navUsersMobile) navUsersMobile.classList.add('hidden');
-
                 userArea.innerHTML = `
                     ${themeBtnHtml()}
                     <button onclick="switchTab('auth')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold transition text-sm">Đăng Nhập</button>
@@ -879,7 +847,6 @@
             const productList = document.getElementById('product-list');
             productList.innerHTML = '';
             if (snapshot.empty) return productList.innerHTML = '<p class="text-gray-500 col-span-full text-center py-16">Hiện chưa có tài khoản nào được bán.</p>';
-            
             snapshot.forEach((docSnap) => {
                 const acc = docSnap.data();
                 const discountPercent = acc.discount_percent || 0;
@@ -888,13 +855,11 @@
                 let originalPrice = acc.price;
                 if (discountPercent > 0 && discountPercent < 100) originalPrice = Math.round(acc.price / (1 - (discountPercent / 100)));
                 else if (discountPercent === 100) originalPrice = acc.price * 2; 
-                
                 const badgeHtml = discountPercent > 0 
                     ? `<div class="absolute top-3 right-3 z-10"><span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">-${discountPercent}%</span></div>` : '';
                 const imageHtml = acc.imageUrl 
                     ? `<img src="${acc.imageUrl}" alt="Ảnh acc" class="w-full h-56 sm:h-64 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300">` 
                     : `<div class="w-full h-56 sm:h-64 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-2xl flex items-center justify-center"><i class="fa-solid fa-gamepad text-6xl text-white/90"></i></div>`;
-
                 productList.innerHTML += `
                     <div class="relative bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-900/30 transition-all duration-300 group flex flex-col justify-between">
                         <div class="absolute top-3 left-3 z-10">
@@ -927,9 +892,6 @@
             });
         });
 
-        // Mua acc: dùng runTransaction() để đảm bảo "kiểm tra còn hàng + trừ tiền +
-        // chuyển trạng thái acc" xảy ra atomically — 2 người bấm mua cùng lúc sẽ
-        // không còn xảy ra tình trạng cả 2 đều mua được cùng 1 acc.
         window.buyAccount = async function(accId) {
             if (!currentUser) return switchTab('auth');
             const confirmBuy = await customConfirm("Bạn có chắc chắn muốn mua tài khoản này?");
@@ -940,31 +902,22 @@
                 await runTransaction(db, async (transaction) => {
                     const accSnap = await transaction.get(accRef);
                     const userSnap = await transaction.get(userRef);
-                    if(!accSnap.exists() || accSnap.data().status !== "available") {
-                        throw new Error("SOLD_OUT");
-                    }
+                    if(!accSnap.exists() || accSnap.data().status !== "available") throw new Error("SOLD_OUT");
                     const price = accSnap.data().price;
                     const balance = userSnap.data().balance || 0;
                     if(balance < price) throw new Error("INSUFFICIENT_BALANCE");
                     const buyerEmail = userSnap.data().email || currentUser.email;
                     transaction.update(userRef, { balance: increment(-price) });
                     transaction.update(accRef, {
-                        status: "sold",
-                        buyer_uid: currentUser.uid,
-                        buyer_email: buyerEmail,
-                        sold_at: serverTimestamp()
+                        status: "sold", buyer_uid: currentUser.uid, buyer_email: buyerEmail, sold_at: serverTimestamp()
                     });
                 });
                 await customAlert("Mua thành công! Vui lòng vào Lịch Sử Mua để xem Tài Khoản / Mật Khẩu.", 'success');
                 switchTab('history');
             } catch (error) {
-                if(error.message === "SOLD_OUT") {
-                    customAlert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!", 'error');
-                } else if(error.message === "INSUFFICIENT_BALANCE") {
-                    customAlert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!", 'warning');
-                } else {
-                    customAlert("Đã xảy ra lỗi khi mua: " + error.message, 'error');
-                }
+                if(error.message === "SOLD_OUT") customAlert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!", 'error');
+                else if(error.message === "INSUFFICIENT_BALANCE") customAlert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!", 'warning');
+                else customAlert("Đã xảy ra lỗi khi mua: " + error.message, 'error');
             }
         };
 
@@ -986,15 +939,13 @@
             if(rand > 0.95) prizeIndex = 3; 
             if(rand > 0.98) prizeIndex = 4; 
             if(rand > 0.995) prizeIndex = 5; 
-            const baseAngle = 360 * 5; 
-            const prizeAngle = prizeIndex * 60 + 30;
-            const totalDegree = baseAngle + prizeAngle;
+            const totalDegree = 360 * 5 + prizeIndex * 60 + 30;
             const wheel = document.getElementById('roulette-wheel');
             wheel.style.transform = `rotate(${totalDegree}deg)`;
             setTimeout(async () => {
                 isSpinning = false;
                 wheel.style.transition = 'none';
-                wheel.style.transform = `rotate(${prizeAngle}deg)`;
+                wheel.style.transform = `rotate(${prizeIndex * 60 + 30}deg)`;
                 setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)', 50);
                 if(prizes[prizeIndex] > 0) {
                     await updateDoc(userRef, { balance: increment(prizes[prizeIndex]) });
@@ -1005,9 +956,6 @@
             }, 4000);
         });
 
-        // Lịch sử mua hàng: acc.account_info không còn nằm trong "accounts" nữa,
-        // nên với mỗi dòng phải load riêng từ collection "account_secrets"
-        // (rules cho phép vì buyer_uid của acc đó chính là mình).
         function loadHistory() {
             if(!currentUser) return;
             const historyList = document.getElementById('history-list');
@@ -1067,11 +1015,7 @@
                         <tr class="hover:bg-gray-800/50 transition">
                             <td class="p-4 font-medium text-white">${acc.title}</td>
                             <td class="p-4 font-bold text-red-400">${Number(acc.price).toLocaleString()}đ</td>
-                            <td class="p-4">
-                                <button onclick="viewSecret('${accId}')" class="text-cyan-400 hover:underline text-sm font-mono">
-                                    <i class="fa-solid fa-eye mr-1"></i>Xem TK|MK
-                                </button>
-                            </td>
+                            <td class="p-4"><button onclick="viewSecret('${accId}')" class="text-cyan-400 hover:underline text-sm font-mono"><i class="fa-solid fa-eye mr-1"></i>Xem TK|MK</button></td>
                             <td class="p-4">${statusHtml}${buyerInfoHtml}</td>
                             <td class="p-4 text-xs text-gray-400 space-y-1">
                                 <div>Giảm: <span class="text-orange-400 font-bold">${discount}%</span></div>
@@ -1117,20 +1061,15 @@
             });
         }
 
-        // Xem thông tin TK|MK thật của 1 acc (chỉ admin gọi được nút này) —
-        // load theo yêu cầu (on-demand) thay vì tải sẵn hết mọi acc cùng lúc.
         window.viewSecret = async function(accId) {
             try {
                 const secretSnap = await getDoc(doc(db, "account_secrets", accId));
-                const info = secretSnap.exists() ? secretSnap.data().account_info : "(chưa có dữ liệu)";
-                customAlert(info, 'info');
+                customAlert(secretSnap.exists() ? secretSnap.data().account_info : "(chưa có dữ liệu)", 'info');
             } catch (error) {
                 customAlert("Lỗi khi tải thông tin: " + error.message, 'error');
             }
         };
 
-        // Xóa acc: phải xóa cả 2 document (accounts + account_secrets) cùng lúc
-        // bằng writeBatch để tránh sót lại secret mồ côi không ai đọc được nữa.
         window.deleteAccount = async function(accId) {
             if(!(await customConfirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi shop không?"))) return;
             try {
@@ -1163,14 +1102,12 @@
             } catch (error) { customAlert("Lỗi khi cập nhật tiêu đề: " + error.message, 'error'); }
         };
 
-        // Sửa TK|MK: giờ nằm ở collection riêng "account_secrets", nên trước tiên
-        // phải đọc giá trị hiện tại từ đó rồi mới hiện ô nhập cho admin sửa.
         window.updateInfo = async function(accId) {
             let currentInfo = "";
             try {
                 const secretSnap = await getDoc(doc(db, "account_secrets", accId));
                 if(secretSnap.exists()) currentInfo = secretSnap.data().account_info || "";
-            } catch (error) { /* để trống nếu chưa đọc được, admin tự nhập lại */ }
+            } catch (error) {}
             const newInfo = await customPrompt("Nhập thông tin tài khoản mới (Định dạng TK|MK):", currentInfo);
             if(newInfo === null) return;
             if(newInfo.trim() === "") return customAlert("Thông tin tài khoản không được để trống!", 'error');
@@ -1236,9 +1173,6 @@
             });
         }
 
-        // Đăng bán acc mới: ghi đồng thời vào 2 collection ("accounts" cho thông
-        // tin công khai + "account_secrets" cho TK|MK thật) bằng writeBatch để
-        // đảm bảo cả 2 cùng thành công hoặc cùng thất bại, không bị lệch nhau.
         document.getElementById('admin-add-acc-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('add-acc-submit-btn');
@@ -1248,7 +1182,6 @@
             const price = Number(document.getElementById('add-price').value);
             const accountInfo = document.getElementById('add-info').value;
             const imageFile = document.getElementById('add-image').files[0];
-
             async function saveToFirestore(imageUrl = null) {
                 try {
                     const newAccRef = doc(collection(db, "accounts"));
@@ -1258,9 +1191,7 @@
                         status: "available", buyer_uid: null, created_at: serverTimestamp(),
                         discount_percent: 0, sold_count: 0, stock_left: 1
                     });
-                    batch.set(doc(db, "account_secrets", newAccRef.id), {
-                        account_info: accountInfo
-                    });
+                    batch.set(doc(db, "account_secrets", newAccRef.id), { account_info: accountInfo });
                     await batch.commit();
                     await customAlert("Đăng bán thành công!", 'success');
                     e.target.reset();
@@ -1273,9 +1204,8 @@
                 }
             }
             if (imageFile) {
-                try {
-                    await saveToFirestore(await resizeAndCompressImage(imageFile));
-                } catch (error) {
+                try { await saveToFirestore(await resizeAndCompressImage(imageFile)); }
+                catch (error) {
                     customAlert("Có lỗi khi nén và xử lý ảnh!", 'error');
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Đăng Bán Lên Shop";
