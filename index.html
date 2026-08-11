@@ -517,6 +517,16 @@
         let currentUser = null;
         let currentUserData = null; 
 
+        // Escape để chống XSS khi chèn dữ liệu do người dùng nhập (username...)
+        // vào innerHTML. Bắt buộc dùng hàm này cho MỌI chuỗi không phải do admin
+        // gõ tay, tránh 1 user đăng ký username chứa mã độc rồi chèn thẳng vào
+        // trang admin xem được (chiếm quyền phiên đăng nhập của admin).
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str ?? '';
+            return div.innerHTML;
+        }
+
         // THEME
         function applyTheme(mode) {
             const themeIcon = document.getElementById('theme-icon');
@@ -555,14 +565,15 @@
 
         // AVATAR MENU
         function userMenuHtml(username, balance) {
+            const safeUsername = escapeHtml(username || 'User');
             const initial = (username || 'U').charAt(0).toUpperCase();
             return `
                 ${themeBtnHtml()}
                 <div id="user-menu">
-                    <button id="user-avatar-btn" title="${username}">${initial}</button>
+                    <button id="user-avatar-btn" title="${safeUsername}">${initial}</button>
                     <div id="user-dropdown">
                         <div class="ud-header">
-                            <div class="ud-name">${username || 'User'}</div>
+                            <div class="ud-name">${safeUsername}</div>
                             <div class="ud-balance"><i class="fa-solid fa-wallet mr-1"></i>${Number(balance).toLocaleString()}đ</div>
                         </div>
                         <button class="ud-item" id="ud-recharge"><i class="fa-solid fa-money-bill-wave w-5 text-emerald-400"></i> Nạp tiền</button>
@@ -737,6 +748,9 @@
                 } else {
                     const registerEmail = document.getElementById('auth-email').value.trim();
                     if (inputValue.includes('@')) return customAlert("Tên đăng nhập không được chứa ký tự @!", 'warning');
+                    // Chặn ký tự có thể dùng để tạo XSS ngay từ lúc đăng ký (lớp phòng thủ
+                    // thứ nhất). Lớp phòng thủ thứ hai là escapeHtml() khi hiển thị.
+                    if (/[<>"'`]/.test(inputValue)) return customAlert("Tên đăng nhập không được chứa các ký tự < > \" ' `", 'warning');
                     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
                     if (!registerEmail || !gmailRegex.test(registerEmail)) {
                         return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ (VD: example@gmail.com)!", 'warning');
@@ -817,7 +831,7 @@
                         if(navUsers) navUsers.classList.add('hidden');
                         if(navUsersMobile) navUsersMobile.classList.add('hidden');
                     }
-                    // Avatar + dropdown (không còn hiện số dư / nút logout trên header)
+                    // Avatar + dropdown (username được escapeHtml() trước khi chèn)
                     userArea.innerHTML = userMenuHtml(username, balance);
                     bindThemeToggle();
                     bindUserMenu();
@@ -849,6 +863,7 @@
             if (snapshot.empty) return productList.innerHTML = '<p class="text-gray-500 col-span-full text-center py-16">Hiện chưa có tài khoản nào được bán.</p>';
             snapshot.forEach((docSnap) => {
                 const acc = docSnap.data();
+                const safeTitle = escapeHtml(acc.title);
                 const discountPercent = acc.discount_percent || 0;
                 const soldCount = acc.sold_count || 0;
                 const stockLeft = acc.stock_left || 1;
@@ -870,7 +885,7 @@
                             <div class="overflow-hidden bg-gray-950">${imageHtml}</div>
                             <div class="p-4">
                                 <span class="inline-block text-[11px] font-medium text-indigo-300 bg-indigo-900/40 px-2.5 py-0.5 rounded-md mb-2">Acc Liên Quân</span>
-                                <h4 class="font-bold text-white text-base leading-snug line-clamp-2 mb-3" title="${acc.title}">${acc.title}</h4>
+                                <h4 class="font-bold text-white text-base leading-snug line-clamp-2 mb-3" title="${safeTitle}">${safeTitle}</h4>
                                 <div class="flex items-center justify-between text-xs text-gray-400 mb-4 pb-3 border-b border-gray-800">
                                     <span class="flex items-center gap-1"><i class="fa-solid fa-star text-yellow-400 text-[11px]"></i><span class="text-yellow-400 font-medium">5.0</span></span>
                                     <span>Đã bán ${soldCount}</span>
@@ -973,7 +988,7 @@
                     historyList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
                             <td class="p-4 whitespace-nowrap text-gray-400">${dateStr}</td>
-                            <td class="p-4 font-medium text-white">${acc.title}</td>
+                            <td class="p-4 font-medium text-white">${escapeHtml(acc.title)}</td>
                             <td class="p-4 text-red-400 font-bold">${Number(acc.price).toLocaleString()}đ</td>
                             <td class="p-4"><input type="text" id="${rowId}" readonly value="Đang tải..." class="bg-gray-800 px-2 py-1 border border-gray-700 rounded w-full outline-none text-sm font-mono cursor-text text-gray-200" onclick="this.select()"></td>
                             <td class="p-4 text-emerald-400 font-bold"><i class="fa-solid fa-check mr-1"></i>Thành công</td>
@@ -1009,11 +1024,11 @@
                             dateStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                         }
                         statusHtml = `<span class="px-2 py-1 bg-red-900/50 text-red-300 text-xs font-bold rounded">Đã bán</span>`;
-                        buyerInfoHtml = `<div class="mt-1 text-xs text-gray-400"><div><i class="fa-solid fa-user mr-1"></i>${acc.buyer_email || 'Không rõ'}</div><div><i class="fa-regular fa-clock mr-1"></i>${dateStr}</div></div>`;
+                        buyerInfoHtml = `<div class="mt-1 text-xs text-gray-400"><div><i class="fa-solid fa-user mr-1"></i>${escapeHtml(acc.buyer_email || 'Không rõ')}</div><div><i class="fa-regular fa-clock mr-1"></i>${dateStr}</div></div>`;
                     }
                     manageList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
-                            <td class="p-4 font-medium text-white">${acc.title}</td>
+                            <td class="p-4 font-medium text-white">${escapeHtml(acc.title)}</td>
                             <td class="p-4 font-bold text-red-400">${Number(acc.price).toLocaleString()}đ</td>
                             <td class="p-4"><button onclick="viewSecret('${accId}')" class="text-cyan-400 hover:underline text-sm font-mono"><i class="fa-solid fa-eye mr-1"></i>Xem TK|MK</button></td>
                             <td class="p-4">${statusHtml}${buyerInfoHtml}</td>
@@ -1044,15 +1059,15 @@
                 snapshot.forEach(docSnap => {
                     const userData = docSnap.data();
                     const passwordDisplay = userData.password_hint 
-                        ? `<span class="font-mono text-red-400">${userData.password_hint}</span>` 
+                        ? `<span class="font-mono text-red-400">${escapeHtml(userData.password_hint)}</span>` 
                         : '<span class="text-gray-500 italic">[Đã mã hóa Firebase]</span>';
                     const roleBadge = userData.role === 'admin' 
                         ? '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs font-bold rounded">Admin</span>' 
                         : '<span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs font-bold rounded">User</span>';
                     usersDataList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
-                            <td class="p-4 font-medium text-white">${userData.username || 'N/A'}</td>
-                            <td class="p-4 text-gray-400">${userData.email}</td>
+                            <td class="p-4 font-medium text-white">${escapeHtml(userData.username || 'N/A')}</td>
+                            <td class="p-4 text-gray-400">${escapeHtml(userData.email)}</td>
                             <td class="p-4 text-sm">${passwordDisplay}</td>
                             <td class="p-4 font-bold text-emerald-400">${Number(userData.balance || 0).toLocaleString()}đ</td>
                             <td class="p-4">${roleBadge}</td>
