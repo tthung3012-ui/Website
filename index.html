@@ -9,13 +9,13 @@
     <style>
         .page-section { display: none; }
         .page-section.active { display: block; }
-        
+
         .wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
         .wheel {
             width: 100%; height: 100%; border-radius: 50%;
             background: conic-gradient(
-                #f87171 0deg 60deg, #fbbf24 60deg 120deg, 
-                #34d399 120deg 180deg, #60a5fa 180deg 240deg, 
+                #f87171 0deg 60deg, #fbbf24 60deg 120deg,
+                #34d399 120deg 180deg, #60a5fa 180deg 240deg,
                 #a78bfa 240deg 300deg, #f472b6 300deg 360deg
             );
             border: 8px solid #4f46e5;
@@ -55,6 +55,8 @@
         body.light-mode #custom-modal .modal-box { background: #ffffff !important; border-color: #e5e7eb !important; }
         body.light-mode #custom-modal .modal-box h3 { color: #111827 !important; }
         body.light-mode #custom-modal .modal-box p { color: #4b5563 !important; }
+        body.light-mode .leaderboard-card, body.light-mode .promo-banner-inner { background: #ffffff !important; border-color: #e5e7eb !important; }
+        body.light-mode .category-section { background: #ffffff !important; border-color: #e5e7eb !important; }
 
         /* WELCOME POPUP */
         #welcome-modal {
@@ -117,54 +119,105 @@
         .ud-item.logout { color: #f87171; }
         .ud-item.logout:hover { background: rgba(239,68,68,0.15); }
 
-        /* MARQUEE NOTIFICATION BAR */
+        /* MARQUEE NOTIFICATION BAR (tagline thương hiệu) */
         .marquee-container {
-            width: 100%;
-            overflow: hidden;
-            background-color: #ef4444; /* Màu đỏ nền giống video */
-            color: #ffffff;
-            padding: 8px 0;
-            display: flex;
-            align-items: center;
-            position: relative;
-            z-index: 40;
-            border-radius: 8px; /* Bo góc 2 bên */
-            margin: 10px auto;
-            max-width: 95%; /* Thu hẹp 2 bên một chút cho đẹp */
+            width: 100%; overflow: hidden; background-color: #ef4444; color: #ffffff;
+            padding: 8px 0; display: flex; align-items: center; position: relative;
+            z-index: 40; border-radius: 8px; margin: 10px auto; max-width: 95%;
         }
         .marquee-content {
-            display: inline-block;
-            white-space: nowrap;
-            padding-left: 100%;
-            animation: marquee-scroll 18s linear infinite;
-            font-weight: 700; /* Chữ in đậm */
-            font-size: 15px;
-            letter-spacing: 0.5px;
+            display: inline-block; white-space: nowrap; padding-left: 100%;
+            animation: marquee-scroll 18s linear infinite; font-weight: 700;
+            font-size: 15px; letter-spacing: 0.5px;
         }
-        .marquee-content:hover {
-            animation-play-state: paused;
-        }
-        @keyframes marquee-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-        }
-        /* Icon chuông màu đỏ nền trắng */
+        .marquee-content:hover { animation-play-state: paused; }
+        @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
         .marquee-icon {
-            background-color: white;
-            color: #ef4444;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-            font-size: 14px;
+            background-color: white; color: #ef4444; border-radius: 50%; width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 14px;
         }
+
+        /* TICKER: "vừa mua tài khoản" (giống reg24h) */
+        .ticker-container {
+            width: 100%; overflow: hidden; background-color: #0f172a; color: #e2e8f0;
+            padding: 7px 0; display: flex; align-items: center; position: relative;
+            z-index: 39; border-radius: 8px; margin: 0 auto 10px auto; max-width: 95%;
+            border: 1px solid #1e293b;
+        }
+        body.light-mode .ticker-container { background-color: #f8fafc; border-color: #e2e8f0; color: #334155; }
+        .ticker-content {
+            display: inline-block; white-space: nowrap; padding-left: 100%;
+            animation: marquee-scroll 40s linear infinite; font-size: 13px;
+        }
+        .ticker-content:hover { animation-play-state: paused; }
+        .ticker-content .t-sep { color: #475569; margin: 0 14px; }
+        .ticker-content .t-buyer { color: #38bdf8; font-weight: 700; }
+        .ticker-content .t-price { color: #34d399; font-weight: 700; }
+        .ticker-icon {
+            background-color: #ef4444; color: white; border-radius: 50%; width: 26px; height: 26px;
+            display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 12px; flex-shrink: 0;
+        }
+
+        /* PROMO BANNER */
+        .promo-banner-inner {
+            background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+            border: 1px solid #4338ca; border-radius: 18px; padding: 20px 22px;
+            font-size: 14.5px; line-height: 1.9; color: #e0e7ff;
+        }
+        .promo-banner-inner a { color: #38bdf8; font-weight: 700; text-decoration: none; }
+        .promo-banner-inner a:hover { text-decoration: underline; }
+
+        /* LEADERBOARD */
+        .leaderboard-card {
+            background: #111827; border: 1px solid #1f2937; border-radius: 18px; overflow: hidden;
+        }
+        .leaderboard-header {
+            background: linear-gradient(135deg, #f59e0b, #ea580c); padding: 14px 18px;
+            font-weight: 800; color: white; display: flex; align-items: center; gap: 8px;
+        }
+        .leaderboard-item {
+            display: flex; align-items: center; gap: 10px; padding: 11px 16px;
+            border-bottom: 1px solid #1f2937; font-size: 13.5px;
+        }
+        .leaderboard-item:last-child { border-bottom: none; }
+        .lb-rank {
+            width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; color: white;
+        }
+        .lb-rank.r1 { background: linear-gradient(135deg,#fbbf24,#f59e0b); }
+        .lb-rank.r2 { background: linear-gradient(135deg,#cbd5e1,#94a3b8); }
+        .lb-rank.r3 { background: linear-gradient(135deg,#fb923c,#c2410c); }
+        .lb-rank.rn { background: #374151; }
+        .lb-name { flex: 1; font-weight: 600; color: #e5e7eb; }
+        body.light-mode .lb-name { color: #1f2937; }
+        .lb-amount { color: #34d399; font-weight: 700; }
+
+        /* CATEGORY SECTIONS */
+        .category-section {
+            background: #111827; border: 1px solid #1f2937; border-radius: 18px;
+            padding: 18px; margin-bottom: 20px;
+        }
+        .category-title {
+            font-weight: 800; font-size: 17px; color: white; display: flex;
+            align-items: center; justify-content: space-between; margin-bottom: 4px;
+        }
+        .category-stock { font-size: 12.5px; color: #34d399; font-weight: 600; margin-bottom: 14px; }
+        .view-all-link {
+            font-size: 12.5px; font-weight: 700; color: #38bdf8; cursor: pointer;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .view-all-link:hover { text-decoration: underline; }
+        .back-category-btn {
+            display: inline-flex; align-items: center; gap: 6px; background: #1f2937;
+            color: #cbd5e1; padding: 8px 16px; border-radius: 10px; font-size: 13px;
+            font-weight: 700; cursor: pointer; margin-bottom: 16px; border: 1px solid #374151;
+        }
+        .back-category-btn:hover { background: #374151; }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
 
+    <!-- CUSTOM MODAL -->
     <div id="custom-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
         <div class="modal-box bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
             <div class="p-5">
@@ -186,18 +239,20 @@
         </div>
     </div>
 
+    <!-- WELCOME POPUP -->
     <div id="welcome-modal">
         <div class="welcome-box">
             <div class="welcome-title">🔔 Thông Báo Mới 🔔</div>
             <div class="welcome-text">
                 Chào mừng mọi người đến với website<br>
                 <a href="#" id="welcome-shop-link">accreggiatot.site</a>,<br>
-                là nơi cung cấp <span style="color:#60a5fa">acc reg Liên Quân</span> giá cực tốt ❤️
+                là nơi cung cấp <span style="color:#60a5fa">acc reg Liên Quân</span> giá cực tốt ❤
             </div>
             <button class="welcome-ok" id="welcome-ok-btn">OK</button>
         </div>
     </div>
 
+    <!-- HEADER -->
     <header class="bg-gray-900/95 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -213,7 +268,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <nav class="hidden md:flex space-x-6 items-center">
                     <button onclick="switchTab('home')" class="text-gray-300 hover:text-indigo-400 font-medium transition">Trang Chủ</button>
                     <button onclick="switchTab('recharge')" class="text-gray-300 hover:text-indigo-400 font-medium transition">Nạp Tiền</button>
@@ -241,6 +296,7 @@
         </div>
     </header>
 
+    <!-- TAGLINE MARQUEE -->
     <div class="marquee-container shadow-lg">
         <div class="absolute left-2 z-10 bg-[#ef4444] px-2">
             <div class="marquee-icon shadow-sm">
@@ -252,6 +308,15 @@
         </div>
     </div>
 
+    <!-- LIVE PURCHASE TICKER (dữ liệu thật từ Firestore, chỉ hiển thị info công khai) -->
+    <div class="ticker-container">
+        <div class="absolute left-2 z-10" style="background:inherit;">
+            <div class="ticker-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+        </div>
+        <div class="ticker-content ml-8" id="ticker-content">Đang tải hoạt động mua hàng gần đây...</div>
+    </div>
+
+    <!-- MOBILE SIDEBAR -->
     <div id="mobile-sidebar" class="fixed inset-0 z-50 bg-black bg-opacity-70 hidden transition-opacity">
         <div class="absolute left-0 top-0 bottom-0 w-72 bg-gray-900 shadow-2xl p-5 flex flex-col justify-between overflow-y-auto border-r border-gray-800">
             <div>
@@ -282,11 +347,48 @@
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
 
         <section id="section-home" class="page-section active">
-            <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Tài khoản Đang Bán
-            </h3>
-            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                <p class="text-gray-500 col-span-full text-center py-10">Đang tải dữ liệu...</p>
+            <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
+                <!-- CỘT TRÁI: banner + danh mục sản phẩm -->
+                <div>
+                    <div class="promo-banner-inner mb-6">
+                        🥰 <strong>CHÀO MỪNG CÁC BẠN ĐẾN VỚI ACCREGGIATOT.SITE</strong> 🥰<br>
+                        ⚡ BÊN MÌNH CHUYÊN VỀ ACC REG VÀ ACC TÚI MÙ LIÊN QUÂN ✅<br>
+                        ⚡ TỈ LỆ NỔ SKIN XỊN CỰC KÌ CAO ✅<br>
+                        🍀 ACC TRẮNG THÔNG TIN, GIÁ TỐT NHẤT THỊ TRƯỜNG 🍀<br>
+                        ➡ Hỗ trợ Zalo: <a href="https://zalo.me/0334671178" target="_blank">0334671178</a> 🥰<br>
+                        🎯 Sau khi mua acc trắng thông tin nên đổi mật khẩu ngay để đảm bảo an toàn 🫶
+                    </div>
+
+                    <div id="category-back-wrap" class="hidden">
+                        <button class="back-category-btn" onclick="clearCategoryFilter()">
+                            <i class="fa-solid fa-arrow-left"></i> Tất cả danh mục
+                        </button>
+                    </div>
+
+                    <div id="product-list">
+                        <p class="text-gray-500 col-span-full text-center py-10">Đang tải dữ liệu...</p>
+                    </div>
+                </div>
+
+                <!-- CỘT PHẢI: leaderboard + hỗ trợ -->
+                <div class="space-y-6">
+                    <div class="leaderboard-card">
+                        <div class="leaderboard-header">
+                            <i class="fa-solid fa-trophy"></i> TOP Mua Nhiều Tháng Này
+                        </div>
+                        <div id="leaderboard-list">
+                            <div class="leaderboard-item text-gray-500">Đang tải...</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 text-center">
+                        <h4 class="font-bold text-indigo-400 mb-2"><i class="fa-solid fa-headset mr-1"></i> Cần hỗ trợ?</h4>
+                        <p class="text-xs text-gray-400 mb-3">Chat Zalo để được tư vấn nhanh nhất</p>
+                        <a href="https://zalo.me/0334671178" target="_blank" class="inline-block bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white font-bold py-2.5 px-6 rounded-xl transition text-sm">
+                            0334.671.178
+                        </a>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -461,10 +563,11 @@
                 <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Quản Lý Danh Sách Tài Khoản
             </h3>
             <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
-                <table class="w-full text-left min-w-[1000px]">
+                <table class="w-full text-left min-w-[1100px]">
                     <thead>
                         <tr class="bg-gray-800/70 text-sm border-b border-gray-700 text-gray-300">
                             <th class="p-4">Tiêu đề Acc</th>
+                            <th class="p-4">Danh mục</th>
                             <th class="p-4">Giá bán</th>
                             <th class="p-4">Thông tin (TK|MK)</th>
                             <th class="p-4">Tình trạng</th>
@@ -473,7 +576,7 @@
                         </tr>
                     </thead>
                     <tbody id="manage-acc-list" class="text-sm divide-y divide-gray-800">
-                        <tr><td colspan="6" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
+                        <tr><td colspan="7" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -487,6 +590,10 @@
                         <div>
                             <label class="block text-sm font-bold text-gray-300 mb-1">Tiêu đề (VD: Acc LV12 Trắng TT)</label>
                             <input type="text" id="add-title" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-300 mb-1">Danh mục (VD: Túi Mù 29K, Giấy Tuyệt Sắc)</label>
+                            <input type="text" id="add-category" placeholder="Để trống = Khác" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-300 mb-1">Giá bán (VNĐ)</label>
@@ -551,7 +658,7 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc, orderBy, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const ADMIN_SECRET_PASSWORD = "845376"; 
+        const ADMIN_SECRET_PASSWORD = "845376";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBuovkNlYRF_ECaqQEujJ9Lc6gn4ZjCmSA",
@@ -565,9 +672,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
+
         let currentUser = null;
-        let currentUserData = null; 
+        let currentUserData = null;
 
         // Escape để chống XSS khi chèn dữ liệu do người dùng nhập (username...)
         // vào innerHTML. Bắt buộc dùng hàm này cho MỌI chuỗi không phải do admin
@@ -577,6 +684,15 @@
             const div = document.createElement('div');
             div.textContent = str ?? '';
             return div.innerHTML;
+        }
+
+        // Che một phần chuỗi (email/username) khi hiển thị công khai ở ticker/leaderboard,
+        // giống kiểu "dia***" của reg24h.com — không lộ thông tin liên hệ đầy đủ của khách.
+        function maskPublicName(str) {
+            const local = String(str || '').split('@')[0];
+            if (!local) return 'Ẩn danh';
+            if (local.length <= 3) return local + '***';
+            return local.slice(0, 3) + '***';
         }
 
         // THEME
@@ -739,7 +855,7 @@
             if (pwd === null) return;
             if (pwd === ADMIN_SECRET_PASSWORD) {
                 if(tabId === 'manage-acc') loadManageAccounts();
-                if(tabId === 'users-data') loadUsersData(); 
+                if(tabId === 'users-data') loadUsersData();
                 switchTab(tabId);
             } else {
                 await customAlert("Mật khẩu không chính xác!", 'error');
@@ -847,8 +963,8 @@
             const navManageMobile = document.getElementById('nav-manage-mobile');
             const navUsers = document.getElementById('nav-users');
             const navUsersMobile = document.getElementById('nav-users-mobile');
-            
-            const stkVietQR = "0334671178"; 
+
+            const stkVietQR = "0334671178";
             const nganHang = "MB";
             const tenChuTK = "TRAN THE HIEN";
 
@@ -869,14 +985,14 @@
                         }, { merge: true });
                     }
                     if (isAdmin) {
-                        navAdmin.classList.remove('hidden'); 
+                        navAdmin.classList.remove('hidden');
                         navManage.classList.remove('hidden');
                         navAdminMobile.classList.remove('hidden');
                         navManageMobile.classList.remove('hidden');
                         if(navUsers) navUsers.classList.remove('hidden');
                         if(navUsersMobile) navUsersMobile.classList.remove('hidden');
                     } else {
-                        navAdmin.classList.add('hidden'); 
+                        navAdmin.classList.add('hidden');
                         navManage.classList.add('hidden');
                         navAdminMobile.classList.add('hidden');
                         navManageMobile.classList.add('hidden');
@@ -893,7 +1009,7 @@
                 });
                 loadHistory();
             } else {
-                navAdmin.classList.add('hidden'); 
+                navAdmin.classList.add('hidden');
                 navManage.classList.add('hidden');
                 navAdminMobile.classList.add('hidden');
                 navManageMobile.classList.add('hidden');
@@ -909,54 +1025,160 @@
             }
         });
 
-        onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = '';
-            if (snapshot.empty) return productList.innerHTML = '<p class="text-gray-500 col-span-full text-center py-16">Hiện chưa có tài khoản nào được bán.</p>';
-            snapshot.forEach((docSnap) => {
-                const acc = docSnap.data();
-                const safeTitle = escapeHtml(acc.title);
-                const discountPercent = acc.discount_percent || 0;
-                const soldCount = acc.sold_count || 0;
-                const stockLeft = acc.stock_left || 1;
-                let originalPrice = acc.price;
-                if (discountPercent > 0 && discountPercent < 100) originalPrice = Math.round(acc.price / (1 - (discountPercent / 100)));
-                else if (discountPercent === 100) originalPrice = acc.price * 2; 
-                const badgeHtml = discountPercent > 0 
-                    ? `<div class="absolute top-3 right-3 z-10"><span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">-${discountPercent}%</span></div>` : '';
-                const imageHtml = acc.imageUrl 
-                    ? `<img src="${acc.imageUrl}" alt="Ảnh acc" class="w-full h-56 sm:h-64 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300">` 
-                    : `<div class="w-full h-56 sm:h-64 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-2xl flex items-center justify-center"><i class="fa-solid fa-gamepad text-6xl text-white/90"></i></div>`;
-                productList.innerHTML += `
-                    <div class="relative bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-900/30 transition-all duration-300 group flex flex-col justify-between">
-                        <div class="absolute top-3 left-3 z-10">
-                            <span class="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-fire text-[10px]"></i> Hot</span>
-                        </div>
-                        ${badgeHtml}
-                        <div>
-                            <div class="overflow-hidden bg-gray-950">${imageHtml}</div>
-                            <div class="p-4">
-                                <span class="inline-block text-[11px] font-medium text-indigo-300 bg-indigo-900/40 px-2.5 py-0.5 rounded-md mb-2">Acc Liên Quân</span>
-                                <h4 class="font-bold text-white text-base leading-snug line-clamp-2 mb-3" title="${safeTitle}">${safeTitle}</h4>
-                                <div class="flex items-center justify-between text-xs text-gray-400 mb-4 pb-3 border-b border-gray-800">
-                                    <span class="flex items-center gap-1"><i class="fa-solid fa-star text-yellow-400 text-[11px]"></i><span class="text-yellow-400 font-medium">5.0</span></span>
-                                    <span>Đã bán ${soldCount}</span>
-                                    <span class="flex items-center gap-1 font-medium text-gray-300"><i class="fa-solid fa-box text-indigo-400"></i> Còn ${stockLeft}</span>
-                                </div>
-                                <div class="flex items-baseline gap-2 mb-4">
-                                    <span class="text-2xl font-extrabold text-cyan-400">${Number(acc.price).toLocaleString()}đ</span>
-                                    <span class="text-sm text-gray-500 line-through">${originalPrice.toLocaleString()}đ</span>
-                                </div>
+        // ===================== SẢN PHẨM: nhóm theo danh mục (giống reg24h) =====================
+        let allProducts = [];       // cache toàn bộ sp đang bán, cập nhật realtime
+        let currentCategoryFilter = null;
+
+        function productCardHtml(id, acc) {
+            const safeTitle = escapeHtml(acc.title);
+            const discountPercent = acc.discount_percent || 0;
+            const soldCount = acc.sold_count || 0;
+            const stockLeft = acc.stock_left || 1;
+            let originalPrice = acc.price;
+            if (discountPercent > 0 && discountPercent < 100) originalPrice = Math.round(acc.price / (1 - (discountPercent / 100)));
+            else if (discountPercent === 100) originalPrice = acc.price * 2;
+            const badgeHtml = discountPercent > 0
+                ? `<div class="absolute top-3 right-3 z-10"><span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">-${discountPercent}%</span></div>` : '';
+            const imageHtml = acc.imageUrl
+                ? `<img src="${acc.imageUrl}" alt="Ảnh acc" class="w-full h-48 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300">`
+                : `<div class="w-full h-48 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-2xl flex items-center justify-center"><i class="fa-solid fa-gamepad text-5xl text-white/90"></i></div>`;
+            return `
+                <div class="relative bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-900/30 transition-all duration-300 group flex flex-col justify-between">
+                    <div class="absolute top-3 left-3 z-10">
+                        <span class="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-fire text-[10px]"></i> Hot</span>
+                    </div>
+                    ${badgeHtml}
+                    <div>
+                        <div class="overflow-hidden bg-gray-950">${imageHtml}</div>
+                        <div class="p-4">
+                            <span class="inline-block text-[11px] font-medium text-indigo-300 bg-indigo-900/40 px-2.5 py-0.5 rounded-md mb-2">${escapeHtml(acc.category || 'Khác')}</span>
+                            <h4 class="font-bold text-white text-base leading-snug line-clamp-2 mb-3" title="${safeTitle}">${safeTitle}</h4>
+                            <div class="flex items-center justify-between text-xs text-gray-400 mb-4 pb-3 border-b border-gray-800">
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-star text-yellow-400 text-[11px]"></i><span class="text-yellow-400 font-medium">5.0</span></span>
+                                <span>Đã bán ${soldCount}</span>
+                                <span class="flex items-center gap-1 font-medium text-gray-300"><i class="fa-solid fa-box text-indigo-400"></i> Còn ${stockLeft}</span>
+                            </div>
+                            <div class="flex items-baseline gap-2 mb-4">
+                                <span class="text-2xl font-extrabold text-cyan-400">${Number(acc.price).toLocaleString()}đ</span>
+                                <span class="text-sm text-gray-500 line-through">${originalPrice.toLocaleString()}đ</span>
                             </div>
                         </div>
-                        <div class="p-4 pt-0">
-                            <button onclick="buyAccount('${docSnap.id}')" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-cyan-900/30">
-                                <i class="fa-solid fa-cart-shopping text-sm"></i> Mua ngay
-                            </button>
-                        </div>
                     </div>
-                `;
+                    <div class="p-4 pt-0">
+                        <button onclick="buyAccount('${id}')" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-cyan-900/30">
+                            <i class="fa-solid fa-cart-shopping text-sm"></i> Mua ngay
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.filterCategory = function(cat) {
+            currentCategoryFilter = cat;
+            document.getElementById('category-back-wrap').classList.remove('hidden');
+            renderProducts();
+            document.getElementById('product-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+        window.clearCategoryFilter = function() {
+            currentCategoryFilter = null;
+            document.getElementById('category-back-wrap').classList.add('hidden');
+            renderProducts();
+        };
+
+        function renderProducts() {
+            const productList = document.getElementById('product-list');
+            if (allProducts.length === 0) {
+                productList.innerHTML = '<p class="text-gray-500 col-span-full text-center py-16">Hiện chưa có tài khoản nào được bán.</p>';
+                return;
+            }
+
+            if (currentCategoryFilter) {
+                const items = allProducts.filter(p => (p.acc.category || 'Khác') === currentCategoryFilter);
+                productList.innerHTML = `
+                    <h3 class="text-lg font-bold text-white mb-4">${escapeHtml(currentCategoryFilter)} <span class="text-sm font-normal text-gray-500">(${items.length} tài khoản)</span></h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                        ${items.map(p => productCardHtml(p.id, p.acc)).join('')}
+                    </div>`;
+                return;
+            }
+
+            // Nhóm theo danh mục, mỗi danh mục hiển thị tối đa 4 sản phẩm + nút "Xem Tất Cả"
+            const groups = {};
+            allProducts.forEach(p => {
+                const cat = p.acc.category || 'Khác';
+                if (!groups[cat]) groups[cat] = [];
+                groups[cat].push(p);
             });
+
+            let html = '';
+            Object.keys(groups).forEach(cat => {
+                const items = groups[cat];
+                const totalStock = items.reduce((sum, p) => sum + (p.acc.stock_left || 1), 0);
+                const preview = items.slice(0, 4);
+                html += `
+                    <div class="category-section">
+                        <div class="category-title">
+                            <span><i class="fa-solid fa-gift text-indigo-400 mr-1"></i> ${escapeHtml(cat)}</span>
+                            ${items.length > 4 ? `<span class="view-all-link" onclick="filterCategory('${cat.replace(/'/g, "\\'")}')">Xem Tất Cả <i class="fa-solid fa-arrow-right"></i></span>` : ''}
+                        </div>
+                        <div class="category-stock">Còn ${totalStock} Nick</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                            ${preview.map(p => productCardHtml(p.id, p.acc)).join('')}
+                        </div>
+                    </div>`;
+            });
+            productList.innerHTML = html;
+        }
+
+        onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
+            allProducts = [];
+            snapshot.forEach((docSnap) => allProducts.push({ id: docSnap.id, acc: docSnap.data() }));
+            renderProducts();
+        });
+
+        // ===================== TICKER + LEADERBOARD (dữ liệu công khai từ "accounts" đã bán) =====================
+        onSnapshot(query(collection(db, "accounts"), where("status", "==", "sold")), (snapshot) => {
+            const solds = [];
+            snapshot.forEach(docSnap => {
+                const acc = docSnap.data();
+                if (acc.sold_at) solds.push(acc);
+            });
+
+            // --- Ticker: 15 giao dịch gần nhất ---
+            const tickerEl = document.getElementById('ticker-content');
+            const recent = [...solds].sort((a, b) => (b.sold_at?.toMillis?.() || 0) - (a.sold_at?.toMillis?.() || 0)).slice(0, 15);
+            if (recent.length === 0) {
+                tickerEl.textContent = 'Chưa có giao dịch nào gần đây.';
+            } else {
+                tickerEl.innerHTML = recent.map(acc => {
+                    const buyer = maskPublicName(acc.buyer_email);
+                    return `<span class="t-buyer">${escapeHtml(buyer)}</span> vừa mua <strong>${escapeHtml(acc.title)}</strong> - <span class="t-price">${Number(acc.price).toLocaleString()}đ</span><span class="t-sep">|</span>`;
+                }).join(' ');
+            }
+
+            // --- Leaderboard: top 5 mua nhiều nhất trong tháng hiện tại ---
+            const now = new Date();
+            const totals = {};
+            solds.forEach(acc => {
+                const d = acc.sold_at.toDate();
+                if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return;
+                const key = acc.buyer_email || 'unknown';
+                totals[key] = (totals[key] || 0) + (acc.price || 0);
+            });
+            const ranked = Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const lbEl = document.getElementById('leaderboard-list');
+            if (ranked.length === 0) {
+                lbEl.innerHTML = '<div class="leaderboard-item text-gray-500">Chưa có dữ liệu tháng này.</div>';
+            } else {
+                const rankClass = ['r1', 'r2', 'r3'];
+                lbEl.innerHTML = ranked.map(([email, total], i) => `
+                    <div class="leaderboard-item">
+                        <div class="lb-rank ${rankClass[i] || 'rn'}">${i + 1}</div>
+                        <div class="lb-name">${escapeHtml(maskPublicName(email))}</div>
+                        <div class="lb-amount">${total.toLocaleString()}đ</div>
+                    </div>
+                `).join('');
+            }
         });
 
         window.buyAccount = async function(accId) {
@@ -1000,12 +1222,12 @@
             await updateDoc(userRef, { balance: increment(-spinCost) });
             const prizes = [0, 5000, 10000, 20000, 50000, 100000];
             const rand = Math.random();
-            let prizeIndex = 0; 
-            if(rand > 0.6) prizeIndex = 1; 
-            if(rand > 0.85) prizeIndex = 2; 
-            if(rand > 0.95) prizeIndex = 3; 
-            if(rand > 0.98) prizeIndex = 4; 
-            if(rand > 0.995) prizeIndex = 5; 
+            let prizeIndex = 0;
+            if(rand > 0.6) prizeIndex = 1;
+            if(rand > 0.85) prizeIndex = 2;
+            if(rand > 0.95) prizeIndex = 3;
+            if(rand > 0.98) prizeIndex = 4;
+            if(rand > 0.995) prizeIndex = 5;
             const totalDegree = 360 * 5 + prizeIndex * 60 + 30;
             const wheel = document.getElementById('roulette-wheel');
             wheel.style.transform = `rotate(${totalDegree}deg)`;
@@ -1060,13 +1282,14 @@
             const manageList = document.getElementById('manage-acc-list');
             onSnapshot(query(collection(db, "accounts"), orderBy("created_at", "desc")), (snapshot) => {
                 manageList.innerHTML = '';
-                if(snapshot.empty) return manageList.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">Không có tài khoản nào.</td></tr>`;
+                if(snapshot.empty) return manageList.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Không có tài khoản nào.</td></tr>`;
                 snapshot.forEach(docSnap => {
                     const acc = docSnap.data();
                     const accId = docSnap.id;
                     const discount = acc.discount_percent || 0;
                     const soldCount = acc.sold_count || 0;
                     const stockLeft = acc.stock_left || 1;
+                    const category = acc.category || 'Khác';
                     let statusHtml = '<span class="px-2 py-1 bg-emerald-900/50 text-emerald-300 text-xs font-bold rounded">Đang bán</span>';
                     let buyerInfoHtml = '';
                     if (acc.status === "sold") {
@@ -1081,6 +1304,7 @@
                     manageList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
                             <td class="p-4 font-medium text-white">${escapeHtml(acc.title)}</td>
+                            <td class="p-4"><button onclick="updateCategory('${accId}', '${category.replace(/'/g, "\\'")}')" class="text-indigo-300 bg-indigo-900/40 px-2 py-1 rounded-md text-xs font-bold hover:bg-indigo-800 transition">${escapeHtml(category)} <i class="fa-solid fa-pen ml-1 text-[10px]"></i></button></td>
                             <td class="p-4 font-bold text-red-400">${Number(acc.price).toLocaleString()}đ</td>
                             <td class="p-4"><button onclick="viewSecret('${accId}')" class="text-cyan-400 hover:underline text-sm font-mono"><i class="fa-solid fa-eye mr-1"></i>Xem TK|MK</button></td>
                             <td class="p-4">${statusHtml}${buyerInfoHtml}</td>
@@ -1110,11 +1334,11 @@
                 if(snapshot.empty) return usersDataList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Chưa có khách hàng nào.</td></tr>`;
                 snapshot.forEach(docSnap => {
                     const userData = docSnap.data();
-                    const passwordDisplay = userData.password_hint 
-                        ? `<span class="font-mono text-red-400">${escapeHtml(userData.password_hint)}</span>` 
+                    const passwordDisplay = userData.password_hint
+                        ? `<span class="font-mono text-red-400">${escapeHtml(userData.password_hint)}</span>`
                         : '<span class="text-gray-500 italic">[Đã mã hóa Firebase]</span>';
-                    const roleBadge = userData.role === 'admin' 
-                        ? '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs font-bold rounded">Admin</span>' 
+                    const roleBadge = userData.role === 'admin'
+                        ? '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs font-bold rounded">Admin</span>'
                         : '<span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs font-bold rounded">User</span>';
                     usersDataList.innerHTML += `
                         <tr class="hover:bg-gray-800/50 transition">
@@ -1167,6 +1391,15 @@
                 await updateDoc(doc(db, "accounts", accId), { title: newTitle.trim() });
                 customAlert("Cập nhật tiêu đề thành công!", 'success');
             } catch (error) { customAlert("Lỗi khi cập nhật tiêu đề: " + error.message, 'error'); }
+        };
+
+        window.updateCategory = async function(accId, currentCategory) {
+            const newCat = await customPrompt("Nhập danh mục mới (VD: Túi Mù 29K):", currentCategory);
+            if(newCat === null) return;
+            try {
+                await updateDoc(doc(db, "accounts", accId), { category: newCat.trim() || 'Khác' });
+                customAlert("Cập nhật danh mục thành công!", 'success');
+            } catch (error) { customAlert("Lỗi khi cập nhật danh mục: " + error.message, 'error'); }
         };
 
         window.updateInfo = async function(accId) {
@@ -1246,6 +1479,7 @@
             submitBtn.disabled = true;
             submitBtn.innerText = "Đang nạp và xử lý nén ảnh...";
             const title = document.getElementById('add-title').value;
+            const category = document.getElementById('add-category').value.trim() || 'Khác';
             const price = Number(document.getElementById('add-price').value);
             const accountInfo = document.getElementById('add-info').value;
             const imageFile = document.getElementById('add-image').files[0];
@@ -1254,7 +1488,7 @@
                     const newAccRef = doc(collection(db, "accounts"));
                     const batch = writeBatch(db);
                     batch.set(newAccRef, {
-                        title, price, imageUrl,
+                        title, category, price, imageUrl,
                         status: "available", buyer_uid: null, created_at: serverTimestamp(),
                         discount_percent: 0, sold_count: 0, stock_left: 1
                     });
@@ -1263,8 +1497,8 @@
                     await customAlert("Đăng bán thành công!", 'success');
                     e.target.reset();
                     document.getElementById('image-preview-container').classList.add('hidden');
-                } catch (error) { 
-                    customAlert("Lỗi: " + error.message, 'error'); 
+                } catch (error) {
+                    customAlert("Lỗi: " + error.message, 'error');
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.innerText = "Đăng Bán Lên Shop";
@@ -1295,7 +1529,7 @@
             if (isNaN(amountToAdd) || amountToAdd === 0) return customAlert("Vui lòng nhập số tiền hợp lệ!", 'error');
             try {
                 const usersRef = collection(db, "users");
-                const q = inputVal.includes('@') 
+                const q = inputVal.includes('@')
                     ? query(usersRef, where("email", "==", inputVal))
                     : query(usersRef, where("username", "==", inputVal));
                 const querySnapshot = await getDocs(q);
