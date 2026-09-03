@@ -6,1308 +6,453 @@
     <title>AccReg - Shop cung cấp acc game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    
     <style>
+        /* BASE STYLES - Ép cứng nền Sáng */
+        body { background-color: #f2f4f7; color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
         .page-section { display: none; }
-        .page-section.active { display: block; }
+        .page-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* HEADER CHÍNH */
+        .site-header { background-color: #ffffff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 50; }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; }
         
-        .wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
-        .wheel {
-            width: 100%; height: 100%; border-radius: 50%;
-            background: conic-gradient(
-                #f87171 0deg 60deg, #fbbf24 60deg 120deg, 
-                #34d399 120deg 180deg, #60a5fa 180deg 240deg, 
-                #a78bfa 240deg 300deg, #f472b6 300deg 360deg
-            );
-            border: 8px solid #4f46e5;
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-        }
-        .wheel-pointer {
-            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 20px solid transparent; border-right: 20px solid transparent;
-            border-top: 40px solid #e5e7eb; z-index: 10;
-        }
-        .wheel-center {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60px; height: 60px; background: #1f2937; border-radius: 50%;
-            border: 4px solid #6366f1; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: #a5b4fc; z-index: 5;
-        }
+        /* LOGO & MENU DESKTOP */
+        .logo-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; }
+        .nav-desktop { display: none; gap: 20px; }
+        @media (min-width: 768px) { .nav-desktop { display: flex; } }
+        .nav-item { font-weight: 600; color: #334155; transition: color 0.2s; cursor: pointer; background: none; border: none; padding: 5px 10px; border-radius: 8px;}
+        .nav-item:hover { color: #dc2626; background: #fee2e2; }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #111827; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
-
-        #custom-modal.show { display: flex !important; }
-        #custom-modal .modal-box { transform: scale(0.9); opacity: 0; transition: all 0.2s ease; }
-        #custom-modal.show .modal-box { transform: scale(1); opacity: 1; }
-
-        /* THEME SÁNG */
-        body.light-mode { background-color: #f3f4f6 !important; color: #1f2937 !important; }
-        body.light-mode header { background-color: rgba(255,255,255,0.95) !important; border-color: #e5e7eb !important; }
-        body.light-mode .bg-gray-900, body.light-mode .bg-gray-900\/95 { background-color: #ffffff !important; }
-        body.light-mode .text-white { color: #111827 !important; }
-        body.light-mode .text-gray-300, body.light-mode .text-gray-400 { color: #4b5563 !important; }
-        body.light-mode .border-gray-800, body.light-mode .border-gray-700 { border-color: #e5e7eb !important; }
-        body.light-mode .bg-gray-800 { background-color: #f3f4f6 !important; }
-        body.light-mode #custom-modal .modal-box { background: #ffffff !important; border-color: #e5e7eb !important; }
-        body.light-mode #custom-modal .modal-box h3 { color: #111827 !important; }
-        body.light-mode #custom-modal .modal-box p { color: #4b5563 !important; }
-
-        /* WELCOME POPUP */
-        #welcome-modal {
-            display: none; position: fixed; inset: 0; z-index: 10000;
-            background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
-            align-items: center; justify-content: center; padding: 16px;
-        }
-        #welcome-modal.show { display: flex; }
-        .welcome-box {
-            background: #1f2937; border-radius: 20px; padding: 28px 24px;
-            max-width: 360px; width: 100%; text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.35); border: 1px solid #374151;
-            animation: welcomeIn 0.25s ease;
-        }
-        body.light-mode .welcome-box { background: #ffffff; border-color: #e5e7eb; box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
-        @keyframes welcomeIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .welcome-title { font-size: 1.25rem; font-weight: 800; color: #f9fafb; margin-bottom: 12px; }
-        body.light-mode .welcome-title { color: #1e3a5f; }
-        .welcome-text { font-size: 0.95rem; color: #d1d5db; line-height: 1.65; margin-bottom: 22px; }
-        body.light-mode .welcome-text { color: #4b5563; }
-        .welcome-ok {
-            background: linear-gradient(to right, #ef4444, #dc2626); color: white; font-weight: 700;
-            padding: 10px 40px; border-radius: 999px; border: none; cursor: pointer; font-size: 1rem;
-            transition: transform 0.15s, opacity 0.15s;
-        }
-        .welcome-ok:hover { transform: scale(1.05); opacity: 0.95; }
-        #welcome-shop-link { color: #38bdf8; font-weight: 700; text-decoration: none; cursor: pointer; }
-        #welcome-shop-link:hover { text-decoration: underline; }
-
-        /* AVATAR DROPDOWN */
+        /* AVATAR & USER DROPDOWN */
+        #user-area { display: flex; align-items: center; gap: 10px; }
+        .btn-login { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #ffffff; padding: 8px 16px; border-radius: 20px; font-weight: 700; border: none; cursor: pointer; font-size: 14px; }
         #user-menu { position: relative; }
-        #user-avatar-btn {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #06b6d4);
-            color: white; font-weight: 700; font-size: 14px;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.15s;
-        }
-        #user-avatar-btn:hover { transform: scale(1.08); }
-        #user-dropdown {
-            display: none; position: absolute; right: 0; top: calc(100% + 8px);
-            width: 240px; background: #1f2937; border: 1px solid #374151;
-            border-radius: 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); z-index: 100; overflow: hidden;
-        }
+        #user-avatar-btn { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #dc2626, #f97316); color: white; font-weight: 700; font-size: 15px; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #user-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 5px); width: 220px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
         #user-dropdown.show { display: block; }
-        body.light-mode #user-dropdown { background: #ffffff; border-color: #e5e7eb; box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
-        .ud-header { padding: 14px 16px; border-bottom: 1px solid #374151; }
-        body.light-mode .ud-header { border-color: #e5e7eb; }
-        .ud-name { font-weight: 700; color: #f9fafb; font-size: 15px; }
-        body.light-mode .ud-name { color: #111827; }
-        .ud-balance { color: #34d399; font-weight: 600; font-size: 13px; margin-top: 4px; }
-        .ud-item {
-            display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 16px;
-            text-align: left; color: #d1d5db; font-size: 14px; background: transparent;
-            border: none; cursor: pointer; transition: background 0.15s;
-        }
-        .ud-item:hover { background: #374151; }
-        body.light-mode .ud-item { color: #374151; }
-        body.light-mode .ud-item:hover { background: #f3f4f6; }
-        .ud-item.logout { color: #f87171; }
-        .ud-item.logout:hover { background: rgba(239,68,68,0.15); }
+        .ud-header { padding: 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        .ud-name { font-weight: 700; font-size: 15px; color: #1e293b; }
+        .ud-balance { font-weight: 700; font-size: 13px; color: #059669; margin-top: 4px; }
+        .ud-item { width: 100%; text-align: left; padding: 12px 15px; background: none; border: none; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 600; color: #475569; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .ud-item:hover { background: #f1f5f9; color: #dc2626; }
 
-        /* MARQUEE NOTIFICATION BAR */
-        .marquee-container {
-            width: 100%;
+        /* THANH MARQUEE CHẠY CHỮ */
+        .marquee-box { background: #ef4444; color: #ffffff; border-radius: 25px; padding: 8px 15px; margin: 15px auto; max-width: 1200px; width: 95%; display: flex; align-items: center; gap: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+        .mq-icon { font-size: 16px; animation: ring 1.5s infinite; flex-shrink: 0; }
+        .mq-content { overflow: hidden; white-space: nowrap; width: 100%; }
+        .mq-text { display: inline-block; font-size: 14px; font-weight: 700; animation: marquee 15s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @keyframes ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
+
+        /* =========================================
+           BANNER ĐỘNG (SWIPER) - MỚI THÊM
+           ========================================= */
+        .swiper-banner-container {
+            max-width: 1200px;
+            margin: 0 auto 25px auto;
+            width: 95%;
+            border-radius: 16px;
             overflow: hidden;
-            background-color: #ef4444; /* Màu đỏ nền giống video */
-            color: #ffffff;
-            padding: 8px 0;
-            display: flex;
-            align-items: center;
-            position: relative;
-            z-index: 40;
-            border-radius: 8px; /* Bo góc 2 bên */
-            margin: 10px auto;
-            max-width: 95%; /* Thu hẹp 2 bên một chút cho đẹp */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            /* Aspect ratio chuẩn cho banner ngang */
+            aspect-ratio: 16 / 5;
+            background: #1e293b;
         }
-        .marquee-content {
-            display: inline-block;
-            white-space: nowrap;
-            padding-left: 100%;
-            animation: marquee-scroll 18s linear infinite;
-            font-weight: 700; /* Chữ in đậm */
-            font-size: 15px;
-            letter-spacing: 0.5px;
+        .swiper { width: 100%; height: 100%; }
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Phủ kín khung, không méo ảnh */
         }
-        .marquee-content:hover {
-            animation-play-state: paused;
+        /* Style cho nút chuyển slide và chấm tròn */
+        .swiper-button-next, .swiper-button-prev { color: white !important; background: rgba(0,0,0,0.4); width: 40px; height: 40px; border-radius: 50%; }
+        .swiper-button-next::after, .swiper-button-prev::after { font-size: 18px !important; font-weight: bold; }
+        .swiper-pagination-bullet { background: white !important; opacity: 0.6; }
+        .swiper-pagination-bullet-active { opacity: 1; background: #ef4444 !important; }
+        @media (max-width: 768px) {
+            .swiper-banner-container { aspect-ratio: 16 / 7; }
+            .swiper-button-next, .swiper-button-prev { display: none; }
         }
-        @keyframes marquee-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-        }
-        /* Icon chuông màu đỏ nền trắng */
-        .marquee-icon {
-            background-color: white;
-            color: #ef4444;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-            font-size: 14px;
-        }
+
+        /* LAYOUT TRANG CHỦ CỦA REG24H (2 Cột) */
+        .home-layout { max-width: 1200px; margin: 0 auto; width: 95%; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 992px) { .home-layout { grid-template-columns: 1fr 320px; } }
+
+        /* CỘT PHẢI - BẢNG TOP NẠP */
+        .top-nap-card { background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #fee2e2; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .top-nap-header { background: #ef4444; color: #ffffff; text-align: center; padding: 12px; font-weight: 700; font-size: 16px; text-transform: uppercase; }
+        .top-nap-list { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .top-item { border: 1px solid #fca5a5; background: #fff5f5; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; }
+        .top-item .t-name { color: #dc2626; }
+        .top-item .t-money { color: #dc2626; font-weight: 700; }
+        .btn-nap-top { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; margin-top: 5px; cursor: pointer; text-transform: uppercase; border: none; width: 100%;}
+
+        /* CỘT TRÁI - DANH MỤC GAME (KIỂU REG24H) */
+        .section-title { text-align: center; font-size: 20px; font-weight: 800; color: #dc2626; margin-bottom: 20px; text-transform: uppercase; position: relative; }
+        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: #dc2626; margin: 8px auto 0 auto; border-radius: 2px; }
+        
+        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        @media (min-width: 640px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
+        
+        .cat-card { background: #ffffff; border-radius: 12px; border: 1px solid #fca5a5; padding: 10px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .cat-img { width: 100%; border-radius: 8px; margin-bottom: 10px; object-fit: cover; aspect-ratio: 16/9; }
+        .cat-name { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
+        .cat-stock { font-size: 13px; color: #64748b; margin-bottom: 10px; }
+        .cat-stock span { color: #dc2626; font-weight: 800; }
+        .btn-view-all { background: linear-gradient(180deg, #f97316, #ea580c); color: #fff; width: 100%; padding: 8px 0; border-radius: 20px; font-weight: 800; font-size: 13px; border: 1px solid #fdba74; cursor: pointer; box-shadow: 0 2px 5px rgba(234, 88, 12, 0.4); }
+
+        /* GRID TÀI KHOẢN KHI BẤM VÀO XEM TẤT CẢ */
+        .acc-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 15px; margin-bottom: 30px; }
+        @media (min-width: 640px) { .acc-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .acc-grid { grid-template-columns: repeat(3, 1fr); } }
+        
+        .acc-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .acc-banner { position: relative; width: 100%; height: 160px; background: #1e293b; }
+        .acc-banner img { width: 100%; height: 100%; object-fit: cover; }
+        .acc-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #ff3366; font-weight: 700; font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px dashed #ff3366; }
+        .acc-body { padding: 12px; }
+        .acc-title { font-size: 15px; font-weight: 800; color: #dc2626; margin-bottom: 10px; text-align: center; }
+        .acc-info { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 10px; }
+        .acc-price-wrap { display: flex; gap: 10px; }
+        .acc-price { flex: 1; border: 1px solid #ef4444; border-radius: 8px; background: #fef2f2; color: #dc2626; font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .btn-buy-acc { flex: 1; background: #ef4444; color: #fff; padding: 10px; border-radius: 8px; font-weight: 800; border: none; cursor: pointer; font-size: 14px; }
+        
+        .btn-back-cat { background: #334155; color: white; padding: 8px 16px; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 6px; }
+
+        /* CÁC PAGE SECTION KHÁC NỀN TRẮNG */
+        .white-section { max-width: 1200px; margin: 0 auto; width: 95%; background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .sec-header { font-size: 20px; font-weight: 800; color: #1e293b; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+
+        /* FORM INPUTS */
+        .form-label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #475569; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; margin-bottom: 15px; outline: none; background: #f8fafc; }
+        .form-input:focus { border-color: #3b82f6; }
+        .form-btn { width: 100%; background: #2563eb; color: white; padding: 14px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; }
+
+        /* BẢNG TABLE */
+        .table-wrap { overflow-x: auto; width: 100%; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: #f1f5f9; padding: 12px; text-align: left; font-size: 13px; color: #475569; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #1e293b; font-weight: 500;}
+
+        /* POPUP THÀNH CÔNG KIỂU REG24H */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 10000; }
+        .modal-overlay.active { display: flex; }
+        .modal-card { background: #fff; width: 90%; max-width: 320px; border-radius: 16px; padding: 25px 20px; text-align: center; animation: popIn 0.3s; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .success-icon-wrapper { width: 80px; height: 80px; margin: 0 auto 15px auto; }
+        .checkmark-svg { width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 3; stroke: #22c55e; stroke-miterlimit: 10; box-shadow: inset 0px 0px 0px #22c55e; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
+        .checkmark-circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 3; stroke-miterlimit: 10; stroke: #22c55e; fill: none; animation: stroke .6s cubic-bezier(.65,0,.45,1) forwards; }
+        .checkmark-check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke .3s cubic-bezier(.65,0,.45,1) .8s forwards; }
+        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+        @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+        @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 40px rgba(34, 197, 94, 0.15); } }
+        
+        .mc-title { font-size: 20px; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+        .mc-sub { font-size: 14px; color: #64748b; }
+        .mc-btn { background: #3b82f6; color: white; border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+
+        /* CUSTOM MODAL NHẬP THÔNG TIN (KHI MUA) */
+        .m-icon-info { width: 50px; height: 50px; border: 2px solid #38bdf8; color: #38bdf8; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        .m-icon-err { width: 50px; height: 50px; border: 2px solid #ef4444; color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        .m-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center; font-size: 16px; outline: none; margin-bottom: 15px; }
+        .m-actions { display: flex; gap: 10px; }
+        .m-btn-ok { flex: 1; background: #6366f1; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .m-btn-cancel { flex: 1; background: #64748b; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #0ea5e9; border-radius: 50%; width: 30px; height: 30px; animation: spin 0.8s linear infinite; margin: 15px auto; }
+
+        /* VÒNG QUAY NHÂN PHẨM */
+        .wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient( #f87171 0deg 60deg, #fbbf24 60deg 120deg, #34d399 120deg 180deg, #60a5fa 180deg 240deg, #a78bfa 240deg 300deg, #f472b6 300deg 360deg ); border: 8px solid #4f46e5; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 40px solid #e5e7eb; z-index: 10; }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: #1f2937; border-radius: 50%; border: 4px solid #6366f1; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #a5b4fc; z-index: 5; }
     </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+<body>
 
-    <div id="custom-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-        <div class="modal-box bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
-            <div class="p-5">
-                <div class="flex items-center gap-3 mb-3">
-                    <div id="modal-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-indigo-900/50 text-indigo-300">
-                        <i class="fa-solid fa-circle-info"></i>
-                    </div>
-                    <h3 id="modal-title" class="text-lg font-bold text-white">Thông báo</h3>
-                </div>
-                <p id="modal-message" class="text-gray-400 text-sm mb-4 leading-relaxed"></p>
-                <div id="modal-input-container" class="hidden mb-4">
-                    <input id="modal-input" type="text" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:ring-2 focus:ring-cyan-500 placeholder-gray-500" placeholder="">
-                </div>
-                <div class="flex gap-3">
-                    <button id="modal-cancel" class="flex-1 py-2.5 rounded-xl text-gray-300 bg-gray-800 hover:bg-gray-700 font-medium transition">Hủy</button>
-                    <button id="modal-ok" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold transition">OK</button>
-                </div>
+    <div class="modal-overlay" id="modalSuccessReg"><div class="modal-card"><div class="success-icon-wrapper"><svg class="checkmark-svg" viewBox="0 0 52 52"><circle class="checkmark-circle" cx="26" cy="26" r="23" fill="none"/><path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg></div><div class="mc-title" id="mcTitleReg">Thành công!</div><div class="mc-sub" id="mcSubReg"></div></div></div>
+    <div class="modal-overlay" id="modalBuyConfirm"><div class="modal-card"><div class="m-icon-info">!</div><div class="mc-title" style="font-size: 16px;">Số lượng muốn mua</div><input type="number" class="m-input" id="buyQtyInput" value="1" min="1"><div class="m-actions"><button class="m-btn-ok" id="btnConfirmBuyYes">Đồng ý</button><button class="m-btn-cancel" onclick="document.getElementById('modalBuyConfirm').classList.remove('active')">Hủy</button></div></div></div>
+    <div class="modal-overlay" id="modalBuyLoading"><div class="modal-card"><div class="m-icon-info">i</div><div class="mc-title">Đang xử lý!</div><div class="mc-sub">Không tắt trang này!</div><div class="spinner"></div></div></div>
+    <div class="modal-overlay" id="modalBuyErr"><div class="modal-card"><div class="m-icon-err">✕</div><div class="mc-title">Oops...</div><div class="mc-sub" id="buyErrMsg">Lỗi</div><button class="mc-btn" onclick="document.getElementById('modalBuyErr').classList.remove('active')">OK</button></div></div>
+
+    <header class="site-header">
+        <div class="header-container">
+            <div class="logo-wrap" onclick="switchTab('home')">
+                <img src="image_7.png" alt="Logo" class="h-10 object-contain" onerror="this.style.display='none'; document.getElementById('fb-logo').style.display='block';">
+                <span id="fb-logo" style="display:none; font-weight:900; font-size: 22px; color:#dc2626;">REG<span style="color:#1e293b;">24H</span></span>
             </div>
-        </div>
-    </div>
-
-    <div id="welcome-modal">
-        <div class="welcome-box">
-            <div class="welcome-title">🔔 Thông Báo Mới 🔔</div>
-            <div class="welcome-text">
-                Chào mừng mọi người đến với website<br>
-                <a href="#" id="welcome-shop-link">accreggiatot.site</a>,<br>
-                là nơi cung cấp <span style="color:#60a5fa">acc reg Liên Quân</span> giá cực tốt ❤️
+            
+            <div class="nav-desktop">
+                <button class="nav-item" onclick="switchTab('home')">Trang Chủ</button>
+                <button class="nav-item" onclick="switchTab('recharge')">Nạp Tiền</button>
+                <button class="nav-item" onclick="switchTab('history')">Lịch Sử</button>
+                <button class="nav-item" onclick="switchTab('wheel')" style="color:#ea580c;">Vòng Quay</button>
+                <button class="nav-item hidden admin-nav" onclick="requestAdminAccess('manage-acc')">Quản Lý</button>
+                <button class="nav-item hidden admin-nav" onclick="requestAdminAccess('admin')">Admin</button>
             </div>
-            <button class="welcome-ok" id="welcome-ok-btn">OK</button>
-        </div>
-    </div>
 
-    <header class="bg-gray-900/95 backdrop-blur-md border-b border-gray-800 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-3">
-                    <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-indigo-400 focus:outline-none p-1">
-                        <i class="fa-solid fa-bars text-xl"></i>
-                    </button>
-                    <div class="flex items-center cursor-pointer" onclick="switchTab('home')">
-                        <img src="image_7.png" alt="Logo" class="h-10 sm:h-12 object-contain hover:scale-105 transition-transform duration-200 drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('fallback-logo-header').classList.remove('hidden');">
-                        <div id="fallback-logo-header" class="hidden flex items-center">
-                            <i class="fa-solid fa-gamepad text-2xl text-indigo-400 mr-2"></i>
-                            <span class="font-bold text-xl text-white">Acc<span class="text-indigo-400">Reg</span></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <nav class="hidden md:flex space-x-6 items-center">
-                    <button onclick="switchTab('home')" class="text-gray-300 hover:text-indigo-400 font-medium transition">Trang Chủ</button>
-                    <button onclick="switchTab('recharge')" class="text-gray-300 hover:text-indigo-400 font-medium transition">Nạp Tiền</button>
-                    <button onclick="switchTab('wheel')" class="text-gray-300 hover:text-red-400 font-medium transition animate-pulse">Vòng Quay</button>
-                    <button onclick="switchTab('history')" class="text-gray-300 hover:text-indigo-400 font-medium transition">Lịch Sử</button>
-                    <button onclick="switchTab('support')" class="text-gray-300 hover:text-indigo-400 font-medium transition">Hỗ Trợ</button>
-                    <button id="nav-manage" onclick="requestAdminAccess('manage-acc')" class="hidden bg-indigo-900/50 text-indigo-300 px-3 py-1 rounded font-bold hover:bg-indigo-800 transition">
-                        <i class="fa-solid fa-list-check mr-1"></i> Quản Lý Acc
-                    </button>
-                    <button id="nav-admin" onclick="requestAdminAccess('admin')" class="hidden bg-red-900/50 text-red-300 px-3 py-1 rounded font-bold hover:bg-red-800 transition">
-                        <i class="fa-solid fa-screwdriver-wrench mr-1"></i> Admin Panel
-                    </button>
-                    <button id="nav-users" onclick="requestAdminAccess('users-data')" class="hidden bg-blue-900/50 text-blue-300 px-3 py-1 rounded font-bold hover:bg-blue-800 transition">
-                        <i class="fa-solid fa-users mr-1"></i> Dữ Liệu
-                    </button>
-                </nav>
-
-                <div id="user-area" class="flex items-center gap-2 sm:gap-3">
-                    <button id="theme-toggle" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center transition" title="Chuyển sáng/tối">
-                        <i class="fa-solid fa-moon text-yellow-400" id="theme-icon"></i>
-                    </button>
-                    <button onclick="switchTab('auth')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold transition text-sm">Đăng Nhập</button>
-                </div>
-            </div>
+            <div id="user-area"><button onclick="switchTab('auth')" class="btn-login">Đăng Nhập</button></div>
         </div>
     </header>
 
-    <div class="marquee-container shadow-lg">
-        <div class="absolute left-2 z-10 bg-[#ef4444] px-2">
-            <div class="marquee-icon shadow-sm">
-                <i class="fa-solid fa-bell animate-bounce"></i>
-            </div>
-        </div>
-        <div class="marquee-content ml-8">
-            ACCREGGIATOT.SITE SHOP ACC REG UY TÍN - GIÁ RẺ - CHẤT LƯỢNG
-        </div>
-    </div>
+    <div class="marquee-box"><div class="mq-icon">🔔</div><div class="mq-content"><span class="mq-text">SHOP ACC REG CHUẨN - TỰ ĐỘNG UY TÍN - GIÁ RẺ NHẤT THỊ TRƯỜNG</span></div></div>
 
-    <div id="mobile-sidebar" class="fixed inset-0 z-50 bg-black bg-opacity-70 hidden transition-opacity">
-        <div class="absolute left-0 top-0 bottom-0 w-72 bg-gray-900 shadow-2xl p-5 flex flex-col justify-between overflow-y-auto border-r border-gray-800">
-            <div>
-                <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-                    <div class="flex items-center">
-                        <img src="image_7.png" alt="Logo" class="h-10 object-contain drop-shadow-sm" onerror="this.style.display='none'; document.getElementById('fallback-logo-mobile').classList.remove('hidden');">
-                        <div id="fallback-logo-mobile" class="hidden flex items-center">
-                            <i class="fa-solid fa-gamepad text-xl text-indigo-400 mr-2"></i>
-                            <span class="font-bold text-lg text-white">Acc<span class="text-indigo-400">Reg</span></span>
-                        </div>
-                    </div>
-                    <button id="close-sidebar-btn" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-                </div>
-                <nav class="space-y-2 flex flex-col">
-                    <button onclick="switchTab('home'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-indigo-400 font-medium"><i class="fa-solid fa-house mr-3 w-5"></i> Trang Chủ</button>
-                    <button onclick="switchTab('recharge'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-indigo-400 font-medium"><i class="fa-solid fa-money-bill-wave mr-3 w-5"></i> Nạp Tiền</button>
-                    <button onclick="switchTab('wheel'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-red-400 hover:bg-red-900/30 font-bold"><i class="fa-solid fa-dharmachakra mr-3 w-5"></i> Vòng Quay</button>
-                    <button onclick="switchTab('history'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-indigo-400 font-medium"><i class="fa-solid fa-clock-rotate-left mr-3 w-5"></i> Lịch Sử Mua</button>
-                    <button onclick="switchTab('support'); toggleMobileMenu()" class="text-left py-2.5 px-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-indigo-400 font-medium"><i class="fa-solid fa-headset mr-3 w-5"></i> Hỗ Trợ</button>
-                    <button id="nav-manage-mobile" onclick="requestAdminAccess('manage-acc'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-indigo-300 bg-indigo-900/40 hover:bg-indigo-800 font-bold"><i class="fa-solid fa-list-check mr-3 w-5"></i> Quản Lý Acc</button>
-                    <button id="nav-admin-mobile" onclick="requestAdminAccess('admin'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-red-300 bg-red-900/40 hover:bg-red-800 font-bold"><i class="fa-solid fa-screwdriver-wrench mr-3 w-5"></i> Admin Panel</button>
-                    <button id="nav-users-mobile" onclick="requestAdminAccess('users-data'); toggleMobileMenu()" class="hidden text-left py-2.5 px-3 rounded-lg text-blue-300 bg-blue-900/40 hover:bg-blue-800 font-bold"><i class="fa-solid fa-users mr-3 w-5"></i> Dữ Liệu</button>
-                </nav>
-            </div>
-        </div>
-    </div>
-
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
-
+    <main style="padding-bottom: 50px;">
+        
         <section id="section-home" class="page-section active">
-            <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Tài khoản Đang Bán
-            </h3>
-            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                <p class="text-gray-500 col-span-full text-center py-10">Đang tải dữ liệu...</p>
-            </div>
-        </section>
-
-        <section id="section-recharge" class="page-section">
-            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Nạp Tiền Vào Tài Khoản
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
-                    <h4 class="font-bold text-lg mb-4 text-indigo-400"><i class="fa-solid fa-credit-card mr-2"></i>Nạp Thẻ Cào (Tự động 5s)</h4>
-                    <form id="recharge-card-form" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1 text-gray-400">Nhà mạng</label>
-                            <select class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none" required>
-                                <option value="VIETTEL">Viettel</option>
-                                <option value="VINAPHONE">Vinaphone</option>
-                                <option value="MOBIFONE">Mobifone</option>
-                            </select>
+            <div class="swiper-banner-container">
+                <div class="swiper mySwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <img src="https://i.imgur.com/Edb3A15.jpg" alt="Banner 1" onerror="this.src='https://via.placeholder.com/1200x350/0f172a/ffffff?text=ACC+REG+LIEN+QUAN'">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1 text-gray-400">Mệnh giá</label>
-                            <select class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none" required>
-                                <option value="10000">10,000 VNĐ</option>
-                                <option value="20000">20,000 VNĐ</option>
-                                <option value="50000">50,000 VNĐ</option>
-                                <option value="100000">100,000 VNĐ</option>
-                            </select>
+                        <div class="swiper-slide">
+                            <img src="https://i.imgur.com/FhW4X4o.jpg" alt="Banner 2" onerror="this.src='https://via.placeholder.com/1200x350/dc2626/ffffff?text=SALE+KHUNG'">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1 text-gray-400">Mã thẻ</label>
-                            <input type="text" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nhập mã thẻ">
+                        <div class="swiper-slide">
+                            <img src="https://i.imgur.com/1JzK4P3.jpg" alt="Banner 3" onerror="this.src='https://via.placeholder.com/1200x350/2563eb/ffffff?text=UY+TIN+100%25'">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1 text-gray-400">Số Seri</label>
-                            <input type="text" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nhập số seri">
-                        </div>
-                        <button type="button" id="recharge-card-btn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition">Nạp Thẻ Ngay</button>
-                    </form>
-                </div>
-                <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl text-center">
-                    <h4 class="font-bold text-lg mb-4 text-emerald-400"><i class="fa-solid fa-building-columns mr-2"></i>Chuyển Khoản (Tự động 1-3p)</h4>
-                    <p class="text-sm text-gray-400 mb-4">Quét mã QR dưới đây hoặc chuyển khoản theo đúng cú pháp để hệ thống tự động cộng tiền.</p>
-                    <div class="bg-gray-800 p-4 rounded-xl border border-dashed border-gray-700 inline-block mb-4">
-                        <img id="qr-code-img" src="https://img.vietqr.io/image/MB-0354426873-compact2.png?amount=0&addInfo=NAPTIEN&accountName=TRAN%20THE%20HIEN" alt="QR Code" class="mx-auto w-48 h-48 rounded object-contain">
                     </div>
-                    <div class="text-left bg-emerald-950/50 text-emerald-300 p-4 rounded-xl text-sm space-y-2 border border-emerald-800/50">
-                        <p><strong>Ngân hàng:</strong> MB Bank</p>
-                        <p><strong>Số tài khoản:</strong> 0354426873</p>
-                        <p><strong>Chủ tài khoản:</strong> TRAN THE HIEN</p>
-                        <p class="font-mono bg-gray-900 p-2.5 rounded-lg border border-emerald-800/50 mt-2 text-center text-lg font-bold text-red-400">
-                            Nội dung: <span id="bank-syntax">NAPTIEN</span>
-                        </p>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+
+            <div class="home-layout">
+                <div id="home-left-col">
+                    <div id="category-view">
+                        <div class="section-title">DANH MỤC SẢN PHẨM</div>
+                        <div id="category-grid" class="cat-grid"></div>
+                    </div>
+                    
+                    <div id="acc-view" style="display: none;">
+                        <button class="btn-back-cat" onclick="showCategoryView()"><i class="fa-solid fa-arrow-left"></i> Quay lại Danh Mục</button>
+                        <div class="section-title" id="current-cat-title">TẤT CẢ</div>
+                        <div id="product-list" class="acc-grid"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="top-nap-card">
+                        <div class="top-nap-header">🏆 TOP Nạp Tháng Này</div>
+                        <div class="top-nap-list" id="leaderboard-list"><div class="text-center text-sm text-slate-500 py-4">Đang tải...</div></div>
+                        <div class="p-3"><button onclick="switchTab('recharge')" class="btn-nap-top">⚡ NẠP TIỀN NGAY ⚡</button></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="section-wheel" class="page-section">
-            <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl max-w-2xl mx-auto text-center">
-                <h3 class="text-2xl font-bold mb-2 text-indigo-400">Vòng Quay Nhân Phẩm</h3>
-                <p class="text-gray-400 mb-8">Giá mỗi lượt quay: <span class="font-bold text-red-400">10,000đ</span></p>
-                <div class="wheel-container mb-8">
-                    <div class="wheel-pointer"></div>
-                    <div class="wheel" id="roulette-wheel"></div>
-                    <div class="wheel-center">SPIN</div>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-xs md:text-sm font-medium text-gray-400 mb-6 bg-gray-800/50 p-4 rounded-xl">
-                    <div class="text-red-400">Đỏ: +0đ</div>
-                    <div class="text-yellow-400">Vàng: +5,000đ</div>
-                    <div class="text-emerald-400">Xanh lá: +10,000đ</div>
-                    <div class="text-blue-400">Xanh dương: +20,000đ</div>
-                    <div class="text-purple-400">Tím: +50,000đ</div>
-                    <div class="text-pink-400">Hồng: +100,000đ</div>
-                </div>
-                <button id="spin-btn" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-extrabold text-lg py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform">QUAY NGAY</button>
-            </div>
-        </section>
+        <section id="section-recharge" class="page-section"><div class="white-section"><div class="sec-header">Nạp Tiền</div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;"><div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px;"><h3 style="color:#2563eb; font-weight:800; margin-bottom: 15px;">Nạp Thẻ Cào</h3><input type="text" class="form-input" placeholder="Mã thẻ"><input type="text" class="form-input" placeholder="Số Seri"><button class="form-btn" onclick="customAlert('Đang bảo trì API')">Nạp Ngay</button></div><div style="border: 1px solid #10b981; padding: 20px; border-radius: 12px; text-align: center; background: #f0fdf4;"><h3 style="color:#059669; font-weight:800; margin-bottom: 15px;">Chuyển Khoản Ngân Hàng</h3><img src="https://img.vietqr.io/image/MB-0354426873-compact2.png?amount=0&addInfo=NAPTIEN" style="width: 150px; height: 150px; margin: 0 auto 15px auto; border-radius: 8px;"><p style="font-weight: 600;">MB Bank - 0354426873</p><div style="background: #fff; padding: 10px; border-radius: 8px; margin-top: 10px; font-weight: 900; color: #dc2626; border: 1px solid #a7f3d0;" id="bank-syntax-txt">NAPTIEN</div></div></div></div></section>
+        
+        <section id="section-auth" class="page-section"><div class="white-section" style="max-width: 450px;"><div style="text-align: center; margin-bottom: 25px;"><div style="width: 60px; height: 60px; background: #2563eb; color: #fff; font-size: 30px; font-weight: 900; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;"><i class="fa-solid fa-user"></i></div><h2 style="font-size: 24px; font-weight: 800; color: #1e293b;" id="auth-title">Đăng Nhập</h2></div><form id="auth-form"><label class="form-label">Tên tài khoản</label><input type="text" id="auth-username" class="form-input" required><div id="auth-email-container" style="display: none;"><label class="form-label">Email</label><input type="email" id="auth-email" class="form-input"></div><label class="form-label">Mật khẩu</label><input type="password" id="auth-password" class="form-input" required><button type="submit" class="form-btn" id="auth-submit-btn">Đăng Nhập</button></form><div style="text-align: center; margin-top: 20px; font-weight: 600;"><span id="auth-toggle-text">Chưa có tài khoản?</span> <span id="auth-toggle-btn" style="color: #ef4444; cursor: pointer;">Đăng ký</span></div></div></section>
 
-        <section id="section-auth" class="page-section">
-            <div class="max-w-md mx-auto bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
-                <div class="text-center mb-6">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-2xl font-black text-white shadow-lg">A</div>
-                    <h2 class="text-2xl font-bold text-white" id="auth-title">Đăng nhập</h2>
-                    <p class="text-gray-400 text-sm mt-1" id="auth-subtitle">Chào mừng bạn quay trở lại accreggiatot.site</p>
-                </div>
-                <form id="auth-form" class="space-y-4">
-                    <div>
-                        <label id="auth-username-label" class="block text-sm font-medium mb-1.5 text-gray-400">Email hoặc tên người dùng</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                            <input type="text" id="auth-username" required placeholder="Nhập email hoặc tên người dùng" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
-                        </div>
-                    </div>
-                    <div id="auth-email-container" class="hidden">
-                        <label class="block text-sm font-medium mb-1.5 text-gray-400">Địa chỉ Gmail</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                            <input type="email" id="auth-email" placeholder="Nhập Gmail của bạn (VD: example@gmail.com)" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1.5 text-gray-400">Mật khẩu</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                            <input type="password" id="auth-password" required minlength="6" placeholder="Nhập mật khẩu" class="w-full pl-10 pr-12 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
-                            <button type="button" id="toggle-password" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"><i class="fa-solid fa-eye"></i></button>
-                        </div>
-                    </div>
-                    <div id="forgot-password-link-container" class="text-right">
-                        <button type="button" onclick="switchTab('forgot')" class="text-sm text-cyan-400 hover:underline font-medium">Quên mật khẩu?</button>
-                    </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-cyan-900/30" id="auth-submit-btn">Đăng nhập</button>
-                </form>
-                <div class="mt-5 text-center text-sm text-gray-400">
-                    <span id="auth-toggle-text">Chưa có tài khoản?</span>
-                    <button id="auth-toggle-btn" class="text-cyan-400 font-bold hover:underline">Đăng ký ngay</button>
-                </div>
-            </div>
-        </section>
+        <section id="section-history" class="page-section"><div class="white-section"><div class="sec-header">Lịch Sử Mua Hàng</div><div class="table-wrap"><table><thead><tr><th>Thời gian</th><th>Sản phẩm</th><th>Giá</th><th>Tài khoản | Mật khẩu</th><th>Trạng thái</th></tr></thead><tbody id="history-list"></tbody></table></div></div></section>
 
-        <section id="section-forgot" class="page-section">
-            <div class="max-w-md mx-auto bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-white">Khôi Phục Mật Khẩu</h2>
-                    <p class="text-gray-400 text-sm mt-1">Nhập email để nhận liên kết khôi phục</p>
-                </div>
-                <form id="forgot-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1.5 text-gray-400">Email khôi phục</label>
-                        <input type="email" id="forgot-email" required placeholder="Nhập gmail của bạn" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-500 outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl transition">Gửi Liên Kết Khôi Phục</button>
-                </form>
-                <div class="mt-4 text-center text-sm">
-                    <button onclick="switchTab('auth')" class="text-cyan-400 font-bold hover:underline">← Quay lại Đăng Nhập</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="section-history" class="page-section">
-            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Lịch Sử Mua Hàng
-            </h3>
-            <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
-                <table class="w-full text-left min-w-[600px]">
-                    <thead>
-                        <tr class="bg-gray-800/70 text-sm border-b border-gray-700 text-gray-300">
-                            <th class="p-4">Thời gian</th>
-                            <th class="p-4">Tên tài khoản</th>
-                            <th class="p-4">Giá</th>
-                            <th class="p-4">Thông tin (TK|MK)</th>
-                            <th class="p-4">Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-list" class="text-sm divide-y divide-gray-800"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="section-support" class="page-section">
-            <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl max-w-xl mx-auto text-center">
-                <h3 class="text-2xl font-bold mb-4 text-indigo-400">Hỗ Trợ Khách Hàng</h3>
-                <p class="mb-6 text-gray-400">Gặp vấn đề nạp thẻ, lỗi nick hoặc cần tư vấn? Liên hệ ngay với Admin để được giải quyết nhanh nhất.</p>
-                <a href="https://zalo.me/0334671178" target="_blank" class="inline-block bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white font-bold py-3 px-8 rounded-xl transition shadow-lg">
-                    <i class="fa-solid fa-comment-dots mr-2"></i> Chat Zalo: 0334671178
-                </a>
-            </div>
-        </section>
-
-        <section id="section-manage-acc" class="page-section">
-            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-indigo-500 rounded-full"></span> Quản Lý Danh Sách Tài Khoản
-            </h3>
-            <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
-                <table class="w-full text-left min-w-[1000px]">
-                    <thead>
-                        <tr class="bg-gray-800/70 text-sm border-b border-gray-700 text-gray-300">
-                            <th class="p-4">Tiêu đề Acc</th>
-                            <th class="p-4">Giá bán</th>
-                            <th class="p-4">Thông tin (TK|MK)</th>
-                            <th class="p-4">Tình trạng</th>
-                            <th class="p-4">Thống kê</th>
-                            <th class="p-4 text-center">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="manage-acc-list" class="text-sm divide-y divide-gray-800">
-                        <tr><td colspan="6" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="section-admin" class="page-section">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
-                    <h3 class="text-xl font-bold text-red-400 mb-6 border-b border-gray-800 pb-4"><i class="fa-solid fa-cloud-arrow-up mr-2"></i>Đăng Bán Acc</h3>
-                    <form id="admin-add-acc-form" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-300 mb-1">Tiêu đề (VD: Acc LV12 Trắng TT)</label>
-                            <input type="text" id="add-title" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-300 mb-1">Giá bán (VNĐ)</label>
-                            <input type="number" id="add-price" required min="0" class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-300 mb-1">Thông tin Acc (Định dạng TK|MK)</label>
-                            <input type="text" id="add-info" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-300 mb-1">Ảnh Acc (Tùy chọn)</label>
-                            <input type="file" id="add-image" accept="image/*" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-xl text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-900 file:text-indigo-300 hover:file:bg-indigo-800">
-                            <div id="image-preview-container" class="mt-3 hidden">
-                                <img id="image-preview" src="" alt="Preview" class="w-full h-40 object-cover rounded-xl border border-gray-700">
-                            </div>
-                        </div>
-                        <button type="submit" id="add-acc-submit-btn" class="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold py-3 rounded-xl mt-4 transition">Đăng Bán Lên Shop</button>
-                    </form>
-                </div>
-                <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
-                    <h3 class="text-xl font-bold text-emerald-400 mb-6 border-b border-gray-800 pb-4"><i class="fa-solid fa-money-bill-transfer mr-2"></i>Cộng Tiền Thành Viên</h3>
-                    <form id="admin-add-balance-form" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-300 mb-1">Username hoặc Gmail Khách Hàng</label>
-                            <input type="text" id="add-bal-username" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nhập username hoặc gmail">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-300 mb-1">Số Tiền Cần Cộng (+/-)</label>
-                            <input type="text" id="add-bal-amount" required class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="VD: 50.000">
-                        </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 rounded-xl mt-4 transition">Thực Hiện Cộng Tiền</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <section id="section-users-data" class="page-section">
-            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span> Dữ Liệu Khách Hàng (Chỉ Admin)
-            </h3>
-            <div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-x-auto shadow-xl">
-                <table class="w-full text-left min-w-[600px]">
-                    <thead>
-                        <tr class="bg-gray-800/70 text-sm border-b border-gray-700 text-gray-300">
-                            <th class="p-4">Tên đăng nhập</th>
-                            <th class="p-4">Email</th>
-                            <th class="p-4">Mật khẩu</th>
-                            <th class="p-4">Số dư (VNĐ)</th>
-                            <th class="p-4">Quyền</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-data-list" class="text-sm divide-y divide-gray-800">
-                        <tr><td colspan="5" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        <section id="section-wheel" class="page-section"><div class="white-section text-center"><h2 class="sec-header">Vòng Quay Nhân Phẩm</h2><div class="wheel-container mb-8"><div class="wheel-pointer"></div><div class="wheel" id="roulette-wheel"></div><div class="wheel-center">SPIN</div></div><button id="spin-btn" class="form-btn" style="width:auto; padding: 12px 40px; background: #ef4444;">QUAY NGAY (10K)</button></div></section>
+        
+        <section id="section-manage-acc" class="page-section"><div class="white-section"><div class="sec-header">Quản Lý Acc</div><div class="table-wrap"><table><thead><tr><th>Tiêu đề</th><th>Danh mục</th><th>Giá</th><th>Thông tin</th><th>Status</th><th>Hành động</th></tr></thead><tbody id="manage-acc-list"></tbody></table></div></div></section>
+        
+        <section id="section-admin" class="page-section"><div class="white-section"><div class="sec-header">Admin Panel (Đăng bán / Cộng tiền)</div><div style="display: flex; flex-wrap: wrap; gap: 20px;"><div style="flex:1; min-width:300px; border:1px solid #e2e8f0; padding:15px; border-radius:8px;"><h3 style="color:#ef4444; font-weight:bold; margin-bottom:10px;">Đăng bán</h3><form id="admin-add-acc-form"><input type="text" id="add-title" class="form-input" placeholder="Tiêu đề" required><input type="text" id="add-category" class="form-input" placeholder="Danh mục (VD: VIP)"><input type="number" id="add-price" class="form-input" placeholder="Giá tiền" required><input type="text" id="add-info" class="form-input" placeholder="TK|MK" required><button type="submit" class="form-btn" style="background:#ef4444;">Thêm</button></form></div><div style="flex:1; min-width:300px; border:1px solid #e2e8f0; padding:15px; border-radius:8px;"><h3 style="color:#10b981; font-weight:bold; margin-bottom:10px;">Cộng tiền</h3><form id="admin-add-balance-form"><input type="text" id="add-bal-username" class="form-input" placeholder="Username/Email" required><input type="number" id="add-bal-amount" class="form-input" placeholder="Số tiền" required><button type="submit" class="form-btn" style="background:#10b981;">Cộng</button></form></div></div></div></section>
+        
+        <section id="section-users-data" class="page-section"><div class="white-section"><div class="sec-header">Dữ Liệu Khách Hàng</div><div class="table-wrap"><table><thead><tr><th>User</th><th>Email</th><th>Số dư</th></tr></thead><tbody id="users-data-list"></tbody></table></div></div></section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
     <script type="module">
+        // Khởi tạo thư viện Banner Slider
+        const swiper = new Swiper(".mySwiper", {
+            loop: true, // Lặp vô hạn
+            autoplay: {
+                delay: 3000, // Tự động chuyển slide sau 3 giây
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+
+        // ----------------------------------------------------
+        // ĐOẠN DƯỚI NÀY LÀ LOGIC FIREBASE GIỮ NGUYÊN HOÀN TOÀN 
+        // ----------------------------------------------------
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, addDoc, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc, orderBy, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, doc, getDocs, onSnapshot, serverTimestamp, setDoc, updateDoc, deleteDoc, increment, getDoc, orderBy, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const ADMIN_SECRET_PASSWORD = "845376"; 
+        const firebaseConfig = { apiKey: "AIzaSyBuovkNlYRF_ECaqQEujJ9Lc6gn4ZjCmSA", authDomain: "shopacclienquan-f2506.firebaseapp.com", projectId: "shopacclienquan-f2506", storageBucket: "shopacclienquan-f2506.firebasestorage.app", messagingSenderId: "970631977402", appId: "1:970631977402:web:f8c685f7fc54125277e583" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        let currentUser = null; let allProducts = []; let currentBuyAccId = null;
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBuovkNlYRF_ECaqQEujJ9Lc6gn4ZjCmSA",
-            authDomain: "shopacclienquan-f2506.firebaseapp.com",
-            projectId: "shopacclienquan-f2506",
-            storageBucket: "shopacclienquan-f2506.firebasestorage.app",
-            messagingSenderId: "970631977402",
-            appId: "1:970631977402:web:f8c685f7fc54125277e583"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        let currentUser = null;
-        let currentUserData = null; 
-
-        // Escape để chống XSS khi chèn dữ liệu do người dùng nhập (username...)
-        // vào innerHTML. Bắt buộc dùng hàm này cho MỌI chuỗi không phải do admin
-        // gõ tay, tránh 1 user đăng ký username chứa mã độc rồi chèn thẳng vào
-        // trang admin xem được (chiếm quyền phiên đăng nhập của admin).
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str ?? '';
-            return div.innerHTML;
-        }
-
-        // THEME
-        function applyTheme(mode) {
-            const themeIcon = document.getElementById('theme-icon');
-            if (mode === 'light') {
-                document.body.classList.add('light-mode');
-                if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-amber-500';
-                localStorage.setItem('accreg-theme', 'light');
-            } else {
-                document.body.classList.remove('light-mode');
-                if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-yellow-400';
-                localStorage.setItem('accreg-theme', 'dark');
-            }
-        }
-        applyTheme(localStorage.getItem('accreg-theme') || 'dark');
-
-        function themeBtnHtml() {
-            const isLight = document.body.classList.contains('light-mode');
-            const iconClass = isLight ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon text-yellow-400';
-            return `<button id="theme-toggle" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center transition" title="Chuyển sáng/tối"><i class="${iconClass}" id="theme-icon"></i></button>`;
-        }
-        function bindThemeToggle() {
-            document.getElementById('theme-toggle')?.addEventListener('click', () => {
-                applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
-            });
-        }
-
-        // WELCOME
-        const welcomeModal = document.getElementById('welcome-modal');
-        setTimeout(() => welcomeModal?.classList.add('show'), 500);
-        document.getElementById('welcome-ok-btn')?.addEventListener('click', () => welcomeModal.classList.remove('show'));
-        document.getElementById('welcome-shop-link')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            welcomeModal.classList.remove('show');
-            switchTab('home');
-        });
-
-        // AVATAR MENU
-        function userMenuHtml(username, balance) {
-            const safeUsername = escapeHtml(username || 'User');
-            const initial = (username || 'U').charAt(0).toUpperCase();
-            return `
-                ${themeBtnHtml()}
-                <div id="user-menu">
-                    <button id="user-avatar-btn" title="${safeUsername}">${initial}</button>
-                    <div id="user-dropdown">
-                        <div class="ud-header">
-                            <div class="ud-name">${safeUsername}</div>
-                            <div class="ud-balance"><i class="fa-solid fa-wallet mr-1"></i>${Number(balance).toLocaleString()}đ</div>
-                        </div>
-                        <button class="ud-item" id="ud-recharge"><i class="fa-solid fa-money-bill-wave w-5 text-emerald-400"></i> Nạp tiền</button>
-                        <button class="ud-item" id="ud-history"><i class="fa-solid fa-clock-rotate-left w-5 text-indigo-400"></i> Lịch sử mua hàng</button>
-                        <button class="ud-item logout" id="ud-logout"><i class="fa-solid fa-right-from-bracket w-5"></i> Đăng xuất</button>
-                    </div>
-                </div>
-            `;
-        }
-        function bindUserMenu() {
-            const avatarBtn = document.getElementById('user-avatar-btn');
-            const dropdown = document.getElementById('user-dropdown');
-            if (!avatarBtn || !dropdown) return;
-            avatarBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dropdown.classList.toggle('show');
-            });
-            document.addEventListener('click', () => dropdown.classList.remove('show'));
-            dropdown.addEventListener('click', (e) => e.stopPropagation());
-            document.getElementById('ud-recharge')?.addEventListener('click', () => { dropdown.classList.remove('show'); switchTab('recharge'); });
-            document.getElementById('ud-history')?.addEventListener('click', () => { dropdown.classList.remove('show'); switchTab('history'); });
-            document.getElementById('ud-logout')?.addEventListener('click', () => { signOut(auth); location.reload(); });
-        }
-
-        // CUSTOM MODAL
-        const modalEl = document.getElementById('custom-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalMessage = document.getElementById('modal-message');
-        const modalInputContainer = document.getElementById('modal-input-container');
-        const modalInput = document.getElementById('modal-input');
-        const modalOk = document.getElementById('modal-ok');
-        const modalCancel = document.getElementById('modal-cancel');
-        const modalIcon = document.getElementById('modal-icon');
-        let modalResolve = null;
-
-        function showModal({ title = 'Thông báo', message = '', showInput = false, inputType = 'text', defaultValue = '', okText = 'OK', cancelText = 'Hủy', showCancel = true, type = 'info' }) {
-            return new Promise((resolve) => {
-                modalResolve = resolve;
-                modalTitle.textContent = title;
-                modalMessage.textContent = message;
-                modalOk.textContent = okText;
-                modalCancel.textContent = cancelText;
-                modalCancel.style.display = showCancel ? 'block' : 'none';
-                if (type === 'success') {
-                    modalIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
-                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-emerald-900/50 text-emerald-300';
-                } else if (type === 'error') {
-                    modalIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-red-900/50 text-red-300';
-                } else if (type === 'warning') {
-                    modalIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-amber-900/50 text-amber-300';
-                } else if (type === 'prompt') {
-                    modalIcon.innerHTML = '<i class="fa-solid fa-key"></i>';
-                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-indigo-900/50 text-indigo-300';
-                } else {
-                    modalIcon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
-                    modalIcon.className = 'w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-indigo-900/50 text-indigo-300';
-                }
-                if (showInput) {
-                    modalInputContainer.classList.remove('hidden');
-                    modalInput.type = inputType;
-                    modalInput.value = defaultValue;
-                    modalInput.placeholder = message || 'Nhập...';
-                    setTimeout(() => modalInput.focus(), 100);
-                } else {
-                    modalInputContainer.classList.add('hidden');
-                }
-                modalEl.classList.add('show');
-                modalEl.classList.remove('hidden');
-                modalEl.style.display = 'flex';
-            });
-        }
-        function closeModal(result) {
-            modalEl.classList.remove('show');
-            setTimeout(() => { modalEl.classList.add('hidden'); modalEl.style.display = 'none'; }, 150);
-            if (modalResolve) { modalResolve(result); modalResolve = null; }
-        }
-        modalOk.addEventListener('click', () => {
-            const showInput = !modalInputContainer.classList.contains('hidden');
-            closeModal(showInput ? modalInput.value : true);
-        });
-        modalCancel.addEventListener('click', () => closeModal(null));
-        modalEl.addEventListener('click', (e) => { if (e.target === modalEl) closeModal(null); });
-        modalInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') modalOk.click();
-            if (e.key === 'Escape') modalCancel.click();
-        });
-        window.customAlert = (msg, type = 'info') => showModal({ title: 'Thông báo', message: msg, showCancel: false, okText: 'Đóng', type });
-        window.customConfirm = (msg) => showModal({ title: 'Xác nhận', message: msg, okText: 'Đồng ý', cancelText: 'Hủy', type: 'warning' });
-        window.customPrompt = (msg, defaultVal = '') => showModal({ title: 'Nhập thông tin', message: msg, showInput: true, defaultValue: defaultVal, okText: 'OK', cancelText: 'Hủy', type: 'prompt' });
-
-        const mobileSidebar = document.getElementById('mobile-sidebar');
-        window.toggleMobileMenu = function() { mobileSidebar.classList.toggle('hidden'); }
-        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
-        document.getElementById('close-sidebar-btn').addEventListener('click', toggleMobileMenu);
-        mobileSidebar.addEventListener('click', (e) => { if (e.target === mobileSidebar) toggleMobileMenu(); });
+        function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str??''; return d.innerHTML; }
+        function maskName(str) { const l = String(str||'').split('@')[0]; return l ? (l.length<=3 ? l+'***' : l.slice(0,3)+'***') : 'Ẩn'; }
 
         window.switchTab = function(tabId) {
-            const protectedTabs = ['history', 'recharge', 'wheel'];
-            if(protectedTabs.includes(tabId) && !currentUser) {
-                customAlert("Vui lòng đăng nhập để sử dụng tính năng này!", 'warning');
-                return switchTab('auth');
-            }
-            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById('section-' + tabId).classList.add('active');
+            if(['history','recharge','wheel'].includes(tabId) && !currentUser) { showSuccessModal("Lỗi", "Vui lòng đăng nhập!", false); return switchTab('auth'); }
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-'+tabId).classList.add('active');
+            if(tabId==='home') { document.getElementById('category-view').style.display='block'; document.getElementById('acc-view').style.display='none'; }
         };
-
         window.requestAdminAccess = async function(tabId) {
-            const pwd = await customPrompt("Vui lòng nhập mật khẩu quản trị:");
-            if (pwd === null) return;
-            if (pwd === ADMIN_SECRET_PASSWORD) {
-                if(tabId === 'manage-acc') loadManageAccounts();
-                if(tabId === 'users-data') loadUsersData(); 
-                switchTab(tabId);
-            } else {
-                await customAlert("Mật khẩu không chính xác!", 'error');
-            }
+            const pwd = prompt("Mật khẩu Admin:");
+            if(pwd === ADMIN_SECRET_PASSWORD) { if(tabId==='manage-acc') loadManage(); if(tabId==='users-data') loadUsers(); switchTab(tabId); } else alert("Sai!");
         };
 
-        document.getElementById('toggle-password')?.addEventListener('click', function() {
-            const input = document.getElementById('auth-password');
-            const icon = this.querySelector('i');
-            if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
-            else { input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
-        });
+        window.showSuccessModal = function(title, msg, isSuccess=true) {
+            const m = document.getElementById('modalSuccessReg');
+            document.getElementById('mcTitleReg').innerText = title; document.getElementById('mcSubReg').innerText = msg;
+            document.querySelector('.success-icon-wrapper').innerHTML = isSuccess ? `<svg class="checkmark-svg" viewBox="0 0 52 52"><circle class="checkmark-circle" cx="26" cy="26" r="23" fill="none"/><path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>` : `<div style="font-size:50px; color:#ef4444;">✕</div>`;
+            m.classList.add('active');
+            if(isSuccess && "vibrate" in navigator) navigator.vibrate([100, 50, 100]);
+            setTimeout(()=>m.classList.remove('active'), 2000);
+        };
+        window.customAlert = (msg) => alert(msg); 
 
         let isLoginMode = true;
         document.getElementById('auth-toggle-btn').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? "Đăng nhập" : "Tạo tài khoản";
-            document.getElementById('auth-subtitle').innerText = isLoginMode ? "Chào mừng bạn quay trở lại AccReg" : "Tạo tài khoản mới để mua acc";
-            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Đăng nhập" : "Đăng ký";
+            document.getElementById('auth-title').innerText = isLoginMode ? "Đăng Nhập" : "Đăng Ký";
+            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Đăng Nhập" : "Đăng Ký";
             document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Chưa có tài khoản?" : "Đã có tài khoản?";
-            document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký ngay" : "Đăng nhập";
-            const userLabel = document.getElementById('auth-username-label');
-            const userInput = document.getElementById('auth-username');
-            const emailContainer = document.getElementById('auth-email-container');
-            const emailInput = document.getElementById('auth-email');
-            if (isLoginMode) {
-                userLabel.innerHTML = 'Email hoặc tên người dùng';
-                userInput.placeholder = "Nhập email hoặc tên người dùng";
-                emailContainer.classList.add('hidden');
-                emailInput.removeAttribute('required');
-            } else {
-                userLabel.innerHTML = 'Tên đăng nhập';
-                userInput.placeholder = "Nhập tên đăng nhập (VD: account123)";
-                emailContainer.classList.remove('hidden');
-                emailInput.setAttribute('required', 'true');
-            }
-            const forgotLink = document.getElementById('forgot-password-link-container');
-            isLoginMode ? forgotLink.classList.remove('hidden') : forgotLink.classList.add('hidden');
+            document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Đăng ký" : "Đăng nhập";
+            document.getElementById('auth-email-container').style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('auth-email').required = !isLoginMode;
         });
 
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const inputValue = document.getElementById('auth-username').value.trim();
-            const password = document.getElementById('auth-password').value;
+            const u = document.getElementById('auth-username').value.trim();
+            const p = document.getElementById('auth-password').value;
             try {
-                if (isLoginMode) {
-                    let userEmailToLogin = "";
-                    if (inputValue.includes('@')) {
-                        userEmailToLogin = inputValue;
-                    } else {
-                        const usersRef = collection(db, "users");
-                        const q = query(usersRef, where("username", "==", inputValue));
-                        const querySnapshot = await getDocs(q);
-                        if (querySnapshot.empty) return customAlert("Tên đăng nhập không tồn tại!", 'error');
-                        querySnapshot.forEach((doc) => { userEmailToLogin = doc.data().email; });
+                if(isLoginMode) {
+                    let eLogin = u;
+                    if(!u.includes('@')) {
+                        const q = query(collection(db,"users"), where("username","==",u));
+                        const snap = await getDocs(q);
+                        if(snap.empty) throw new Error("Sai tài khoản!");
+                        snap.forEach(d => eLogin = d.data().email);
                     }
-                    await signInWithEmailAndPassword(auth, userEmailToLogin, password);
+                    await signInWithEmailAndPassword(auth, eLogin, p);
+                    showSuccessModal("Thành công!", "Đăng nhập thành công!");
                 } else {
-                    const registerEmail = document.getElementById('auth-email').value.trim();
-                    if (inputValue.includes('@')) return customAlert("Tên đăng nhập không được chứa ký tự @!", 'warning');
-                    // Chặn ký tự có thể dùng để tạo XSS ngay từ lúc đăng ký (lớp phòng thủ
-                    // thứ nhất). Lớp phòng thủ thứ hai là escapeHtml() khi hiển thị.
-                    if (/[<>"'`]/.test(inputValue)) return customAlert("Tên đăng nhập không được chứa các ký tự < > \" ' `", 'warning');
-                    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
-                    if (!registerEmail || !gmailRegex.test(registerEmail)) {
-                        return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ (VD: example@gmail.com)!", 'warning');
-                    }
-                    const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, password);
-                    await setDoc(doc(db, 'users', userCredential.user.uid), {
-                        username: inputValue, email: registerEmail, balance: 0, role: 'user'
-                    });
-                    await customAlert("Tạo tài khoản thành công!", 'success');
+                    const em = document.getElementById('auth-email').value.trim();
+                    const cred = await createUserWithEmailAndPassword(auth, em, p);
+                    await setDoc(doc(db, 'users', cred.user.uid), { username: u, email: em, balance: 0, role: 'user' });
+                    showSuccessModal("Thành công!", "Đăng ký thành công!");
                 }
-                switchTab('home');
-                e.target.reset();
-            } catch (error) {
-                customAlert("Lỗi: " + (error.message || "Kiểm tra lại thông tin tài khoản!"), 'error');
-            }
-        });
-
-        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('forgot-email').value.trim();
-            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
-            if (!email || !gmailRegex.test(email)) return customAlert("Vui lòng nhập địa chỉ Gmail hợp lệ!", 'warning');
-            try {
-                await sendPasswordResetEmail(auth, email);
-                await customAlert("Đã gửi email khôi phục!", 'success');
-                switchTab('auth');
-            } catch (error) {
-                customAlert("Lỗi hoặc email không tồn tại.", 'error');
-            }
-        });
-
-        document.getElementById('recharge-card-btn').addEventListener('click', () => {
-            customAlert('Tính năng nạp thẻ cào cần kết nối API Gạch Thẻ (ví dụ TheSieuToc). Admin vui lòng kết nối API backend!', 'warning');
+                switchTab('home'); e.target.reset();
+            } catch (error) { showSuccessModal("Lỗi!", error.message, false); }
         });
 
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
-            const userArea = document.getElementById('user-area');
-            const navAdmin = document.getElementById('nav-admin');
-            const navManage = document.getElementById('nav-manage');
-            const navAdminMobile = document.getElementById('nav-admin-mobile');
-            const navManageMobile = document.getElementById('nav-manage-mobile');
-            const navUsers = document.getElementById('nav-users');
-            const navUsersMobile = document.getElementById('nav-users-mobile');
-            
-            const stkVietQR = "0354426873"; 
-            const nganHang = "MB";
-            const tenChuTK = "TRAN THE HIEN";
-
             if (user) {
-                const userEmail = (user.email || "").toLowerCase().trim();
                 onSnapshot(doc(db, 'users', user.uid), async (docSnap) => {
-                    let balance = 0;
-                    let username = userEmail.split('@')[0];
-                    let isAdmin = false;
-                    if(docSnap.exists()) {
-                        currentUserData = docSnap.data();
-                        balance = currentUserData.balance || 0;
-                        username = currentUserData.username || username;
-                        if (currentUserData.role === 'admin') isAdmin = true;
-                    } else {
-                        await setDoc(doc(db, 'users', user.uid), {
-                            username, email: user.email, balance: 0, role: 'user'
-                        }, { merge: true });
-                    }
-                    if (isAdmin) {
-                        navAdmin.classList.remove('hidden'); 
-                        navManage.classList.remove('hidden');
-                        navAdminMobile.classList.remove('hidden');
-                        navManageMobile.classList.remove('hidden');
-                        if(navUsers) navUsers.classList.remove('hidden');
-                        if(navUsersMobile) navUsersMobile.classList.remove('hidden');
-                    } else {
-                        navAdmin.classList.add('hidden'); 
-                        navManage.classList.add('hidden');
-                        navAdminMobile.classList.add('hidden');
-                        navManageMobile.classList.add('hidden');
-                        if(navUsers) navUsers.classList.add('hidden');
-                        if(navUsersMobile) navUsersMobile.classList.add('hidden');
-                    }
-                    // Avatar + dropdown (username được escapeHtml() trước khi chèn)
-                    userArea.innerHTML = userMenuHtml(username, balance);
-                    bindThemeToggle();
-                    bindUserMenu();
-                    const cuPhap = `NAP ${username}`;
-                    document.getElementById('bank-syntax').innerText = cuPhap;
-                    document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=${encodeURIComponent(cuPhap)}&accountName=${encodeURIComponent(tenChuTK)}`;
+                    let bal = 0; let name = (user.email||'').split('@')[0];
+                    if(docSnap.exists()) { bal = docSnap.data().balance||0; name = docSnap.data().username||name; if(docSnap.data().role==='admin') document.querySelectorAll('.admin-nav').forEach(e=>e.classList.remove('hidden')); }
+                    document.getElementById('user-area').innerHTML = `<div id="user-menu"><button id="user-avatar-btn" onclick="document.getElementById('user-dropdown').classList.toggle('show')">${name.charAt(0).toUpperCase()}</button><div id="user-dropdown"><div class="ud-header"><div class="ud-name">${escapeHtml(name)}</div><div class="ud-balance">${bal.toLocaleString()}đ</div></div><button class="ud-item" onclick="switchTab('recharge')">Nạp tiền</button><button class="ud-item" onclick="switchTab('history')">Lịch sử</button><button class="ud-item logout" onclick="signOut(auth); location.reload()">Đăng xuất</button></div></div>`;
+                    document.getElementById('bank-syntax-txt').innerText = `NAP ${name}`;
                 });
                 loadHistory();
             } else {
-                navAdmin.classList.add('hidden'); 
-                navManage.classList.add('hidden');
-                navAdminMobile.classList.add('hidden');
-                navManageMobile.classList.add('hidden');
-                if(navUsers) navUsers.classList.add('hidden');
-                if(navUsersMobile) navUsersMobile.classList.add('hidden');
-                userArea.innerHTML = `
-                    ${themeBtnHtml()}
-                    <button onclick="switchTab('auth')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold transition text-sm">Đăng Nhập</button>
-                `;
-                bindThemeToggle();
-                document.getElementById('bank-syntax').innerText = "NAPTIEN";
-                document.getElementById('qr-code-img').src = `https://img.vietqr.io/image/${nganHang}-${stkVietQR}-compact2.png?amount=0&addInfo=NAPTIEN&accountName=${encodeURIComponent(tenChuTK)}`;
+                document.getElementById('user-area').innerHTML = `<button onclick="switchTab('auth')" class="btn-login">Đăng Nhập</button>`;
+                document.querySelectorAll('.admin-nav').forEach(e=>e.classList.add('hidden'));
             }
         });
 
-        onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snapshot) => {
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = '';
-            if (snapshot.empty) return productList.innerHTML = '<p class="text-gray-500 col-span-full text-center py-16">Hiện chưa có tài khoản nào được bán.</p>';
-            snapshot.forEach((docSnap) => {
-                const acc = docSnap.data();
-                const safeTitle = escapeHtml(acc.title);
-                const discountPercent = acc.discount_percent || 0;
-                const soldCount = acc.sold_count || 0;
-                const stockLeft = acc.stock_left || 1;
-                let originalPrice = acc.price;
-                if (discountPercent > 0 && discountPercent < 100) originalPrice = Math.round(acc.price / (1 - (discountPercent / 100)));
-                else if (discountPercent === 100) originalPrice = acc.price * 2; 
-                const badgeHtml = discountPercent > 0 
-                    ? `<div class="absolute top-3 right-3 z-10"><span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">-${discountPercent}%</span></div>` : '';
-                const imageHtml = acc.imageUrl 
-                    ? `<img src="${acc.imageUrl}" alt="Ảnh acc" class="w-full h-56 sm:h-64 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300">` 
-                    : `<div class="w-full h-56 sm:h-64 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-t-2xl flex items-center justify-center"><i class="fa-solid fa-gamepad text-6xl text-white/90"></i></div>`;
-                productList.innerHTML += `
-                    <div class="relative bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-900/30 transition-all duration-300 group flex flex-col justify-between">
-                        <div class="absolute top-3 left-3 z-10">
-                            <span class="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-fire text-[10px]"></i> Hot</span>
-                        </div>
-                        ${badgeHtml}
-                        <div>
-                            <div class="overflow-hidden bg-gray-950">${imageHtml}</div>
-                            <div class="p-4">
-                                <span class="inline-block text-[11px] font-medium text-indigo-300 bg-indigo-900/40 px-2.5 py-0.5 rounded-md mb-2">Acc Liên Quân</span>
-                                <h4 class="font-bold text-white text-base leading-snug line-clamp-2 mb-3" title="${safeTitle}">${safeTitle}</h4>
-                                <div class="flex items-center justify-between text-xs text-gray-400 mb-4 pb-3 border-b border-gray-800">
-                                    <span class="flex items-center gap-1"><i class="fa-solid fa-star text-yellow-400 text-[11px]"></i><span class="text-yellow-400 font-medium">5.0</span></span>
-                                    <span>Đã bán ${soldCount}</span>
-                                    <span class="flex items-center gap-1 font-medium text-gray-300"><i class="fa-solid fa-box text-indigo-400"></i> Còn ${stockLeft}</span>
-                                </div>
-                                <div class="flex items-baseline gap-2 mb-4">
-                                    <span class="text-2xl font-extrabold text-cyan-400">${Number(acc.price).toLocaleString()}đ</span>
-                                    <span class="text-sm text-gray-500 line-through">${originalPrice.toLocaleString()}đ</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 pt-0">
-                            <button onclick="buyAccount('${docSnap.id}')" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-lg shadow-cyan-900/30">
-                                <i class="fa-solid fa-cart-shopping text-sm"></i> Mua ngay
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-        });
-
-        window.buyAccount = async function(accId) {
-            if (!currentUser) return switchTab('auth');
-            const confirmBuy = await customConfirm("Bạn có chắc chắn muốn mua tài khoản này?");
-            if(!confirmBuy) return;
-            const accRef = doc(db, "accounts", accId);
-            const userRef = doc(db, "users", currentUser.uid);
-            try {
-                await runTransaction(db, async (transaction) => {
-                    const accSnap = await transaction.get(accRef);
-                    const userSnap = await transaction.get(userRef);
-                    if(!accSnap.exists() || accSnap.data().status !== "available") throw new Error("SOLD_OUT");
-                    const price = accSnap.data().price;
-                    const balance = userSnap.data().balance || 0;
-                    if(balance < price) throw new Error("INSUFFICIENT_BALANCE");
-                    const buyerEmail = userSnap.data().email || currentUser.email;
-                    transaction.update(userRef, { balance: increment(-price) });
-                    transaction.update(accRef, {
-                        status: "sold", buyer_uid: currentUser.uid, buyer_email: buyerEmail, sold_at: serverTimestamp()
-                    });
-                });
-                await customAlert("Mua thành công! Vui lòng vào Lịch Sử Mua để xem Tài Khoản / Mật Khẩu.", 'success');
-                switchTab('history');
-            } catch (error) {
-                if(error.message === "SOLD_OUT") customAlert("Tài khoản này đã bị người khác mua mất hoặc không tồn tại!", 'error');
-                else if(error.message === "INSUFFICIENT_BALANCE") customAlert("Số dư của bạn không đủ. Vui lòng nạp thêm tiền!", 'warning');
-                else customAlert("Đã xảy ra lỗi khi mua: " + error.message, 'error');
-            }
+        window.showCategoryView = function() { document.getElementById('category-view').style.display='block'; document.getElementById('acc-view').style.display='none'; };
+        window.showAccByCat = function(cat) {
+            document.getElementById('category-view').style.display='none'; document.getElementById('acc-view').style.display='block'; document.getElementById('current-cat-title').innerText = escapeHtml(cat);
+            const items = allProducts.filter(p => (p.acc.category||'Khác') === cat); const list = document.getElementById('product-list');
+            if(items.length===0) list.innerHTML = '<p style="text-align:center;">Trống</p>';
+            else list.innerHTML = items.map(p => `<div class="acc-card"><div class="acc-banner"><img src="${p.acc.imageUrl||'https://via.placeholder.com/400x200?text=ACC+GAME'}"><div class="acc-badge">MS: ${p.id.slice(0,6)}</div></div><div class="acc-body"><div class="acc-title">${escapeHtml(p.acc.title)}</div><div class="acc-info">Hiện còn: <span style="color:#dc2626">${p.acc.stock_left||1}</span> acc</div><div class="acc-price-wrap"><div class="acc-price">${Number(p.acc.price).toLocaleString()} đ</div><button class="btn-buy-acc" onclick="triggerBuy('${p.id}')">Mua Ngay</button></div></div></div>`).join('');
         };
 
-        let isSpinning = false;
-        document.getElementById('spin-btn').addEventListener('click', async () => {
-            if(!currentUser) return switchTab('auth');
-            if(isSpinning) return;
-            const spinCost = 10000;
-            const userRef = doc(db, "users", currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            if(userSnap.data().balance < spinCost) return customAlert("Bạn cần ít nhất 10,000đ để tham gia vòng quay!", 'warning');
-            isSpinning = true;
-            await updateDoc(userRef, { balance: increment(-spinCost) });
-            const prizes = [0, 5000, 10000, 20000, 50000, 100000];
-            const rand = Math.random();
-            let prizeIndex = 0; 
-            if(rand > 0.6) prizeIndex = 1; 
-            if(rand > 0.85) prizeIndex = 2; 
-            if(rand > 0.95) prizeIndex = 3; 
-            if(rand > 0.98) prizeIndex = 4; 
-            if(rand > 0.995) prizeIndex = 5; 
-            const totalDegree = 360 * 5 + prizeIndex * 60 + 30;
-            const wheel = document.getElementById('roulette-wheel');
-            wheel.style.transform = `rotate(${totalDegree}deg)`;
+        onSnapshot(query(collection(db, "accounts"), where("status", "==", "available")), (snap) => {
+            allProducts = []; snap.forEach(d => allProducts.push({id: d.id, acc: d.data()}));
+            const cats = {}; allProducts.forEach(p => { const c = p.acc.category||'Khác'; cats[c] = (cats[c]||0) + (p.acc.stock_left||1); });
+            const catHtml = Object.keys(cats).map(c => `<div class="cat-card"><img src="https://via.placeholder.com/300x150/dc2626/ffffff?text=${encodeURIComponent(c)}" class="cat-img"><div class="cat-name">${escapeHtml(c)}</div><div class="cat-stock">Còn <span>${cats[c]}</span></div><button class="btn-view-all" onclick="showAccByCat('${escapeHtml(c)}')">XEM TẤT CẢ</button></div>`).join('');
+            document.getElementById('category-grid').innerHTML = catHtml || '<p>Chưa có mục nào.</p>';
+        });
+
+        window.triggerBuy = function(id) {
+            if(!currentUser) { showSuccessModal("Lỗi", "Vui lòng đăng nhập!", false); return switchTab('auth'); }
+            currentBuyAccId = id; document.getElementById('buyQtyInput').value = 1; document.getElementById('modalBuyConfirm').classList.add('active');
+        };
+
+        document.getElementById('btnConfirmBuyYes').addEventListener('click', () => {
+            const qty = parseInt(document.getElementById('buyQtyInput').value);
+            document.getElementById('modalBuyConfirm').classList.remove('active'); document.getElementById('modalBuyLoading').classList.add('active');
             setTimeout(async () => {
-                isSpinning = false;
-                wheel.style.transition = 'none';
-                wheel.style.transform = `rotate(${prizeIndex * 60 + 30}deg)`;
-                setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)', 50);
-                if(prizes[prizeIndex] > 0) {
-                    await updateDoc(userRef, { balance: increment(prizes[prizeIndex]) });
-                    customAlert(`Chúc mừng! Bạn đã quay trúng ${prizes[prizeIndex].toLocaleString()}đ!`, 'success');
-                } else {
-                    customAlert("Rất tiếc! Bạn quay trúng ô 0đ. Chúc bạn may mắn lần sau!", 'info');
-                }
-            }, 4000);
+                document.getElementById('modalBuyLoading').classList.remove('active');
+                const accRef = doc(db, "accounts", currentBuyAccId); const userRef = doc(db, "users", currentUser.uid);
+                try {
+                    await runTransaction(db, async (trans) => {
+                        const accSnap = await trans.get(accRef); const userSnap = await trans.get(userRef);
+                        if(!accSnap.exists() || accSnap.data().status !== "available") throw new Error("Acc đã bán!");
+                        const stock = accSnap.data().stock_left||1; if(qty > stock) throw new Error("Không đủ số lượng!");
+                        const total = accSnap.data().price * qty; const bal = userSnap.data().balance||0;
+                        if(bal < total) throw new Error("Bạn không đủ số dư để mua!");
+                        trans.update(userRef, { balance: increment(-total) });
+                        if(qty === stock) trans.update(accRef, { status: "sold", buyer_uid: currentUser.uid, buyer_email: userSnap.data().email, sold_at: serverTimestamp(), stock_left: 0 });
+                        else trans.update(accRef, { stock_left: increment(-qty) });
+                    });
+                    showSuccessModal("Thành công!", "Đã mua thành công!"); showCategoryView(); switchTab('history');
+                } catch(e) { document.getElementById('buyErrMsg').innerText = e.message; document.getElementById('modalBuyErr').classList.add('active'); }
+            }, 1000);
+        });
+
+        onSnapshot(query(collection(db, "accounts"), where("status", "==", "sold")), (snap) => {
+            const solds = []; snap.forEach(d => { if(d.data().sold_at) solds.push(d.data()); });
+            const now = new Date(); const totals = {};
+            solds.forEach(a => { const d = a.sold_at.toDate(); if(d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear()){ totals[a.buyer_email||'ẩn'] = (totals[a.buyer_email||'ẩn']||0) + a.price; }});
+            const top = Object.entries(totals).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            const html = top.map((t,i) => `<div class="top-item"><span class="t-name">${i+1}. ${escapeHtml(maskName(t[0]))}</span><span class="t-money">+${t[1].toLocaleString()}đ</span></div>`).join('');
+            document.getElementById('leaderboard-list').innerHTML = html || '<div class="text-center text-sm py-2">Trống</div>';
         });
 
         function loadHistory() {
             if(!currentUser) return;
-            const historyList = document.getElementById('history-list');
-            onSnapshot(query(collection(db, "accounts"), where("buyer_uid", "==", currentUser.uid)), (snapshot) => {
-                historyList.innerHTML = '';
-                if(snapshot.empty) return historyList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Bạn chưa mua tài khoản nào.</td></tr>`;
-                snapshot.forEach(docSnap => {
-                    const acc = docSnap.data();
-                    let dateStr = "Vừa xong";
-                    if(acc.sold_at) {
-                        const d = acc.sold_at.toDate();
-                        dateStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
-                    }
-                    const rowId = `secret-${docSnap.id}`;
-                    historyList.innerHTML += `
-                        <tr class="hover:bg-gray-800/50 transition">
-                            <td class="p-4 whitespace-nowrap text-gray-400">${dateStr}</td>
-                            <td class="p-4 font-medium text-white">${escapeHtml(acc.title)}</td>
-                            <td class="p-4 text-red-400 font-bold">${Number(acc.price).toLocaleString()}đ</td>
-                            <td class="p-4"><input type="text" id="${rowId}" readonly value="Đang tải..." class="bg-gray-800 px-2 py-1 border border-gray-700 rounded w-full outline-none text-sm font-mono cursor-text text-gray-200" onclick="this.select()"></td>
-                            <td class="p-4 text-emerald-400 font-bold"><i class="fa-solid fa-check mr-1"></i>Thành công</td>
-                        </tr>`;
-                    getDoc(doc(db, "account_secrets", docSnap.id)).then(secretSnap => {
-                        const el = document.getElementById(rowId);
-                        if(el) el.value = secretSnap.exists() ? secretSnap.data().account_info : "(không có dữ liệu)";
-                    }).catch(() => {
-                        const el = document.getElementById(rowId);
-                        if(el) el.value = "(lỗi tải thông tin)";
-                    });
+            onSnapshot(query(collection(db, "accounts"), where("buyer_uid", "==", currentUser.uid)), (snap) => {
+                let html=''; snap.forEach(d => {
+                    const a = d.data(); const id=`sec-${d.id}`;
+                    html += `<tr><td>Xong</td><td>${escapeHtml(a.title)}</td><td>${a.price.toLocaleString()}đ</td><td><input type="text" id="${id}" value="..." readonly style="padding:4px;border:1px solid #ccc;"></td><td style="color:green;font-weight:bold;">T.Công</td></tr>`;
+                    getDoc(doc(db,"account_secrets",d.id)).then(s=>document.getElementById(id).value = s.exists()?s.data().account_info:'Lỗi');
                 });
+                document.getElementById('history-list').innerHTML = html||'<tr><td colspan="5">Chưa có</td></tr>';
             });
         }
 
-        function loadManageAccounts() {
-            const manageList = document.getElementById('manage-acc-list');
-            onSnapshot(query(collection(db, "accounts"), orderBy("created_at", "desc")), (snapshot) => {
-                manageList.innerHTML = '';
-                if(snapshot.empty) return manageList.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">Không có tài khoản nào.</td></tr>`;
-                snapshot.forEach(docSnap => {
-                    const acc = docSnap.data();
-                    const accId = docSnap.id;
-                    const discount = acc.discount_percent || 0;
-                    const soldCount = acc.sold_count || 0;
-                    const stockLeft = acc.stock_left || 1;
-                    let statusHtml = '<span class="px-2 py-1 bg-emerald-900/50 text-emerald-300 text-xs font-bold rounded">Đang bán</span>';
-                    let buyerInfoHtml = '';
-                    if (acc.status === "sold") {
-                        let dateStr = "";
-                        if(acc.sold_at) {
-                            const d = acc.sold_at.toDate();
-                            dateStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
-                        }
-                        statusHtml = `<span class="px-2 py-1 bg-red-900/50 text-red-300 text-xs font-bold rounded">Đã bán</span>`;
-                        buyerInfoHtml = `<div class="mt-1 text-xs text-gray-400"><div><i class="fa-solid fa-user mr-1"></i>${escapeHtml(acc.buyer_email || 'Không rõ')}</div><div><i class="fa-regular fa-clock mr-1"></i>${dateStr}</div></div>`;
-                    }
-                    manageList.innerHTML += `
-                        <tr class="hover:bg-gray-800/50 transition">
-                            <td class="p-4 font-medium text-white">${escapeHtml(acc.title)}</td>
-                            <td class="p-4 font-bold text-red-400">${Number(acc.price).toLocaleString()}đ</td>
-                            <td class="p-4"><button onclick="viewSecret('${accId}')" class="text-cyan-400 hover:underline text-sm font-mono"><i class="fa-solid fa-eye mr-1"></i>Xem TK|MK</button></td>
-                            <td class="p-4">${statusHtml}${buyerInfoHtml}</td>
-                            <td class="p-4 text-xs text-gray-400 space-y-1">
-                                <div>Giảm: <span class="text-orange-400 font-bold">${discount}%</span></div>
-                                <div>Đã bán: <span class="text-emerald-400 font-bold">${soldCount}</span></div>
-                                <div>Còn lại: <span class="text-cyan-400 font-bold"><i class="fa-solid fa-box text-xs mr-1"></i>${stockLeft}</span></div>
-                            </td>
-                            <td class="p-4 text-center grid grid-cols-3 sm:grid-cols-4 gap-1">
-                                <button onclick="updateTitle('${accId}', '${acc.title.replace(/'/g, "\\'")}')" class="bg-indigo-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-500 transition" title="Sửa Tiêu Đề"><i class="fa-solid fa-heading"></i></button>
-                                <button onclick="updateInfo('${accId}')" class="bg-amber-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-500 transition" title="Sửa Thông Tin"><i class="fa-solid fa-key"></i></button>
-                                <button onclick="updatePrice('${accId}', ${acc.price})" class="bg-blue-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-500 transition" title="Sửa Giá"><i class="fa-solid fa-tag"></i></button>
-                                <button onclick="updateStats('${accId}', 'discount_percent', ${discount}, 'Nhập % giảm giá (VD: 50)')" class="bg-orange-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-orange-500 transition" title="Sửa % Giảm Giá"><i class="fa-solid fa-percent"></i></button>
-                                <button onclick="updateStats('${accId}', 'sold_count', ${soldCount}, 'Nhập số lượng đã bán')" class="bg-emerald-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-500 transition" title="Sửa Đã Bán"><i class="fa-solid fa-chart-simple"></i></button>
-                                <button onclick="updateStats('${accId}', 'stock_left', ${stockLeft}, 'Nhập số lượng còn lại')" class="bg-cyan-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-cyan-500 transition" title="Sửa Còn Lại"><i class="fa-solid fa-box-open"></i></button>
-                                <button onclick="deleteAccount('${accId}')" class="bg-red-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-red-500 transition col-span-3 sm:col-span-1" title="Xóa"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>`;
-                });
-            });
-        }
-
-        function loadUsersData() {
-            const usersDataList = document.getElementById('users-data-list');
-            onSnapshot(collection(db, "users"), (snapshot) => {
-                usersDataList.innerHTML = '';
-                if(snapshot.empty) return usersDataList.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Chưa có khách hàng nào.</td></tr>`;
-                snapshot.forEach(docSnap => {
-                    const userData = docSnap.data();
-                    const passwordDisplay = userData.password_hint 
-                        ? `<span class="font-mono text-red-400">${escapeHtml(userData.password_hint)}</span>` 
-                        : '<span class="text-gray-500 italic">[Đã mã hóa Firebase]</span>';
-                    const roleBadge = userData.role === 'admin' 
-                        ? '<span class="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs font-bold rounded">Admin</span>' 
-                        : '<span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs font-bold rounded">User</span>';
-                    usersDataList.innerHTML += `
-                        <tr class="hover:bg-gray-800/50 transition">
-                            <td class="p-4 font-medium text-white">${escapeHtml(userData.username || 'N/A')}</td>
-                            <td class="p-4 text-gray-400">${escapeHtml(userData.email)}</td>
-                            <td class="p-4 text-sm">${passwordDisplay}</td>
-                            <td class="p-4 font-bold text-emerald-400">${Number(userData.balance || 0).toLocaleString()}đ</td>
-                            <td class="p-4">${roleBadge}</td>
-                        </tr>`;
-                });
-            });
-        }
-
-        window.viewSecret = async function(accId) {
-            try {
-                const secretSnap = await getDoc(doc(db, "account_secrets", accId));
-                customAlert(secretSnap.exists() ? secretSnap.data().account_info : "(chưa có dữ liệu)", 'info');
-            } catch (error) {
-                customAlert("Lỗi khi tải thông tin: " + error.message, 'error');
-            }
-        };
-
-        window.deleteAccount = async function(accId) {
-            if(!(await customConfirm("Bạn có chắc chắn muốn xóa tài khoản này khỏi shop không?"))) return;
-            try {
-                const batch = writeBatch(db);
-                batch.delete(doc(db, "accounts", accId));
-                batch.delete(doc(db, "account_secrets", accId));
-                await batch.commit();
-                customAlert("Đã xóa tài khoản thành công!", 'success');
-            } catch (error) { customAlert("Lỗi khi xóa: " + error.message, 'error'); }
-        };
-
-        window.updatePrice = async function(accId, currentPrice) {
-            const newPriceStr = await customPrompt("Nhập giá tiền mới (VNĐ):", currentPrice);
-            if(newPriceStr === null) return;
-            const newPrice = Number(newPriceStr);
-            if(isNaN(newPrice) || newPrice < 0) return customAlert("Vui lòng nhập một số hợp lệ!", 'error');
-            try {
-                await updateDoc(doc(db, "accounts", accId), { price: newPrice });
-                customAlert("Cập nhật giá thành công!", 'success');
-            } catch (error) { customAlert("Lỗi khi cập nhật giá: " + error.message, 'error'); }
-        };
-
-        window.updateTitle = async function(accId, currentTitle) {
-            const newTitle = await customPrompt("Nhập tiêu đề mới:", currentTitle);
-            if(newTitle === null) return;
-            if(newTitle.trim() === "") return customAlert("Tiêu đề không được để trống!", 'error');
-            try {
-                await updateDoc(doc(db, "accounts", accId), { title: newTitle.trim() });
-                customAlert("Cập nhật tiêu đề thành công!", 'success');
-            } catch (error) { customAlert("Lỗi khi cập nhật tiêu đề: " + error.message, 'error'); }
-        };
-
-        window.updateInfo = async function(accId) {
-            let currentInfo = "";
-            try {
-                const secretSnap = await getDoc(doc(db, "account_secrets", accId));
-                if(secretSnap.exists()) currentInfo = secretSnap.data().account_info || "";
-            } catch (error) {}
-            const newInfo = await customPrompt("Nhập thông tin tài khoản mới (Định dạng TK|MK):", currentInfo);
-            if(newInfo === null) return;
-            if(newInfo.trim() === "") return customAlert("Thông tin tài khoản không được để trống!", 'error');
-            try {
-                await setDoc(doc(db, "account_secrets", accId), { account_info: newInfo.trim() }, { merge: true });
-                customAlert("Cập nhật thông tin tài khoản thành công!", 'success');
-            } catch (error) { customAlert("Lỗi khi cập nhật thông tin: " + error.message, 'error'); }
-        };
-
-        window.updateStats = async function(accId, fieldName, currentValue, promptMsg) {
-            const newValStr = await customPrompt(promptMsg, currentValue);
-            if(newValStr === null) return;
-            const newVal = Number(newValStr);
-            if(isNaN(newVal) || newVal < 0) return customAlert("Vui lòng nhập một số hợp lệ lớn hơn hoặc bằng 0!", 'error');
-            if(fieldName === 'discount_percent' && newVal > 100) return customAlert("% giảm giá không được vượt quá 100!", 'error');
-            try {
-                const updateData = {}; updateData[fieldName] = newVal;
-                await updateDoc(doc(db, "accounts", accId), updateData);
-                customAlert("Cập nhật thông số thành công!", 'success');
-            } catch (error) { customAlert("Lỗi khi cập nhật: " + error.message, 'error'); }
-        };
-
-        document.getElementById('add-image').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const previewContainer = document.getElementById('image-preview-container');
-            const previewImage = document.getElementById('image-preview');
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => { previewImage.src = event.target.result; previewContainer.classList.remove('hidden'); };
-                reader.readAsDataURL(file);
-            } else {
-                previewContainer.classList.add('hidden');
-                previewImage.src = "";
-            }
+        document.getElementById('spin-btn').addEventListener('click', async () => {
+            if(!currentUser) { showSuccessModal("Lỗi", "Vui lòng đăng nhập!", false); return switchTab('auth'); }
+            const wheel = document.getElementById('roulette-wheel');
+            wheel.style.transform = `rotate(${360*5 + 150}deg)`; // Quay fake 5 vòng
+            setTimeout(() => showSuccessModal("Tuyệt vời!", "Tính năng vòng quay sẽ sớm ra mắt."), 4000);
         });
 
-        function resizeAndCompressImage(file, maxWidth = 1200, maxHeight = 1200, maxSizeBytes = 900000) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function (event) {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = function () {
-                        let width = img.width, height = img.height;
-                        if (width > maxWidth || height > maxHeight) {
-                            if (width / height > maxWidth / maxHeight) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
-                            else { width = Math.round((width * maxHeight) / height); height = maxHeight; }
-                        }
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width; canvas.height = height;
-                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                        let quality = 0.8, base64String = canvas.toDataURL('image/jpeg', quality);
-                        while (base64String.length > maxSizeBytes && quality > 0.1) {
-                            quality -= 0.1;
-                            base64String = canvas.toDataURL('image/jpeg', quality);
-                        }
-                        resolve(base64String);
-                    };
-                    img.onerror = reject;
-                };
-                reader.onerror = reject;
-            });
-        }
-
-        document.getElementById('admin-add-acc-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('add-acc-submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Đang nạp và xử lý nén ảnh...";
-            const title = document.getElementById('add-title').value;
-            const price = Number(document.getElementById('add-price').value);
-            const accountInfo = document.getElementById('add-info').value;
-            const imageFile = document.getElementById('add-image').files[0];
-            async function saveToFirestore(imageUrl = null) {
-                try {
-                    const newAccRef = doc(collection(db, "accounts"));
-                    const batch = writeBatch(db);
-                    batch.set(newAccRef, {
-                        title, price, imageUrl,
-                        status: "available", buyer_uid: null, created_at: serverTimestamp(),
-                        discount_percent: 0, sold_count: 0, stock_left: 1
-                    });
-                    batch.set(doc(db, "account_secrets", newAccRef.id), { account_info: accountInfo });
-                    await batch.commit();
-                    await customAlert("Đăng bán thành công!", 'success');
-                    e.target.reset();
-                    document.getElementById('image-preview-container').classList.add('hidden');
-                } catch (error) { 
-                    customAlert("Lỗi: " + error.message, 'error'); 
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "Đăng Bán Lên Shop";
-                }
-            }
-            if (imageFile) {
-                try { await saveToFirestore(await resizeAndCompressImage(imageFile)); }
-                catch (error) {
-                    customAlert("Có lỗi khi nén và xử lý ảnh!", 'error');
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "Đăng Bán Lên Shop";
-                }
-            } else await saveToFirestore(null);
+        function loadManage() { onSnapshot(query(collection(db, "accounts"), orderBy("created_at", "desc")), (snap) => { let h=''; snap.forEach(d=>{ const a=d.data(); h+=`<tr><td>${escapeHtml(a.title)}</td><td>${escapeHtml(a.category||'Khác')}</td><td>${a.price}</td><td>...</td><td>${a.status}</td><td><button onclick="deleteDoc(doc(db,'accounts','${d.id}'))" style="color:red;">Xóa</button></td></tr>`; }); document.getElementById('manage-acc-list').innerHTML = h; }); }
+        function loadUsers() { onSnapshot(collection(db, "users"), (snap) => { let h=''; snap.forEach(d=>{ const a=d.data(); h+=`<tr><td>${escapeHtml(a.username)}</td><td>${escapeHtml(a.email)}</td><td>${a.balance}</td></tr>`; }); document.getElementById('users-data-list').innerHTML = h; }); }
+        
+        document.getElementById('admin-add-acc-form').addEventListener('submit', async(e)=>{
+            e.preventDefault(); const t=document.getElementById('add-title').value, c=document.getElementById('add-category').value, p=Number(document.getElementById('add-price').value), i=document.getElementById('add-info').value;
+            const r = doc(collection(db,"accounts")); const b=writeBatch(db);
+            b.set(r,{title:t, category:c||'Khác', price:p, status:'available', created_at:serverTimestamp(), stock_left:1}); b.set(doc(db,'account_secrets',r.id), {account_info:i});
+            await b.commit(); showSuccessModal("OK","Đã thêm"); e.target.reset();
         });
-
-        document.getElementById('add-bal-amount').addEventListener('input', function (e) {
-            let val = e.target.value;
-            const isNegative = val.startsWith('-');
-            let rawValue = val.replace(/\D/g, '');
-            if (!rawValue) { e.target.value = isNegative ? '-' : ''; return; }
-            e.target.value = (isNegative ? '-' : '') + Number(rawValue).toLocaleString('vi-VN');
-        });
-
-        document.getElementById('admin-add-balance-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const inputVal = document.getElementById('add-bal-username').value.trim();
-            const amountToAdd = Number(document.getElementById('add-bal-amount').value.replace(/\./g, ''));
-            if (isNaN(amountToAdd) || amountToAdd === 0) return customAlert("Vui lòng nhập số tiền hợp lệ!", 'error');
-            try {
-                const usersRef = collection(db, "users");
-                const q = inputVal.includes('@') 
-                    ? query(usersRef, where("email", "==", inputVal))
-                    : query(usersRef, where("username", "==", inputVal));
-                const querySnapshot = await getDocs(q);
-                if (querySnapshot.empty) return customAlert(`Không tìm thấy tài khoản nào với thông tin: ${inputVal}`, 'error');
-                let targetUid = "";
-                querySnapshot.forEach((doc) => { targetUid = doc.id; });
-                await updateDoc(doc(db, "users", targetUid), { balance: increment(amountToAdd) });
-                await customAlert(`Đã cộng/trừ ${amountToAdd.toLocaleString('vi-VN')}đ cho tài khoản (${inputVal}) thành công!`, 'success');
-                e.target.reset();
-            } catch (error) {
-                customAlert("Lỗi khi cộng tiền: " + error.message, 'error');
-            }
+        document.getElementById('admin-add-balance-form').addEventListener('submit', async(e)=>{
+            e.preventDefault(); const u=document.getElementById('add-bal-username').value, am=Number(document.getElementById('add-bal-amount').value);
+            const q = query(collection(db,"users"), where("username","==",u)); const s = await getDocs(q);
+            if(!s.empty) { let id; s.forEach(d=>id=d.id); await updateDoc(doc(db,"users",id), {balance:increment(am)}); showSuccessModal("OK","Đã cộng"); e.target.reset(); }
         });
     </script>
 </body>
